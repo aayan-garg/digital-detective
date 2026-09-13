@@ -31,6 +31,34 @@ The eventual flow is: telemetry → canonical representation → anomaly detecti
 
 The LLM/agent is an investigator and orchestrator, not the source of truth. Deterministic, statistical, and causal tools must provide the evidence. RAG supplies historical and operational context; it does not replace causal analysis. Deep learning is experimental and must earn inclusion through evaluation. Do not hard-code this future architecture into the current source tree.
 
+## External Research and API Verification
+
+Digital Detective is research-grade: correctness of claims and reproducibility take priority over speed.
+
+- **Datasets:** Before writing dataset-specific code, inspect the actual dataset or repository. Verify the current structure, labels and ground truth, timestamps and telemetry formats, and how cases/incidents are identified. Do not infer these from papers, blog posts, or memory when the data is available.
+- **Papers:** Prefer the original paper. Separate what it reports from our interpretation; never invent numbers, datasets, baselines, or conclusions. Record experimental assumptions that affect reproducibility.
+- **Repositories and packages:** Inspect an external repository's relevant files, interfaces, installation instructions, and—when reproducibility matters—its exact revision/version. For unfamiliar Python packages, verify current documentation or source, installed version, actual import path, and callable interface. Never invent method names, parameters, or return values; adapt old examples to the current API.
+- **Versions and sources:** Record versions used by important experiments; do not casually upgrade or downgrade dependencies, and explain meaningful compatibility decisions. Prefer, in order: official project/repository documentation, the original paper, official package documentation, official source code, and other project-maintained authoritative documentation. Use secondary sources only when primary sources are unavailable; tutorials, generated articles, and search snippets are not authoritative evidence.
+- **Uncertainty and conflicts:** Label information as **Verified**, **Assumption**, **Hypothesis**, or **Experimental result**. Never present an inference as directly verified. When sources conflict, identify the conflict, check version/date/context, use the most appropriate current primary source, and document decisions that affect implementation.
+- **Results and reproducibility:** Never report an unmeasured result. Distinguish expected behavior, observed behavior, benchmark results, and informal smoke tests. For important experiments, record dataset/version, code revision, relevant dependency versions, configuration, evaluation procedure, and random seed when applicable.
+- **Stop condition:** If an API, dataset structure, or research claim cannot be reliably verified, stop before implementing assumptions that could materially affect the system. State what is unknown and ask for clarification when necessary.
+
+## Implementation Protocol
+
+Prefer a smaller correct system over a larger speculative system.
+
+1. **Understand:** Read the task; inspect the relevant files and architecture; identify scope and constraints; determine whether external research, APIs, datasets, or package behavior matter.
+2. **Plan:** For non-trivial work, state the minimal changes, reused components, necessary new components, and validation strategy before editing. Do not create a large design document for a small change.
+3. **Verify assumptions:** Follow **External Research and API Verification**. Do not proceed on a materially important unverified API, dataset, research claim, or version.
+4. **Implement minimally:** Make the smallest coherent change, reuse existing code, prefer straightforward implementations, and avoid unrelated cleanup or speculative infrastructure.
+5. **Test and validate:** Add or update meaningful tests; start focused and expand for integration or regression risk. Then run relevant tests, inspect imports and configured formatting/linting, review the final diff, check for accidental artifacts, and check Git status. Fix failures rather than hiding them; never weaken tests merely to pass.
+6. **Review and report:** Before completion, confirm the scope is limited, complexity and duplication are justified, assumptions are documented, tests are meaningful, and results are reproducible where appropriate. For substantive changes, report what and why changed, affected files, dependency changes, validation and observed results, unresolved limitations, and deliberate omissions.
+7. **Stop:** Complete and validate the requested task, then stop. One milestone does not authorize later phases: anomaly detection does not authorize RAG, RAG does not authorize an agent, and remediation does not authorize evaluation-methodology changes.
+
+- State why each new dependency is needed before adding it, and verify compatibility with the project's Python version and existing dependency set.
+- A failed test is not success; an unverified API is not a valid implementation basis; an unrun experiment is not a result; and unresolved architectural ambiguity must not be silently guessed. If the task cannot be completed safely within scope, report the blocker rather than expanding scope.
+- Design experimental comparisons so baselines and evaluation procedures remain reproducible and comparable, important configuration is recorded, experimental code does not silently alter the stable/core pipeline, and positive and negative results are preserved honestly.
+
 ## Quality and validation
 
 - Add focused, meaningful tests for each behavioral change. Prefer deterministic unit tests; add integration tests where component interactions matter. Do not write tests that exercise code without assertions of useful behavior.
