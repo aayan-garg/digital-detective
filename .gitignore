@@ -1,0 +1,50 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments and local environments
+.venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+
+# Test, coverage, and build artifacts
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+build/
+dist/
+*.egg-info/
+
+# IDEs and operating systems
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local data, experiment outputs, and models
+data/raw/*
+data/interim/*
+data/processed/*
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+outputs/
+artifacts/
+experiments/
+checkpoints/
+models/
+*.ckpt
+*.pt
+*.pth
+*.onnx
+*.pkl
