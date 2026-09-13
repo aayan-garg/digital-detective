@@ -1,4 +1,17 @@
-"""Digital Detective package.
+"""Digital Detective package."""
 
-The project is currently in its engineering and setup phase.
-"""
+from .telemetry import (
+    CaseMetadata,
+    GroundTruth,
+    ModalityProvenance,
+    TelemetryCase,
+    TelemetryModality,
+)
+
+__all__ = [
+    "CaseMetadata",
+    "GroundTruth",
+    "ModalityProvenance",
+    "TelemetryCase",
+    "TelemetryModality",
+]
