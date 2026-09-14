@@ -9,6 +9,12 @@ import os
 from pathlib import Path
 import unittest
 
+from digital_detective.anomaly import detect_metric_anomalies
+from digital_detective.evaluation import (
+    OUTCOME_CLEAN_DETECTION,
+    OUTCOME_NOISY_DETECTION,
+    evaluate_anomaly_detection_case,
+)
 from digital_detective.rcaeval import load_rcaeval_case
 
 DATASET_ROOT_ENV = "RCAEval_DATASET_ROOT"
@@ -164,6 +170,30 @@ class RCAEvalRealDataIntegrationTests(unittest.TestCase):
             case.traces.raw_data.num_rows,
             case.metadata.incident_metadata["n_traces"],
         )
+
+    def test_stage1_sanity_evaluation(self) -> None:
+        # Run baseline anomaly detection and evaluation on the two sanity cases
+        for case_id in ("re1ob_adservice_cpu_1", "re2ob_checkoutservice_cpu_1"):
+            if not (self.root / case_id / "metrics.parquet").is_file():
+                continue
+            case = load_rcaeval_case(self.root, case_id, source_revision=self.revision)
+            detector_result = detect_metric_anomalies(
+                case,
+                window_size=60,
+                threshold=3.0,
+                min_warmup=60,
+                min_valid_history=30,
+            )
+            eval_result = evaluate_anomaly_detection_case(case, detector_result)
+
+            self.assertEqual(eval_result.case_id, case_id)
+            self.assertEqual(eval_result.inject_time, int(case.ground_truth.values["inject_time"]))
+            self.assertEqual(eval_result.t_eval_end, int(detector_result.timestamps[-1]))
+            self.assertIn(eval_result.outcome, (OUTCOME_CLEAN_DETECTION, OUTCOME_NOISY_DETECTION))
+            self.assertIsNotNone(eval_result.t_detect)
+            self.assertIsNotNone(eval_result.detection_latency_sec)
+            self.assertGreaterEqual(eval_result.detection_latency_sec, 0)
+            self.assertGreater(len(eval_result.top_anomalous_metrics), 0)
 
 
 if __name__ == "__main__":
