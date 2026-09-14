@@ -25,6 +25,16 @@ from .telemetry import (
     TelemetryCase,
     TelemetryModality,
 )
+from .topology import (
+    Dependency,
+    EntityAnomalyEvidence,
+    EntityGraph,
+    EntityNode,
+    MetricIdentifier,
+    aggregate_entity_anomaly_evidence,
+    build_entity_graph,
+    parse_rcaeval_metric_identifier,
+)
 
 __all__ = [
     "AggregateEvaluationResult",
@@ -32,8 +42,13 @@ __all__ = [
     "CaseAlarmSequence",
     "CaseEvaluationResult",
     "CaseMetadata",
+    "Dependency",
+    "EntityAnomalyEvidence",
+    "EntityGraph",
+    "EntityNode",
     "GroundTruth",
     "MetricAnomalyResult",
+    "MetricIdentifier",
     "ModalityProvenance",
     "OUTCOME_CLEAN_DETECTION",
     "OUTCOME_COMPLETE_MISS",
@@ -43,8 +58,11 @@ __all__ = [
     "TelemetryCase",
     "TelemetryModality",
     "VALID_OUTCOMES",
+    "aggregate_entity_anomaly_evidence",
     "aggregate_metric_anomalies",
+    "build_entity_graph",
     "detect_metric_anomalies",
     "evaluate_anomaly_detection_case",
     "evaluate_anomaly_detection_cases",
+    "parse_rcaeval_metric_identifier",
 ]
