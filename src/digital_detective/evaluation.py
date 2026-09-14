@@ -7,6 +7,7 @@ import math
 import statistics
 from typing import Any, Mapping, Sequence
 
+from .aggregation import CaseAlarmSequence, aggregate_metric_anomalies
 from .anomaly import MetricAnomalyResult
 from .telemetry import TelemetryCase
 
@@ -66,6 +67,7 @@ class AggregateEvaluationResult:
 def evaluate_anomaly_detection_case(
     case: TelemetryCase,
     anomaly_result: MetricAnomalyResult,
+    case_alarms: CaseAlarmSequence | None = None,
 ) -> CaseEvaluationResult:
     """Evaluate metric anomaly detection outputs for a single TelemetryCase.
 
@@ -93,6 +95,22 @@ def evaluate_anomaly_detection_case(
     metric_names = anomaly_result.metric_names
     if not metric_names:
         raise ValueError(f"MetricAnomalyResult for case {anomaly_result.case_id!r} has no metric columns")
+
+    if case_alarms is None:
+        case_alarms = aggregate_metric_anomalies(anomaly_result)
+    else:
+        if case_alarms.case_id != case.metadata.case_id:
+            raise ValueError(
+                f"Case ID mismatch: TelemetryCase has {case.metadata.case_id!r}, "
+                f"CaseAlarmSequence has {case_alarms.case_id!r}"
+            )
+        if len(case_alarms.alarms) != len(timestamps):
+            raise ValueError(
+                f"Length mismatch: anomaly_result has {len(timestamps)} timestamps, "
+                f"CaseAlarmSequence has {len(case_alarms.alarms)} alarms"
+            )
+
+    alarms = case_alarms.alarms
 
     # Terminal observation timestamp of the case telemetry is t_eval_end
     t_eval_end = int(timestamps[-1])
@@ -136,10 +154,7 @@ def evaluate_anomaly_detection_case(
             anomaly_result.evaluation_statuses[m][idx] in ("normal", "anomaly")
             for m in metric_names
         )
-        step_has_anomaly = any(
-            anomaly_result.evaluation_statuses[m][idx] == "anomaly"
-            for m in metric_names
-        )
+        step_has_anomaly = alarms[idx]
 
         if step_evaluated:
             evaluated_pre_steps += 1
@@ -172,11 +187,7 @@ def evaluate_anomaly_detection_case(
             anomaly_result.evaluation_statuses[m][idx] in ("normal", "anomaly")
             for m in metric_names
         )
-        # Primary Any-Metric OR-Gate
-        step_has_anomaly = any(
-            anomaly_result.evaluation_statuses[m][idx] == "anomaly"
-            for m in metric_names
-        )
+        step_has_anomaly = alarms[idx]
 
         if step_evaluated:
             evaluated_post_steps += 1
