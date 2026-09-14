@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 from typing import Any, Mapping, Sequence
 
 from .anomaly import MetricAnomalyResult
+from .telemetry import TelemetryCase
 
 KNOWN_ENTITY_TYPES: Mapping[str, str] = {
     "redis": "datastore",
@@ -45,6 +46,19 @@ class Dependency:
 
     source: str
     target: str
+
+
+@dataclass(frozen=True)
+class TraceDependencyObservation:
+    """An observed directed caller -> callee relationship extracted from trace spans."""
+
+    source: str
+    target: str
+    observation_count: int
+
+    def to_dependency(self) -> Dependency:
+        """Convert to an EntityGraph Dependency object."""
+        return Dependency(source=self.source, target=self.target)
 
 
 @dataclass(frozen=True)
@@ -215,3 +229,89 @@ def aggregate_entity_anomaly_evidence(
         )
 
     return evidence
+
+
+def extract_trace_dependencies(
+    case: TelemetryCase,
+    *,
+    service_aliases: Mapping[str, str] | None = None,
+) -> tuple[TraceDependencyObservation, ...]:
+    """Extract directly observed caller -> callee service edges from case traces.
+
+    Operates strictly over observed parent-child span relationships.
+    An observed edge represents an observed execution relationship,
+    not complete system topology, not causality, and not root cause.
+
+    Parameters
+    ----------
+    case:
+        The TelemetryCase containing optional traces modality.
+    service_aliases:
+        Optional explicit mapping from trace serviceName to canonical entity name
+        (e.g. {"frontendservice": "frontend"}). No fuzzy matching is performed.
+
+    Returns
+    -------
+    tuple[TraceDependencyObservation, ...]
+        Deterministically sorted tuple of unique caller -> callee edges with observation counts.
+    """
+    if case.traces is None:
+        return ()
+
+    table = case.traces.raw_data
+    if hasattr(table, "column_names"):
+        columns = set(table.column_names)
+        get_col = lambda name: table.column(name).to_pylist()
+    elif isinstance(table, Mapping):
+        columns = set(table.keys())
+        get_col = lambda name: list(table[name])
+    else:
+        raise ValueError(f"Unsupported trace raw_data type: {type(table)!r}")
+
+    required_cols = ("spanID", "parentSpanID", "serviceName")
+    missing = [c for c in required_cols if c not in columns]
+    if missing:
+        raise ValueError(f"Trace data missing required column(s): {missing}")
+
+    span_ids = get_col("spanID")
+    parent_ids = get_col("parentSpanID")
+    service_names = get_col("serviceName")
+
+    # Build spanID -> serviceName lookup and reject duplicates
+    span_to_service: dict[str, str] = {}
+    for sid, sname in zip(span_ids, service_names):
+        if sid is None:
+            raise ValueError("Trace spanID cannot be null")
+        if sid in span_to_service:
+            raise ValueError(f"Duplicate spanID detected in trace data: {sid!r}")
+        span_to_service[sid] = sname
+
+    edge_counts: dict[tuple[str, str], int] = {}
+
+    for pid, child_svc in zip(parent_ids, service_names):
+        if pid is None or pid == "":
+            continue
+        if pid not in span_to_service:
+            continue
+
+        parent_svc = span_to_service[pid]
+        if parent_svc is None or child_svc is None:
+            continue
+        if parent_svc == "" or child_svc == "":
+            continue
+
+        if service_aliases:
+            parent_svc = service_aliases.get(parent_svc, parent_svc)
+            child_svc = service_aliases.get(child_svc, child_svc)
+
+        if parent_svc == child_svc:
+            continue
+
+        edge = (parent_svc, child_svc)
+        edge_counts[edge] = edge_counts.get(edge, 0) + 1
+
+    sorted_edges = sorted(edge_counts.keys(), key=lambda e: (e[0], e[1]))
+    return tuple(
+        TraceDependencyObservation(source=u, target=v, observation_count=edge_counts[(u, v)])
+        for u, v in sorted_edges
+    )

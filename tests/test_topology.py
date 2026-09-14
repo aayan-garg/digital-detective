@@ -4,12 +4,20 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Mapping, Sequence
+from typing import Any, Mapping, Sequence
 import unittest
 
+import pyarrow as pa
 import pyarrow.parquet as pq
 
 from digital_detective.anomaly import MetricAnomalyResult
+from digital_detective.rcaeval import load_rcaeval_case
+from digital_detective.telemetry import (
+    CaseMetadata,
+    ModalityProvenance,
+    TelemetryCase,
+    TelemetryModality,
+)
 from digital_detective.topology import (
     DEFAULT_ENTITY_TYPE,
     Dependency,
@@ -17,8 +25,10 @@ from digital_detective.topology import (
     EntityGraph,
     EntityNode,
     MetricIdentifier,
+    TraceDependencyObservation,
     aggregate_entity_anomaly_evidence,
     build_entity_graph,
+    extract_trace_dependencies,
     parse_rcaeval_metric_identifier,
 )
 
@@ -263,6 +273,208 @@ class RealDataIntegrationTests(unittest.TestCase):
         self.assertGreater(total_metrics_checked, 0)
         # All 84 distinct metric column names observed in RE1-OB must be covered
         self.assertEqual(len(all_raw_names_preserved), 84)
+
+
+class TraceDependencyExtractionTests(unittest.TestCase):
+    def _make_case_with_traces(self, trace_table: Any) -> TelemetryCase:
+        return TelemetryCase(
+            metadata=CaseMetadata(case_id="trace_test_case", suite="RE2", system="ob"),
+            traces=TelemetryModality(
+                raw_data=trace_table,
+                provenance=ModalityProvenance(
+                    source_dataset="test",
+                    source_case="trace_test_case",
+                    original_format="traces.parquet",
+                    original_field_names=tuple(trace_table.column_names) if hasattr(trace_table, "column_names") else tuple(trace_table.keys()),
+                ),
+            ) if trace_table is not None else None,
+        )
+
+    def test_direct_cross_service_parent_child_edge(self) -> None:
+        table = pa.table({
+            "spanID": ["span1", "span2"],
+            "parentSpanID": [None, "span1"],
+            "serviceName": ["frontend", "checkoutservice"],
+        })
+        case = self._make_case_with_traces(table)
+        deps = extract_trace_dependencies(case)
+        self.assertEqual(len(deps), 1)
+        self.assertEqual(deps[0].source, "frontend")
+        self.assertEqual(deps[0].target, "checkoutservice")
+        self.assertEqual(deps[0].observation_count, 1)
+        self.assertEqual(deps[0].to_dependency(), Dependency(source="frontend", target="checkoutservice"))
+
+    def test_repeated_edge_produces_one_observation_with_correct_count(self) -> None:
+        table = pa.table({
+            "spanID": ["root1", "child1", "root2", "child2", "root3", "child3"],
+            "parentSpanID": [None, "root1", None, "root2", None, "root3"],
+            "serviceName": [
+                "frontend", "checkoutservice",
+                "frontend", "checkoutservice",
+                "frontend", "checkoutservice",
+            ],
+        })
+        case = self._make_case_with_traces(table)
+        deps = extract_trace_dependencies(case)
+        self.assertEqual(len(deps), 1)
+        self.assertEqual(deps[0].source, "frontend")
+        self.assertEqual(deps[0].target, "checkoutservice")
+        self.assertEqual(deps[0].observation_count, 3)
+
+    def test_same_service_parent_child_ignored(self) -> None:
+        table = pa.table({
+            "spanID": ["span1", "span2"],
+            "parentSpanID": [None, "span1"],
+            "serviceName": ["checkoutservice", "checkoutservice"],
+        })
+        case = self._make_case_with_traces(table)
+        deps = extract_trace_dependencies(case)
+        self.assertEqual(deps, ())
+
+    def test_root_span_ignored(self) -> None:
+        table = pa.table({
+            "spanID": ["root1", "root2"],
+            "parentSpanID": [None, ""],
+            "serviceName": ["frontend", "checkoutservice"],
+        })
+        case = self._make_case_with_traces(table)
+        deps = extract_trace_dependencies(case)
+        self.assertEqual(deps, ())
+
+    def test_missing_parent_ignored(self) -> None:
+        table = pa.table({
+            "spanID": ["child1"],
+            "parentSpanID": ["nonexistent_parent"],
+            "serviceName": ["checkoutservice"],
+        })
+        case = self._make_case_with_traces(table)
+        deps = extract_trace_dependencies(case)
+        self.assertEqual(deps, ())
+
+    def test_null_or_missing_service_name_ignored(self) -> None:
+        table = pa.table({
+            "spanID": ["span1", "span2", "span3", "span4"],
+            "parentSpanID": [None, "span1", None, "span3"],
+            "serviceName": [None, "checkoutservice", "frontend", ""],
+        })
+        case = self._make_case_with_traces(table)
+        deps = extract_trace_dependencies(case)
+        self.assertEqual(deps, ())
+
+    def test_duplicate_span_id_raises_value_error(self) -> None:
+        table = pa.table({
+            "spanID": ["dup_span", "dup_span"],
+            "parentSpanID": [None, "dup_span"],
+            "serviceName": ["frontend", "checkoutservice"],
+        })
+        case = self._make_case_with_traces(table)
+        with self.assertRaisesRegex(ValueError, "Duplicate spanID detected"):
+            extract_trace_dependencies(case)
+
+    def test_explicit_alias_mapping(self) -> None:
+        table = pa.table({
+            "spanID": ["span1", "span2"],
+            "parentSpanID": [None, "span1"],
+            "serviceName": ["frontendservice", "checkoutservice"],
+        })
+        case = self._make_case_with_traces(table)
+        deps = extract_trace_dependencies(case, service_aliases={"frontendservice": "frontend"})
+        self.assertEqual(len(deps), 1)
+        self.assertEqual(deps[0].source, "frontend")
+        self.assertEqual(deps[0].target, "checkoutservice")
+        self.assertEqual(deps[0].observation_count, 1)
+
+    def test_deterministic_ordering(self) -> None:
+        table = pa.table({
+            "spanID": ["root", "child_z", "child_a", "child_m"],
+            "parentSpanID": [None, "root", "root", "root"],
+            "serviceName": ["gateway", "zebra", "apple", "mango"],
+        })
+        case = self._make_case_with_traces(table)
+        deps = extract_trace_dependencies(case)
+        targets = [d.target for d in deps]
+        self.assertEqual(targets, ["apple", "mango", "zebra"])
+
+    def test_missing_traces_returns_empty_tuple(self) -> None:
+        case = self._make_case_with_traces(None)
+        self.assertEqual(extract_trace_dependencies(case), ())
+
+    def test_missing_required_column_raises_value_error(self) -> None:
+        table = pa.table({
+            "spanID": ["span1"],
+            "serviceName": ["frontend"],
+            # parentSpanID is missing
+        })
+        case = self._make_case_with_traces(table)
+        with self.assertRaisesRegex(ValueError, "Trace data missing required column"):
+            extract_trace_dependencies(case)
+
+    def test_re2_real_data_trace_extraction(self) -> None:
+        dataset_root = os.environ.get("RCAEval_DATASET_ROOT")
+        if not dataset_root:
+            raise unittest.SkipTest("RCAEval_DATASET_ROOT not set; skipping real-data trace test")
+
+        root = Path(dataset_root)
+        case_dir = root / "re2ob_checkoutservice_cpu_1"
+        if not (case_dir / "traces.parquet").is_file():
+            raise unittest.SkipTest("re2ob_checkoutservice_cpu_1 traces.parquet not found")
+
+        case = load_rcaeval_case(root, "re2ob_checkoutservice_cpu_1")
+
+        # 1. Raw extraction without aliases: exactly 9 edges and counts
+        raw_deps = extract_trace_dependencies(case)
+        expected_raw = {
+            ("checkoutservice", "currencyservice"): 2323,
+            ("checkoutservice", "emailservice"): 669,
+            ("checkoutservice", "paymentservice"): 669,
+            ("checkoutservice", "productcatalogservice"): 1655,
+            ("frontendservice", "checkoutservice"): 669,
+            ("frontendservice", "currencyservice"): 52421,
+            ("frontendservice", "productcatalogservice"): 84412,
+            ("frontendservice", "recommendationservice"): 12929,
+            ("recommendationservice", "productcatalogservice"): 12929,
+        }
+        self.assertEqual(len(raw_deps), 9)
+        actual_raw = {(d.source, d.target): d.observation_count for d in raw_deps}
+        self.assertEqual(actual_raw, expected_raw)
+
+        # 2. Extraction with alias mapping frontendservice -> frontend
+        aliased_deps = extract_trace_dependencies(case, service_aliases={"frontendservice": "frontend"})
+        expected_aliased = {
+            ("checkoutservice", "currencyservice"): 2323,
+            ("checkoutservice", "emailservice"): 669,
+            ("checkoutservice", "paymentservice"): 669,
+            ("checkoutservice", "productcatalogservice"): 1655,
+            ("frontend", "checkoutservice"): 669,
+            ("frontend", "currencyservice"): 52421,
+            ("frontend", "productcatalogservice"): 84412,
+            ("frontend", "recommendationservice"): 12929,
+            ("recommendationservice", "productcatalogservice"): 12929,
+        }
+        self.assertEqual(len(aliased_deps), 9)
+        actual_aliased = {(d.source, d.target): d.observation_count for d in aliased_deps}
+        self.assertEqual(actual_aliased, expected_aliased)
+
+        # 3. Verify trace invariants directly on real data:
+        # - all parent-child links remain within traceID (0 cross-trace links)
+        # - missing parents are not converted into invented edges (exactly 7 missing parents skipped)
+        # - same-service links are excluded (199,346 same-service links skipped)
+        trace_table = case.traces.raw_data
+        span_to_trace = dict(zip(trace_table.column("spanID").to_pylist(), trace_table.column("traceID").to_pylist()))
+        parents = trace_table.column("parentSpanID").to_pylist()
+        traces = trace_table.column("traceID").to_pylist()
+
+        cross_trace_count = 0
+        missing_parent_count = 0
+        for pid, tid in zip(parents, traces):
+            if pid is not None and pid != "":
+                if pid not in span_to_trace:
+                    missing_parent_count += 1
+                elif span_to_trace[pid] != tid:
+                    cross_trace_count += 1
+
+        self.assertEqual(cross_trace_count, 0)
+        self.assertEqual(missing_parent_count, 7)
 
 
 if __name__ == "__main__":

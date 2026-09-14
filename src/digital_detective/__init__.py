@@ -31,8 +31,10 @@ from .topology import (
     EntityGraph,
     EntityNode,
     MetricIdentifier,
+    TraceDependencyObservation,
     aggregate_entity_anomaly_evidence,
     build_entity_graph,
+    extract_trace_dependencies,
     parse_rcaeval_metric_identifier,
 )
 
@@ -57,6 +59,7 @@ __all__ = [
     "STANDARD_CONFIGURATIONS",
     "TelemetryCase",
     "TelemetryModality",
+    "TraceDependencyObservation",
     "VALID_OUTCOMES",
     "aggregate_entity_anomaly_evidence",
     "aggregate_metric_anomalies",
@@ -64,5 +67,6 @@ __all__ = [
     "detect_metric_anomalies",
     "evaluate_anomaly_detection_case",
     "evaluate_anomaly_detection_cases",
+    "extract_trace_dependencies",
     "parse_rcaeval_metric_identifier",
 ]
