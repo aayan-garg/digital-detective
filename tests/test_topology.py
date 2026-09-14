@@ -371,6 +371,29 @@ class TraceDependencyExtractionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Duplicate spanID detected"):
             extract_trace_dependencies(case)
 
+    def test_duplicate_span_id_conflicting_parent_raises_value_error(self) -> None:
+        table = pa.table({
+            "spanID": ["span_child", "span_child"],
+            "parentSpanID": ["parent1", "parent2"],
+            "serviceName": ["checkoutservice", "checkoutservice"],
+        })
+        case = self._make_case_with_traces(table)
+        with self.assertRaisesRegex(ValueError, "Duplicate spanID detected"):
+            extract_trace_dependencies(case)
+
+    def test_duplicate_span_id_identical_records_tolerated(self) -> None:
+        table = pa.table({
+            "spanID": ["p1", "c1", "c1"],
+            "parentSpanID": [None, "p1", "p1"],
+            "serviceName": ["frontend", "checkoutservice", "checkoutservice"],
+        })
+        case = self._make_case_with_traces(table)
+        deps = extract_trace_dependencies(case)
+        self.assertEqual(len(deps), 1)
+        self.assertEqual(deps[0].source, "frontend")
+        self.assertEqual(deps[0].target, "checkoutservice")
+        self.assertEqual(deps[0].observation_count, 1)
+
     def test_explicit_alias_mapping(self) -> None:
         table = pa.table({
             "spanID": ["span1", "span2"],
@@ -475,6 +498,33 @@ class TraceDependencyExtractionTests(unittest.TestCase):
 
         self.assertEqual(cross_trace_count, 0)
         self.assertEqual(missing_parent_count, 7)
+
+    def test_re2_real_data_recommendationservice_loss_1_duplicate_rows(self) -> None:
+        dataset_root = os.environ.get("RCAEval_DATASET_ROOT")
+        if not dataset_root:
+            raise unittest.SkipTest("RCAEval_DATASET_ROOT not set; skipping real-data trace test")
+
+        root = Path(dataset_root)
+        case_dir = root / "re2ob_recommendationservice_loss_1"
+        if not (case_dir / "traces.parquet").is_file():
+            raise unittest.SkipTest("re2ob_recommendationservice_loss_1 traces.parquet not found")
+
+        case = load_rcaeval_case(root, "re2ob_recommendationservice_loss_1")
+        aliased_deps = extract_trace_dependencies(case, service_aliases={"frontendservice": "frontend"})
+        expected_edges = {
+            ("checkoutservice", "currencyservice"),
+            ("checkoutservice", "emailservice"),
+            ("checkoutservice", "paymentservice"),
+            ("checkoutservice", "productcatalogservice"),
+            ("frontend", "checkoutservice"),
+            ("frontend", "currencyservice"),
+            ("frontend", "productcatalogservice"),
+            ("frontend", "recommendationservice"),
+            ("recommendationservice", "productcatalogservice"),
+        }
+        actual_edges = {(d.source, d.target) for d in aliased_deps}
+        self.assertEqual(actual_edges, expected_edges)
+        self.assertEqual(len(aliased_deps), 9)
 
 
 if __name__ == "__main__":

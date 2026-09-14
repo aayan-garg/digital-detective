@@ -277,18 +277,25 @@ def extract_trace_dependencies(
     parent_ids = get_col("parentSpanID")
     service_names = get_col("serviceName")
 
-    # Build spanID -> serviceName lookup and reject duplicates
+    # Build spanID -> serviceName/parentSpanID lookup, allowing exact duplicate
+    # records (e.g. from network retry/loss telemetry duplication) while strictly
+    # rejecting duplicate spanIDs that map to conflicting services or parents.
     span_to_service: dict[str, str] = {}
-    for sid, sname in zip(span_ids, service_names):
+    span_to_parent: dict[str, str | None] = {}
+    for sid, pid, sname in zip(span_ids, parent_ids, service_names):
         if sid is None:
             raise ValueError("Trace spanID cannot be null")
         if sid in span_to_service:
-            raise ValueError(f"Duplicate spanID detected in trace data: {sid!r}")
+            if span_to_service[sid] != sname or span_to_parent.get(sid) != pid:
+                raise ValueError(f"Duplicate spanID detected in trace data: {sid!r}")
+            continue
         span_to_service[sid] = sname
+        span_to_parent[sid] = pid
 
     edge_counts: dict[tuple[str, str], int] = {}
 
-    for pid, child_svc in zip(parent_ids, service_names):
+    for sid, child_svc in span_to_service.items():
+        pid = span_to_parent.get(sid)
         if pid is None or pid == "":
             continue
         if pid not in span_to_service:
