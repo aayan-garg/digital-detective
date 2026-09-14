@@ -7,6 +7,12 @@ from .aggregation import (
     aggregate_metric_anomalies,
 )
 from .anomaly import MetricAnomalyResult, detect_metric_anomalies
+from .episodes import (
+    EntityEpisodeEvidence,
+    EpisodeConfig,
+    EpisodeInterval,
+    aggregate_entity_episodes,
+)
 from .evaluation import (
     OUTCOME_CLEAN_DETECTION,
     OUTCOME_COMPLETE_MISS,
@@ -17,6 +23,19 @@ from .evaluation import (
     CaseEvaluationResult,
     evaluate_anomaly_detection_case,
     evaluate_anomaly_detection_cases,
+)
+from .rca import (
+    RCA_A_ANOMALY_ONLY,
+    RCA_B_TEMPORAL,
+    RCA_C_TOPOLOGY_ONLY,
+    RCA_D_COMBINED,
+    AggregateRcaEvaluationResult,
+    CaseRcaEvaluationResult,
+    RCAConfig,
+    RootCauseScore,
+    evaluate_rca_benchmark,
+    evaluate_root_cause_ranking,
+    rank_root_cause_entities,
 )
 from .telemetry import (
     CaseMetadata,
@@ -40,14 +59,19 @@ from .topology import (
 
 __all__ = [
     "AggregateEvaluationResult",
+    "AggregateRcaEvaluationResult",
     "AggregationConfig",
     "CaseAlarmSequence",
     "CaseEvaluationResult",
     "CaseMetadata",
+    "CaseRcaEvaluationResult",
     "Dependency",
     "EntityAnomalyEvidence",
+    "EntityEpisodeEvidence",
     "EntityGraph",
     "EntityNode",
+    "EpisodeConfig",
+    "EpisodeInterval",
     "GroundTruth",
     "MetricAnomalyResult",
     "MetricIdentifier",
@@ -56,17 +80,27 @@ __all__ = [
     "OUTCOME_COMPLETE_MISS",
     "OUTCOME_EARLY_ALARM_ONLY",
     "OUTCOME_NOISY_DETECTION",
+    "RCA_A_ANOMALY_ONLY",
+    "RCA_B_TEMPORAL",
+    "RCA_C_TOPOLOGY_ONLY",
+    "RCA_D_COMBINED",
+    "RCAConfig",
+    "RootCauseScore",
     "STANDARD_CONFIGURATIONS",
     "TelemetryCase",
     "TelemetryModality",
     "TraceDependencyObservation",
     "VALID_OUTCOMES",
     "aggregate_entity_anomaly_evidence",
+    "aggregate_entity_episodes",
     "aggregate_metric_anomalies",
     "build_entity_graph",
     "detect_metric_anomalies",
     "evaluate_anomaly_detection_case",
     "evaluate_anomaly_detection_cases",
+    "evaluate_rca_benchmark",
+    "evaluate_root_cause_ranking",
     "extract_trace_dependencies",
     "parse_rcaeval_metric_identifier",
+    "rank_root_cause_entities",
 ]
