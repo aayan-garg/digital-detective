@@ -18,7 +18,12 @@ from .telemetry import TelemetryCase
 
 @dataclass(frozen=True)
 class DistributionSummary:
-    """Summary statistics for a numeric observation distribution."""
+    """Summary statistics for a numeric observation distribution.
+
+    Quantiles use nearest-rank index assignment: `idx = int(round(p * (n - 1)))`.
+    For small sample sizes, Python's round-half-to-even rule determines index
+    selection (for p=0.10, N <= 6 selects index 0, while N = 7, 8, 9 selects index 1).
+    """
 
     count: int
     min: float
@@ -27,12 +32,13 @@ class DistributionSummary:
     p99: float
     max: float
     mean: float
+    p10: float = 0.0
 
     @classmethod
     def from_values(cls, values: Sequence[float | int]) -> DistributionSummary:
         """Construct distribution summary from a sequence of numeric values."""
         if not values:
-            return cls(count=0, min=0.0, median=0.0, p90=0.0, p99=0.0, max=0.0, mean=0.0)
+            return cls(count=0, min=0.0, median=0.0, p90=0.0, p99=0.0, max=0.0, mean=0.0, p10=0.0)
         sorted_vals = sorted(float(v) for v in values)
         n = len(sorted_vals)
 
@@ -43,6 +49,7 @@ class DistributionSummary:
         return cls(
             count=n,
             min=sorted_vals[0],
+            p10=quantile(0.10),
             median=quantile(0.50),
             p90=quantile(0.90),
             p99=quantile(0.99),

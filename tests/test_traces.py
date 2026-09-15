@@ -191,9 +191,31 @@ class TestDistributionSummary(unittest.TestCase):
         d = DistributionSummary.from_values([10, 20, 30, 40, 50])
         self.assertEqual(d.count, 5)
         self.assertEqual(d.min, 10.0)
+        self.assertEqual(d.p10, 10.0)  # idx = round(0.10 * 4) = 0 -> sorted[0] = 10.0
         self.assertEqual(d.median, 30.0)
         self.assertEqual(d.max, 50.0)
         self.assertEqual(d.mean, 30.0)
+
+    def test_p10_small_samples(self) -> None:
+        # N=1: 0.1 * 0 = 0 -> index 0
+        d1 = DistributionSummary.from_values([100])
+        self.assertEqual(d1.p10, 100.0)
+
+        # N=2: 0.1 * 1 = 0.1 -> index 0
+        d2 = DistributionSummary.from_values([10, 20])
+        self.assertEqual(d2.p10, 10.0)
+
+        # N=6: 0.1 * 5 = 0.5 -> round(0.5) = 0 (round-half-to-even) -> index 0
+        d6 = DistributionSummary.from_values([10, 20, 30, 40, 50, 60])
+        self.assertEqual(d6.p10, 10.0)
+
+        # N=7: 0.1 * 6 = 0.6 -> round(0.6) = 1 -> index 1
+        d7 = DistributionSummary.from_values([10, 20, 30, 40, 50, 60, 70])
+        self.assertEqual(d7.p10, 20.0)
+
+        # N=10: 0.1 * 9 = 0.9 -> round(0.9) = 1 -> index 1
+        d10 = DistributionSummary.from_values([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        self.assertEqual(d10.p10, 2.0)
 
 
 class TestExtractTraceLatencyEvidence(unittest.TestCase):
