@@ -295,4 +295,36 @@ The evaluation harness strictly enforces closed, deterministic candidate univers
 - **Policy `canonical_v1`:** Resolves 11 canonical services for Online Boutique (`adservice`, `cartservice`, `checkoutservice`, `currencyservice`, `emailservice`, `frontend`, `paymentservice`, `productcatalogservice`, `recommendationservice`, `shippingservice`, `redis-cart`) and 8 canonical services for Sock Shop.
 - Dynamic universe shrinking, ground-truth-derived candidate subsets, or per-method candidate set variations are forbidden to ensure scientific comparability across all rankers.
 
+### 10.7 Statistical Evaluation Infrastructure (Stage 1C)
+
+Digital Detective implements a robust, dependency-free statistical comparison protocol (`eval/stats.py`) designed for clustered benchmarking data:
+
+1. **Hierarchy & Pairing Alignment:**
+   - **Case/Execution ($i$):** Individual benchmark measurement observation.
+   - **Scenario Family ($\text{scenario\_family}$):** Inferential cluster defined by $(\text{suite}, \text{system}, \text{root\_cause\_service}, \text{fault})$.
+   - **Alignment:** Methods are strictly aligned by exact `case_id` and verified against identical scenario-family memberships. Mismatched case sets or duplicate case IDs fail loudly.
+
+2. **Primary Significance Test — Paired Cluster Randomization:**
+   - Randomizes method labels strictly at the scenario-family cluster level. Swapping signs consistently within each cluster preserves intra-family repetition dependency structures.
+   - Calculates a two-sided Monte Carlo p-value:
+     $$p = \frac{1 + \sum_{k=1}^R \mathbb{I}(|T_k| \ge |T_{\text{obs}}|)}{R + 1}$$
+     which guarantees $p > 0$ under finite Monte Carlo sampling.
+   - **Exchangeability Assumption:** Assumes that under the null hypothesis of equal performance, method assignment is exchangeable conditionally given the scenario family.
+
+3. **Cluster Percentile Bootstrap Confidence Interval:**
+   - Resamples unique scenario families with replacement ($B = 10,000$ replicates by default, configurable seed), retaining all repetitions of each sampled family.
+   - Computes 95% two-sided percentile confidence bounds $[q_{0.025}, q_{0.975}]$.
+
+4. **Multiple Comparisons Adjustment:**
+   - Implements Holm-Bonferroni step-down correction (`apply_holm_correction()`) for sets of confirmatory hypothesis tests ($\alpha = 0.05$).
+
+5. **Primary vs. Secondary Metrics & Effect Sizes:**
+   - **Primary Accuracy:** Top@1 (binary success rate difference, $n_{10}, n_{01}$ counts) and MRR ($\Delta\text{MRR}$).
+   - **Secondary Metrics:** Top@3, Top@5, AC@k, Avg@5, query consumption ($\Delta\text{queries}$), and runtime ($\Delta\ln(\text{runtime})$).
+
+6. **Statistical Limitations & Disclaimers:**
+   - **Smoke Benchmark Disclaimer:** The 30-case RE2-OB repetition-1 smoke benchmark (`re2_ob_rep1_smoke_v1`) is a fast regression verification set, **not** an inferential statistical population. Statistical comparison over the smoke benchmark serves only as a software/pipeline verification test.
+   - **Generalization:** Statistical significance on benchmark datasets demonstrates empirical superiority over the evaluated population under specified telemetry conditions; it does not imply universal superiority across unobserved production systems.
+
+
 
