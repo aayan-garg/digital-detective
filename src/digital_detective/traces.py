@@ -9,9 +9,8 @@ intervals and execution timing.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-import math
-from typing import Any, Mapping, Sequence
+from dataclasses import dataclass
+from typing import Mapping, Sequence
 
 from .telemetry import TelemetryCase
 

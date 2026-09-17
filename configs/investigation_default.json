@@ -1,0 +1,45 @@
+{
+  "investigation": {
+    "budget": 20,
+    "remediation_threshold": 0.80,
+    "adaptive_query_selection": true,
+    "window_mode": "detected",
+    "allow_low_confidence": false
+  },
+  "tool_costs": {
+    "get_metrics": 1,
+    "get_service_health": 1,
+    "get_logs": 2,
+    "get_change_events": 2,
+    "get_traces": 3
+  },
+  "anomaly_detection": {
+    "algorithm": "rolling_zscore",
+    "z_threshold": 3.0,
+    "window_size": 10
+  },
+  "episodes": {
+    "persistence_k": 3,
+    "consensus_m": 2
+  },
+  "agent_models": {
+    "mock": {
+      "type": "mock",
+      "model_name": "MockAgentModel"
+    },
+    "ollama": {
+      "type": "ollama",
+      "model": "qwen3:8b",
+      "base_url": "http://localhost:11434/v1",
+      "temperature": 0.0,
+      "max_tokens": 150
+    },
+    "grok": {
+      "type": "grok",
+      "model": "grok-4.3",
+      "base_url": "https://api.x.ai/v1",
+      "temperature": 0.0,
+      "max_tokens": 150
+    }
+  }
+}

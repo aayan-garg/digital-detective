@@ -11,8 +11,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import statistics
-from typing import Mapping, Sequence
+from typing import Sequence
 
+from .rca import RootCauseScore
 from .traces import EdgeLatencyEvidence, TraceLatencyResult
 
 
@@ -293,3 +294,71 @@ def compute_trace_attribution(
         edges=tuple(edge_attributions),
         uninstrumented_services=uninstrumented,
     )
+
+
+def rank_with_trace_elevation(
+    trace_latency: TraceLatencyResult,
+    candidate_universe: Sequence[str] | None = None,
+) -> tuple[RootCauseScore, ...]:
+    """Rank candidate entities using standalone trace edge elevation (E_elev).
+
+    For each candidate entity v, its score is the maximum elevation across all observed
+    incoming caller -> callee edges u -> v:
+        E_elev(v) = max_{u in callers(v)} compute_edge_elevation(P90(u->v), P10(u->v))
+
+    Entities with no incoming trace edges (roots, uninstrumented, or non-reporting)
+    receive score 0.0 while remaining preserved in the candidate ranking.
+
+    Tie-breaking: (-score, entity_name).
+
+    Parameters
+    ----------
+    trace_latency:
+        TraceLatencyResult produced by extract_trace_latency_evidence.
+    candidate_universe:
+        Optional explicit sequence of candidate entities to enforce a closed candidate set.
+        If None, candidates are derived from trace_latency services and edges.
+
+    Returns
+    -------
+    tuple[RootCauseScore, ...]
+        Candidate entities ranked deterministically descending by E_elev.
+    """
+    elev_by_callee: dict[str, float] = {}
+    for edge in trace_latency.edges:
+        p90 = float(edge.caller_duration_dist.p90)
+        p10 = float(edge.caller_duration_dist.p10)
+        elev = compute_edge_elevation(p90, p10)
+        v = edge.callee_service
+        if v not in elev_by_callee or elev > elev_by_callee[v]:
+            elev_by_callee[v] = elev
+
+    if candidate_universe is not None:
+        candidate_entities = sorted(set(candidate_universe))
+    else:
+        all_ents = set(trace_latency.services)
+        for edge in trace_latency.edges:
+            all_ents.add(edge.caller_service)
+            all_ents.add(edge.callee_service)
+        candidate_entities = sorted(all_ents)
+
+    scores: list[RootCauseScore] = []
+    for ent in candidate_entities:
+        sc = elev_by_callee.get(ent, 0.0)
+        scores.append(
+            RootCauseScore(
+                entity=ent,
+                score=sc,
+                r_early=0.0,
+                r_strength=sc,
+                r_coverage=0.0,
+                r_prop=0.0,
+                first_anomaly_ts=None,
+                peak_score=sc,
+            )
+        )
+
+    # Deterministic tie-breaking: score desc, entity asc
+    scores.sort(key=lambda s: (-s.score, s.entity))
+    return tuple(scores)
+

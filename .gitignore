@@ -38,6 +38,9 @@ data/processed/*
 !data/raw/.gitkeep
 !data/interim/.gitkeep
 !data/processed/.gitkeep
+scratch/*
+!scratch/README.md
+!scratch/.gitkeep
 outputs/
 artifacts/
 experiments/

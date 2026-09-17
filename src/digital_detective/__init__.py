@@ -36,6 +36,7 @@ from .rca import (
     evaluate_rca_benchmark,
     evaluate_root_cause_ranking,
     rank_root_cause_entities,
+    rank_with_s_comb,
 )
 from .telemetry import (
     CaseMetadata,
@@ -77,6 +78,7 @@ from .trace_attribution import (
     compute_edge_elevation,
     compute_terminal_factor,
     compute_trace_attribution,
+    rank_with_trace_elevation,
 )
 
 __all__ = [
@@ -143,4 +145,6 @@ __all__ = [
     "interval_union_duration",
     "parse_rcaeval_metric_identifier",
     "rank_root_cause_entities",
+    "rank_with_s_comb",
+    "rank_with_trace_elevation",
 ]

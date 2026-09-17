@@ -14,7 +14,7 @@ and EntityGraph. It has no access to ground truth, injection times, or fault lab
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Mapping, Sequence
+from typing import Any, Mapping
 
 from .anomaly import MetricAnomalyResult
 from .topology import EntityGraph

@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import math
 import statistics
-from typing import Any, Mapping, Sequence
+from typing import Mapping, Sequence
 
 from .aggregation import CaseAlarmSequence, aggregate_metric_anomalies
 from .anomaly import MetricAnomalyResult

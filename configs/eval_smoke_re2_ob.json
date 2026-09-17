@@ -1,0 +1,41 @@
+{
+  "benchmark": {
+    "manifest_id": "re2_ob_rep1_smoke_v1",
+    "description": "30-case RE2-OB repetition-1 smoke test manifest (PROJECT REGRESSION / SMOKE ONLY)",
+    "dataset": "re2-ob",
+    "total_cases": 30,
+    "system": "ob",
+    "universe_size": 11
+  },
+  "execution": {
+    "window_mode": "oracle",
+    "dataset_root": "~/.cache/rcaeval_validation",
+    "methods": [
+      "random",
+      "simple_rca",
+      "s_comb",
+      "trace_elevation",
+      "fixed_equal_weight_fusion"
+    ]
+  },
+  "frozen_baselines": {
+    "s_comb": {
+      "top1": 0.7000,
+      "top3": 0.8667,
+      "top5": 0.9333,
+      "mrr": 0.8011
+    },
+    "trace_elevation": {
+      "top1": 0.6000,
+      "top3": 0.9667,
+      "top5": 1.0000,
+      "mrr": 0.7567
+    },
+    "fixed_equal_weight_fusion": {
+      "top1": 0.8667,
+      "top3": 0.9667,
+      "top5": 1.0000,
+      "mrr": 0.9194
+    }
+  }
+}
