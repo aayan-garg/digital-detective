@@ -177,7 +177,7 @@ class InvestigationEngine:
         for s, ev in ep_evidence.items():
             valid_eps = [
                 ep for ep in getattr(ev, "episodes", ())
-                if getattr(ep, "start_timestamp", 0) >= window.onset_ts
+                if window.onset_ts is None or getattr(ep, "start_timestamp", 0) >= window.onset_ts
             ]
             if valid_eps:
                 earliest_onsets[s] = valid_eps[0].start_timestamp

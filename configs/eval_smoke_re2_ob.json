@@ -10,6 +10,7 @@
   "execution": {
     "window_mode": "oracle",
     "dataset_root": "~/.cache/rcaeval_validation",
+    "candidate_universe_policy": "canonical_v1",
     "methods": [
       "random",
       "simple_rca",
@@ -17,6 +18,15 @@
       "trace_elevation",
       "fixed_equal_weight_fusion"
     ]
+  },
+  "provenance": {
+    "evaluator_schema_version": "1.0.0",
+    "experiment_config_id": "configs/eval_smoke_re2_ob.json",
+    "dataset_artifact_version": null,
+    "dataset_source_doi": null,
+    "repository_revision": null,
+    "modality_policy": "all_available",
+    "random_seed": 42
   },
   "frozen_baselines": {
     "s_comb": {

@@ -34,18 +34,103 @@ class IncidentWindow:
     """Formal representation of the incident temporal window.
 
     Distinguishes oracle injection-time window from estimated/detected window.
+    When mode='detected' and no episodes are detected, onset_ts and end_ts may be None,
+    and has_detected_window is set to False, representing a clear detection failure
+    without leaking ground-truth inject_time.
     """
 
-    onset_ts: int
-    end_ts: int
+    onset_ts: int | None
+    end_ts: int | None
     mode: str  # "oracle" | "detected"
     source_description: str = ""
+    has_detected_window: bool = True
 
     def __post_init__(self) -> None:
         if self.mode not in {"oracle", "detected"}:
             raise ValueError(f"Invalid window mode: {self.mode!r}. Must be 'oracle' or 'detected'.")
-        if self.end_ts < self.onset_ts:
-            raise ValueError(f"end_ts ({self.end_ts}) cannot precede onset_ts ({self.onset_ts}).")
+        if self.has_detected_window:
+            if self.onset_ts is None or self.end_ts is None:
+                raise ValueError("onset_ts and end_ts must not be None when has_detected_window is True.")
+            if self.end_ts < self.onset_ts:
+                raise ValueError(f"end_ts ({self.end_ts}) cannot precede onset_ts ({self.onset_ts}).")
+        else:
+            if self.mode != "detected":
+                raise ValueError("has_detected_window=False is only valid for mode='detected'.")
+
+
+@dataclass(frozen=True)
+class BenchmarkProvenance:
+    """Explicit provenance and reproducibility metadata for a benchmark run.
+
+    Captures dataset identity, manifest hash, evaluator schema version,
+    experimental configurations, runtime info, and environment settings.
+    Missing optional values remain explicitly None or 'UNSPECIFIED' without fabrication.
+    """
+
+    evaluator_schema_version: str
+    manifest_id: str
+    manifest_hash: str
+    window_mode: str
+    candidate_universe_policy: str
+    dataset_name: str
+    methods: tuple[str, ...]
+    dataset_artifact_version: str | None = None
+    dataset_source_doi: str | None = None
+    repository_revision: str | None = None
+    experiment_config_id: str | None = None
+    modality_policy: str | None = None
+    random_seed: int | None = None
+    runtime_info: dict[str, str] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "evaluator_schema_version": self.evaluator_schema_version,
+            "manifest_id": self.manifest_id,
+            "manifest_hash": self.manifest_hash,
+            "window_mode": self.window_mode,
+            "candidate_universe_policy": self.candidate_universe_policy,
+            "dataset_name": self.dataset_name,
+            "methods": list(self.methods),
+            "dataset_artifact_version": self.dataset_artifact_version if self.dataset_artifact_version is not None else "UNSPECIFIED",
+            "dataset_source_doi": self.dataset_source_doi if self.dataset_source_doi is not None else "UNSPECIFIED",
+            "repository_revision": self.repository_revision if self.repository_revision is not None else "UNSPECIFIED",
+            "experiment_config_id": self.experiment_config_id if self.experiment_config_id is not None else "UNSPECIFIED",
+            "modality_policy": self.modality_policy if self.modality_policy is not None else "all_available",
+            "random_seed": self.random_seed,
+            "runtime_info": dict(self.runtime_info),
+        }
+
+    @classmethod
+    def from_dict(cls, d: Mapping[str, Any]) -> BenchmarkProvenance:
+        artifact_ver = d.get("dataset_artifact_version")
+        if artifact_ver == "UNSPECIFIED":
+            artifact_ver = None
+        source_doi = d.get("dataset_source_doi")
+        if source_doi == "UNSPECIFIED":
+            source_doi = None
+        repo_rev = d.get("repository_revision")
+        if repo_rev == "UNSPECIFIED":
+            repo_rev = None
+        exp_id = d.get("experiment_config_id")
+        if exp_id == "UNSPECIFIED":
+            exp_id = None
+
+        return cls(
+            evaluator_schema_version=str(d.get("evaluator_schema_version", "")),
+            manifest_id=str(d.get("manifest_id", "")),
+            manifest_hash=str(d.get("manifest_hash", "")),
+            window_mode=str(d.get("window_mode", "")),
+            candidate_universe_policy=str(d.get("candidate_universe_policy", "")),
+            dataset_name=str(d.get("dataset_name", "")),
+            methods=tuple(str(m) for m in d.get("methods", ())),
+            dataset_artifact_version=artifact_ver,
+            dataset_source_doi=source_doi,
+            repository_revision=repo_rev,
+            experiment_config_id=exp_id,
+            modality_policy=d.get("modality_policy"),
+            random_seed=d.get("random_seed"),
+            runtime_info=dict(d.get("runtime_info", {})),
+        )
 
 
 @dataclass(frozen=True)

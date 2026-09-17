@@ -184,15 +184,15 @@ class DetectiveTools:
         if ev_ep and hasattr(ev_ep, "episodes"):
             valid_eps = [
                 ep for ep in ev_ep.episodes
-                if window is None or ep.start_timestamp >= window.onset_ts
+                if window is None or window.onset_ts is None or ep.start_timestamp >= window.onset_ts
             ]
             if valid_eps:
                 first_ts = valid_eps[0].start_timestamp
-            elif hasattr(ev_ep, "first_episode_start_ts") and (window is None or ev_ep.first_episode_start_ts >= window.onset_ts):
+            elif hasattr(ev_ep, "first_episode_start_ts") and (window is None or window.onset_ts is None or ev_ep.first_episode_start_ts >= window.onset_ts):
                 first_ts = ev_ep.first_episode_start_ts
         elif ev_ep:
             ts_cand = getattr(ev_ep, "first_episode_start_ts", None)
-            if ts_cand is not None and (window is None or ts_cand >= window.onset_ts):
+            if ts_cand is not None and (window is None or window.onset_ts is None or ts_cand >= window.onset_ts):
                 first_ts = ts_cand
         contrib_metrics = getattr(ev_ep, "all_contributing_metrics", ()) if ev_ep else ()
 
@@ -289,7 +289,7 @@ class DetectiveTools:
                 msg_col = "message" if "message" in table.column_names else "log"
 
                 # Temporal filter if window provided
-                if window is not None and ts_col in table.column_names:
+                if window is not None and window.onset_ts is not None and window.end_ts is not None and ts_col in table.column_names:
                     t_arr = table[ts_col]
                     w_mask = pc.and_(pc.greater_equal(t_arr, window.onset_ts), pc.less_equal(t_arr, window.end_ts))
                     table = table.filter(w_mask)

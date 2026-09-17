@@ -22,7 +22,10 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 import json
+import os
 from pathlib import Path
+import platform
+import subprocess
 import time
 from typing import Any, Mapping, Sequence
 
@@ -39,6 +42,7 @@ from .baselines.simple_rca import rank_with_simple_rca
 from .manifest import BenchmarkManifest, ManifestCase
 from .models import (
     AggregateMethodMetrics,
+    BenchmarkProvenance,
     IncidentWindow,
     MethodRankingResult,
     ModalityAvailability,
@@ -94,9 +98,10 @@ class BenchmarkExecutionReport:
     method_aggregates: dict[str, AggregateMethodMetrics]
     headroom_analysis: HeadroomAnalysis | None
     case_results: list[dict[str, Any]]
+    provenance: BenchmarkProvenance | None = None
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        d = {
             "schema_version": self.schema_version,
             "manifest_id": self.manifest_id,
             "manifest_description": self.manifest_description,
@@ -108,6 +113,9 @@ class BenchmarkExecutionReport:
             "headroom_analysis": self.headroom_analysis.to_dict() if self.headroom_analysis else None,
             "case_results": self.case_results,
         }
+        if self.provenance is not None:
+            d["provenance"] = self.provenance.to_dict()
+        return d
 
     def save(self, output_path: str | Path) -> None:
         p = Path(output_path)
@@ -460,6 +468,14 @@ def run_benchmark(
     ),
     window_mode: str = "oracle",
     partition: str | None = None,
+    provenance: BenchmarkProvenance | None = None,
+    dataset_artifact_version: str | None = None,
+    dataset_source_doi: str | None = None,
+    repository_revision: str | None = None,
+    experiment_config_id: str | None = None,
+    candidate_universe_policy: str = "canonical_v1",
+    modality_policy: str = "all_available",
+    random_seed: int | None = 42,
 ) -> BenchmarkExecutionReport:
     """Execute the benchmark across all cases in the manifest.
 
@@ -591,6 +607,50 @@ def run_benchmark(
             single_modality_methods=single_mods,
         )
 
+    # 8. Resolve provenance record
+    if provenance is None:
+        repo_rev = repository_revision or os.environ.get("DIGITAL_DETECTIVE_GIT_REVISION")
+        if repo_rev is None:
+            try:
+                out = subprocess.check_output(
+                    ["git", "rev-parse", "HEAD"],
+                    stderr=subprocess.DEVNULL,
+                    timeout=2,
+                )
+                repo_rev = out.decode("utf-8").strip()
+            except Exception:
+                repo_rev = None
+
+        art_ver = (
+            dataset_artifact_version
+            or os.environ.get("DIGITAL_DETECTIVE_DATASET_VERSION")
+            or os.environ.get("RCAEVAL_DATASET_VERSION")
+        )
+        doi = dataset_source_doi or os.environ.get("DIGITAL_DETECTIVE_DATASET_DOI")
+        cfg_id = experiment_config_id or os.environ.get("DIGITAL_DETECTIVE_EXPERIMENT_CONFIG_ID")
+
+        dataset_name = manifest.cases[0].dataset if manifest.cases else "UNKNOWN"
+
+        provenance = BenchmarkProvenance(
+            evaluator_schema_version=HARNESS_SCHEMA_VERSION,
+            manifest_id=manifest.manifest_id,
+            manifest_hash=manifest.compute_hash(),
+            window_mode=window_mode,
+            candidate_universe_policy=candidate_universe_policy,
+            dataset_name=dataset_name,
+            methods=tuple(methods),
+            dataset_artifact_version=art_ver,
+            dataset_source_doi=doi,
+            repository_revision=repo_rev,
+            experiment_config_id=cfg_id,
+            modality_policy=modality_policy,
+            random_seed=random_seed,
+            runtime_info={
+                "python_version": platform.python_version(),
+                "platform": platform.platform(),
+            },
+        )
+
     return BenchmarkExecutionReport(
         schema_version=HARNESS_SCHEMA_VERSION,
         manifest_id=manifest.manifest_id,
@@ -602,6 +662,7 @@ def run_benchmark(
         method_aggregates=method_aggregates,
         headroom_analysis=headroom_analysis,
         case_results=per_case_report_list,
+        provenance=provenance,
     )
 
 
@@ -649,6 +710,21 @@ def main() -> None:
         default=None,
         help="Path to save output report JSON",
     )
+    parser.add_argument(
+        "--dataset-artifact-version",
+        default=None,
+        help="Explicit version identifier for RCAEval dataset artifact",
+    )
+    parser.add_argument(
+        "--dataset-source-doi",
+        default=None,
+        help="Explicit source DOI for the dataset",
+    )
+    parser.add_argument(
+        "--experiment-config-id",
+        default=None,
+        help="Configuration ID / filepath for this experiment",
+    )
 
     args = parser.parse_args()
     root_path = Path(args.dataset_root)
@@ -675,11 +751,19 @@ def main() -> None:
         methods=methods,
         window_mode=args.window_mode,
         partition=args.partition,
+        dataset_artifact_version=args.dataset_artifact_version,
+        dataset_source_doi=args.dataset_source_doi,
+        experiment_config_id=args.experiment_config_id,
     )
 
     print("\n" + "=" * 60)
     print(f"EVALUATION SUMMARY ({report.manifest_id})")
     print(f"Total Cases Evaluated: {report.total_cases} | Window Mode: {report.window_mode}")
+    if report.provenance:
+        p = report.provenance
+        print(f"Manifest Hash:        {p.manifest_hash}")
+        print(f"Candidate Universe:   {p.candidate_universe_policy}")
+        print(f"Dataset:              {p.dataset_name} (Artifact: {p.dataset_artifact_version or 'UNSPECIFIED'})")
     print("=" * 60)
 
     for method, agg in report.method_aggregates.items():

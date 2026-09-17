@@ -76,6 +76,9 @@ def detect_metric_alerts(
     if not timestamps:
         return alerts
 
+    if not window.has_detected_window or window.onset_ts is None or window.end_ts is None:
+        return alerts
+
     onset_ts = window.onset_ts
     end_ts = window.end_ts
 

@@ -235,3 +235,64 @@ In accordance with `AGENTS.md`:
 ### Open Questions
 - Whether any specific benchmark cases in Train Ticket or Sock Shop have pre-injection intervals shorter than $W_{warmup}$ (will be checked programmatically in Stage 2/3).
 - Whether code-level faults in RE3 produce detectable metric deviations or manifest primarily in logs and traces.
+
+---
+
+## 10. Evaluation Integrity Foundation (Stage 1)
+
+### 10.1 Benchmark Manifest Typology
+Digital Detective explicitly distinguishes three types of evaluation manifests:
+1. **Regression Benchmark (`SMOKE_REGRESSION`):**
+   - Rapid regression verification of frozen research baselines (e.g., 30-case RE2-OB repetition-1 smoke benchmark).
+   - Flagged with `is_smoke_test=True` and partition `'smoke'`.
+   - Used strictly to confirm that baseline algorithmic components ($S_{\text{comb}}$, $E_{\text{elev}}$, fixed equal-weight fusion) remain bit-for-bit reproducible across updates. Never used to optimize hyperparameters or report general scientific performance.
+2. **Scientific Benchmark (`SCIENTIFIC_BENCHMARK`):**
+   - Defines the full declared benchmark population used to evaluate fixed, non-learning methods across complete suites or systems (e.g., full RE2 with 270 cases, RE2-OB with 90 cases, RE2-SS with 90 cases, RE2-TT with 90 cases).
+   - Not partitioned into train/val/test; all cases belong to the complete evaluation population (`partition='all'`).
+   - Embeds native modality availability summaries (`metrics_available`, `logs_available`, `traces_available`, `all_modalities_available`, `missing_logs`, `missing_traces`). Does not manufacture modalities where they do not natively exist (e.g., RE2-SS has 0 traces in RCAEval; RE2-TT has 1 missing log file).
+3. **Leakage-Controlled Tuning Split (`TUNING_SPLIT`):**
+   - Optional grouped partition (`'dev'`, `'val'`, `'held_out'`) used only when a method learns or tunes parameters using benchmark telemetry.
+   - Enforces the repetition-family grouping rule: all repetitions of any `scenario_family = (suite, system, root_cause_service, fault)` must remain in exactly one partition.
+   - Configurable ratios (e.g., dev=0.50, val=0.25, held_out=0.25) and reproducible PRNG seed.
+   - **Explicit Project Policy:**
+     > RCAEval does not supply an official Digital Detective train/validation/test split; any such split created here is a project-defined experimental split.
+
+### 10.2 Oracle vs Detected Incident Window Semantics
+- **Oracle Mode (`mode="oracle"`):** Uses ground-truth `inject_time` as the incident onset timestamp ($t_{\text{onset}} = \text{inject\_time}$). Used exclusively to establish theoretical headroom and upper-bound performance under perfect detection.
+- **Detected Mode (`mode="detected"`):** Uses only online observations available during monitoring. The incident onset timestamp is determined strictly by the earliest detected anomaly episode across entity metrics ($t_{\text{onset}} = \min_e t_{\text{episode\_start}}$).
+- **Detection Failure Behavior:** If no anomaly episodes are detected, `mode="detected"` must **never** fall back to `inject_time` (which leaks ground truth). Instead, it returns an explicit detection failure outcome (`has_detected_window=False`, `onset_ts=None`). Downstream rankers handle this failure gracefully without fabricating temporal boundaries.
+
+### 10.3 Benchmark Provenance Requirements
+Every benchmark execution produces a structured `BenchmarkProvenance` record serialized in machine-readable JSON reports. This record captures:
+1. `evaluator_schema_version`: Version of the evaluation harness schema (e.g., `1.0.0`).
+2. `manifest_id` and `manifest_hash`: Unique manifest identifier and canonical SHA-256 content hash.
+3. `window_mode`: `'oracle'` or `'detected'`.
+4. `candidate_universe_policy`: Closed universe policy identifier (e.g., `'canonical_v1'`).
+5. `dataset_name`, `dataset_artifact_version`, and `dataset_source_doi`: Explicit dataset provenance. Optional fields not explicitly provided default to `'UNSPECIFIED'` without fabrication.
+6. `repository_revision`: Git commit hash or `'UNSPECIFIED'`.
+7. `experiment_config_id`: Explicit configuration file or experiment identifier.
+8. `methods`: List of evaluated ranker methods.
+9. `modality_policy`: Policy governing modality usage (e.g., `'all_available'`).
+10. `random_seed`: Seed used for randomized baselines.
+11. `runtime_info`: Platform and Python runtime environment metadata.
+
+### 10.4 Deterministic Manifest Hashing
+Manifest integrity is sealed via a deterministic SHA-256 hash computed over:
+1. Manifest Header: `manifest_id:manifest_type:is_smoke_test:total_cases`
+2. Canonical Sorted Case Records (ordered by `case_id`):
+   `case_id|dataset|system|fault|root_cause_service|repetition|partition`
+Modifying any case ID, partition assignment, dataset identity, or grouping metadata alters the hash. Sorting guarantees that permutation of case ordering does not alter the hash for an identical logical case set.
+
+### 10.5 Repetition-Family Grouping
+To prevent information leakage between splits in tuning manifests, cases are grouped by scenario family:
+$$\text{scenario\_family} = (\text{suite}, \text{system}, \text{root\_cause\_service}, \text{fault})$$
+with `repetition` identifying the repeated execution within that family.
+All repetitions (e.g., repetitions 1, 2, 3...) of any given $(\text{suite}, \text{system}, \text{root\_cause\_service}, \text{fault})$ combination are deterministically assigned to the same partition (`'dev'`, `'val'`, or `'held_out'`). Tuning split validation verifies that each family's assigned partitions have cardinality exactly 1. Incorporating `suite` prevents accidental cross-suite grouping when a manifest contains cases from multiple RCAEval suites (e.g., RE1 and RE2).
+RCAEval does not supply an official Digital Detective train/validation/test split; any such split is a project-defined experimental split.
+
+### 10.6 Candidate-Universe Policy
+The evaluation harness strictly enforces closed, deterministic candidate universes resolved once per case prior to method invocation:
+- **Policy `canonical_v1`:** Resolves 11 canonical services for Online Boutique (`adservice`, `cartservice`, `checkoutservice`, `currencyservice`, `emailservice`, `frontend`, `paymentservice`, `productcatalogservice`, `recommendationservice`, `shippingservice`, `redis-cart`) and 8 canonical services for Sock Shop.
+- Dynamic universe shrinking, ground-truth-derived candidate subsets, or per-method candidate set variations are forbidden to ensure scientific comparability across all rankers.
+
+

@@ -254,7 +254,7 @@ class AgentOrchestrator:
         for svc, ev in ep_evidence.items():
             valid_eps = [
                 ep for ep in getattr(ev, "episodes", ())
-                if getattr(ep, "start_timestamp", 0) >= window.onset_ts
+                if window.onset_ts is None or getattr(ep, "start_timestamp", 0) >= window.onset_ts
             ]
             earliest_onsets[svc] = valid_eps[0].start_timestamp if valid_eps else None
 

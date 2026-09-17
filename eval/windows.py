@@ -75,27 +75,33 @@ def resolve_incident_window(
         end_ts = custom_end_ts
     elif telemetry_end_ts is not None:
         end_ts = telemetry_end_ts
-    elif inject_time is not None:
-        end_ts = inject_time + 600  # Fallback default 10-minute duration
+    elif inject_time is not None and mode == "oracle":
+        end_ts = inject_time + 600  # Fallback default 10-minute duration for oracle
     else:
-        raise ValueError("Cannot determine incident end_ts: no timestamps or inject_time provided.")
+        end_ts = None
 
     if custom_onset_ts is not None:
+        if end_ts is None:
+            raise ValueError("Cannot determine incident end_ts: no timestamps or inject_time provided.")
         return IncidentWindow(
             onset_ts=custom_onset_ts,
             end_ts=end_ts,
             mode=mode,
             source_description=f"custom_override:onset={custom_onset_ts}",
+            has_detected_window=True,
         )
 
     if mode == "oracle":
         if inject_time is None:
             raise ValueError("mode='oracle' requested but no ground-truth inject_time is available.")
+        if end_ts is None:
+            raise ValueError("Cannot determine incident end_ts: no timestamps or inject_time provided.")
         return IncidentWindow(
             onset_ts=inject_time,
             end_ts=end_ts,
             mode="oracle",
             source_description=f"oracle:inject_time={inject_time}",
+            has_detected_window=True,
         )
 
     # mode == "detected"
@@ -111,20 +117,22 @@ def resolve_incident_window(
             earliest_ep_ts = min(ep_starts)
 
     if earliest_ep_ts is not None:
+        if end_ts is None:
+            raise ValueError("Cannot determine incident end_ts: no timestamps provided.")
         return IncidentWindow(
             onset_ts=earliest_ep_ts,
             end_ts=end_ts,
             mode="detected",
             source_description=f"detected:first_episode_ts={earliest_ep_ts}",
+            has_detected_window=True,
         )
 
-    # If no episode was detected, record fallback to injection time or error
-    if inject_time is not None:
-        return IncidentWindow(
-            onset_ts=inject_time,
-            end_ts=end_ts,
-            mode="detected",
-            source_description=f"detected_fallback:no_episode_found(inject_time={inject_time})",
-        )
-
-    raise ValueError("mode='detected' requested, but no episodes were found and no inject_time fallback exists.")
+    # Scientific detected mode: NEVER fall back to ground-truth inject_time!
+    # When no episode was detected, return an explicit detection failure window.
+    return IncidentWindow(
+        onset_ts=None,
+        end_ts=end_ts,
+        mode="detected",
+        source_description="no_detected_window:no_episodes_found",
+        has_detected_window=False,
+    )
