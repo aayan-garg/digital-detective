@@ -81,11 +81,12 @@ def resolve_incident_window(
         end_ts = None
 
     if custom_onset_ts is not None:
-        if end_ts is None:
+        c_end = custom_end_ts if custom_end_ts is not None else (custom_onset_ts if mode == "detected" else end_ts)
+        if c_end is None:
             raise ValueError("Cannot determine incident end_ts: no timestamps or inject_time provided.")
         return IncidentWindow(
             onset_ts=custom_onset_ts,
-            end_ts=end_ts,
+            end_ts=c_end,
             mode=mode,
             source_description=f"custom_override:onset={custom_onset_ts}",
             has_detected_window=True,
@@ -117,11 +118,10 @@ def resolve_incident_window(
             earliest_ep_ts = min(ep_starts)
 
     if earliest_ep_ts is not None:
-        if end_ts is None:
-            raise ValueError("Cannot determine incident end_ts: no timestamps provided.")
+        analysis_end = custom_end_ts if custom_end_ts is not None else earliest_ep_ts
         return IncidentWindow(
             onset_ts=earliest_ep_ts,
-            end_ts=end_ts,
+            end_ts=analysis_end,
             mode="detected",
             source_description=f"detected:first_episode_ts={earliest_ep_ts}",
             has_detected_window=True,

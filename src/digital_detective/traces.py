@@ -138,6 +138,10 @@ class TraceLatencyResult:
     edges: tuple[EdgeLatencyEvidence, ...]
     sibling_overlap_count: int
     uninstrumented_services: tuple[str, ...] = ()
+    max_span_timestamp: int | None = None
+    max_span_end_timestamp: int | None = None
+    retained_spans: int = 0
+    excluded_spans: int = 0
 
     def get_edge(self, caller: str, callee: str) -> EdgeLatencyEvidence | None:
         """Lookup evidence for a specific caller -> callee edge, or None."""
@@ -240,6 +244,7 @@ def extract_trace_latency_evidence(
     service_aliases: Mapping[str, str] | None = None,
     expected_services: Sequence[str] | None = None,
     max_examples_per_edge: int = 5,
+    max_timestamp: int | float | None = None,
 ) -> TraceLatencyResult:
     """Extract diagnostic caller -> callee trace latency evidence from a TelemetryCase.
 
@@ -254,6 +259,9 @@ def extract_trace_latency_evidence(
         Optional sequence of all known system services to identify uninstrumented entities.
     max_examples_per_edge:
         Maximum number of representative high-duration caller-callee examples to retain.
+    max_timestamp:
+        Optional causal timestamp cutoff. Spans with start_time > max_timestamp
+        are strictly excluded from analysis.
 
     Returns
     -------
@@ -271,6 +279,10 @@ def extract_trace_latency_evidence(
             edges=(),
             sibling_overlap_count=0,
             uninstrumented_services=uninst,
+            max_span_timestamp=None,
+            max_span_end_timestamp=None,
+            retained_spans=0,
+            excluded_spans=0,
         )
 
     table = case.traces.raw_data
@@ -301,6 +313,7 @@ def extract_trace_latency_evidence(
     # Ingest spans with deduplication for identical duplicate records
     spans_by_id: dict[str, SpanRecord] = {}
     distinct_traces: set[str] = set()
+    excluded_spans = 0
 
     for sid, pid, tid, sname, op, st, dur, sc in zip(
         span_ids, parent_ids, trace_ids, service_names, operation_names, start_times, durations, status_codes
@@ -315,6 +328,24 @@ def extract_trace_latency_evidence(
         op_name = str(op) if op is not None else ""
         s_time = int(st) if st is not None else 0
         dur_val = int(dur) if dur is not None else 0
+        s_end = s_time + dur_val
+
+        # Causal temporal restriction: exclude spans whose completion time is > max_timestamp
+        if max_timestamp is not None:
+            if s_time > 1e14 and max_timestamp < 1e11:
+                # s_time and s_end in microseconds (~1e15), max_timestamp in seconds (~1e9)
+                if (s_end / 1_000_000.0) > max_timestamp:
+                    excluded_spans += 1
+                    continue
+            elif s_time > 1e11 and max_timestamp < 1e11:
+                # s_time and s_end in milliseconds (~1e12), max_timestamp in seconds (~1e9)
+                if (s_end / 1000.0) > max_timestamp:
+                    excluded_spans += 1
+                    continue
+            else:
+                if s_end > max_timestamp:
+                    excluded_spans += 1
+                    continue
         sc_val = int(sc) if (sc is not None and str(sc) != "<NA>") else None
 
         record = SpanRecord(
@@ -446,6 +477,9 @@ def extract_trace_latency_evidence(
         uninst_set = set(expected_services) - observed_services
         uninstrumented = tuple(sorted(uninst_set))
 
+    max_observed_ts = max((s.start_time for s in spans_by_id.values()), default=None)
+    max_observed_end_ts = max((s.end_time for s in spans_by_id.values()), default=None)
+
     return TraceLatencyResult(
         case_id=case_id,
         total_spans=len(spans_by_id),
@@ -454,4 +488,8 @@ def extract_trace_latency_evidence(
         edges=tuple(edge_evidence_list),
         sibling_overlap_count=sibling_overlap_count,
         uninstrumented_services=uninstrumented,
+        max_span_timestamp=max_observed_ts,
+        max_span_end_timestamp=max_observed_end_ts,
+        retained_spans=len(spans_by_id),
+        excluded_spans=excluded_spans,
     )

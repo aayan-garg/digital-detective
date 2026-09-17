@@ -147,8 +147,11 @@ def detect_trace_alerts(
     if not hasattr(case, "traces") or case.traces is None:
         return alerts
 
-    table = getattr(case.traces, "table", None)
+    table = getattr(case.traces, "raw_data", None) or getattr(case.traces, "table", None)
     if table is None or table.num_rows == 0:
+        return alerts
+
+    if not window.has_detected_window or window.onset_ts is None or window.end_ts is None:
         return alerts
 
     onset_ts = window.onset_ts
@@ -231,8 +234,11 @@ def detect_log_alerts(
     if not hasattr(case, "logs") or case.logs is None:
         return alerts
 
-    table = getattr(case.logs, "table", None)
+    table = getattr(case.logs, "raw_data", None) or getattr(case.logs, "table", None)
     if table is None or table.num_rows == 0:
+        return alerts
+
+    if not window.has_detected_window or window.onset_ts is None or window.end_ts is None:
         return alerts
 
     onset_ts = window.onset_ts

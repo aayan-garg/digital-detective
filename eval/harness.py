@@ -29,13 +29,13 @@ import subprocess
 import time
 from typing import Any, Mapping, Sequence
 
-from digital_detective.anomaly import detect_metric_anomalies
-from digital_detective.episodes import EpisodeConfig, aggregate_entity_episodes
+from digital_detective.anomaly import detect_metric_anomalies, truncate_metric_anomaly_result
+from digital_detective.episodes import EpisodeConfig, aggregate_entity_episodes, truncate_entity_episodes
 from digital_detective.rca import rank_with_s_comb
 from digital_detective.rcaeval import load_rcaeval_case
 from digital_detective.topology import build_entity_graph, extract_trace_dependencies
 from digital_detective.trace_attribution import rank_with_trace_elevation
-from digital_detective.traces import extract_trace_latency_evidence
+from digital_detective.traces import TraceLatencyResult, extract_trace_latency_evidence
 
 from .baselines.random_ranker import rank_with_random
 from .baselines.simple_rca import rank_with_simple_rca
@@ -555,6 +555,73 @@ def run_benchmark(
             ep_evidence=precomputed.get("ep_evidence"),
             mode=window_mode,
         )
+
+        # In detected mode, causally bound downstream RCA evidence to timestamps <= detected_onset
+        if window_mode == "detected":
+            if window.has_detected_window and window.onset_ts is not None:
+                detected_onset = window.onset_ts
+                if has_traces:
+                    trace_deps = extract_trace_dependencies(
+                        case,
+                        service_aliases={"frontendservice": "frontend"},
+                        max_timestamp=detected_onset,
+                    )
+                    deps = [td.to_dependency() for td in trace_deps]
+                else:
+                    deps = ()
+
+                if "det_res" in precomputed:
+                    truncated_det = truncate_metric_anomaly_result(
+                        precomputed["det_res"], max_timestamp=detected_onset
+                    )
+                    precomputed["det_res"] = truncated_det
+                    cfg = ep_config if "ep_config" in locals() else EpisodeConfig(persistence=3, consensus=2)
+                    graph = build_entity_graph(truncated_det.metric_names, dependencies=deps)
+                    precomputed["graph"] = graph
+                    precomputed["ep_evidence"] = aggregate_entity_episodes(
+                        truncated_det, graph, cfg
+                    )
+                elif "graph" in precomputed:
+                    graph = build_entity_graph(precomputed["graph"].entities.keys(), dependencies=deps)
+                    precomputed["graph"] = graph
+                elif "ep_evidence" in precomputed:
+                    precomputed["ep_evidence"] = truncate_entity_episodes(
+                        precomputed["ep_evidence"], max_timestamp=detected_onset
+                    )
+
+                if has_traces:
+                    precomputed["trace_lat"] = extract_trace_latency_evidence(
+                        case,
+                        service_aliases={"frontendservice": "frontend"},
+                        expected_services=candidate_universe,
+                        max_timestamp=detected_onset,
+                    )
+            else:
+                # Explicit no-detection outcome: no incident evidence available
+                if "det_res" in precomputed:
+                    truncated_det = truncate_metric_anomaly_result(
+                        precomputed["det_res"], max_timestamp=0
+                    )
+                    precomputed["det_res"] = truncated_det
+                    precomputed["graph"] = build_entity_graph(truncated_det.metric_names, dependencies=())
+                    cfg = ep_config if "ep_config" in locals() else EpisodeConfig(persistence=3, consensus=2)
+                    precomputed["ep_evidence"] = aggregate_entity_episodes(
+                        truncated_det, precomputed["graph"], cfg
+                    )
+                if has_traces:
+                    precomputed["trace_lat"] = TraceLatencyResult(
+                        case_id=cid,
+                        total_spans=0,
+                        total_traces=0,
+                        services=(),
+                        edges=(),
+                        sibling_overlap_count=0,
+                        uninstrumented_services=tuple(sorted(candidate_universe)),
+                        max_span_timestamp=None,
+                        max_span_end_timestamp=None,
+                        retained_spans=0,
+                        excluded_spans=0,
+                    )
 
         case_summary_entry: dict[str, Any] = {
             "case_id": cid,

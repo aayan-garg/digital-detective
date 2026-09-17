@@ -214,3 +214,82 @@ def aggregate_entity_episodes(
         )
 
     return evidence_by_entity
+
+
+def truncate_entity_episodes(
+    ep_evidence: Mapping[str, EntityEpisodeEvidence],
+    max_timestamp: Any,
+) -> dict[str, EntityEpisodeEvidence]:
+    """Causally truncate EntityEpisodeEvidence at max_timestamp.
+
+    Preserves observations with timestamp <= max_timestamp, discarding
+    any episodes or parts of episodes strictly after max_timestamp.
+    """
+    truncated: dict[str, EntityEpisodeEvidence] = {}
+    for entity_name, ev in ep_evidence.items():
+        if not ev.timestamps:
+            truncated[entity_name] = ev
+            continue
+
+        cutoff_idx = -1
+        for idx, ts in enumerate(ev.timestamps):
+            if ts <= max_timestamp:
+                cutoff_idx = idx
+            else:
+                break
+
+        n = cutoff_idx + 1
+        new_timestamps = ev.timestamps[:n]
+        new_active_counts = ev.active_metric_counts[:n]
+        new_is_in_ep = ev.is_in_episode[:n]
+
+        new_episodes: list[EpisodeInterval] = []
+        for ep in ev.episodes:
+            if ep.start_timestamp > max_timestamp:
+                continue
+            if ep.end_timestamp <= max_timestamp:
+                new_episodes.append(ep)
+            else:
+                clamped_end_idx = n - 1
+                clamped_end_ts = new_timestamps[-1] if new_timestamps else max_timestamp
+                clamped_dur = (
+                    int(clamped_end_ts - ep.start_timestamp)
+                    if isinstance(clamped_end_ts, (int, float)) and isinstance(ep.start_timestamp, (int, float))
+                    else 0
+                )
+                peak_m = max(new_active_counts[ep.start_idx : clamped_end_idx + 1]) if new_active_counts else 0
+                new_episodes.append(
+                    EpisodeInterval(
+                        start_idx=ep.start_idx,
+                        end_idx=clamped_end_idx,
+                        start_timestamp=ep.start_timestamp,
+                        end_timestamp=clamped_end_ts,
+                        duration_seconds=clamped_dur,
+                        peak_active_metrics=peak_m,
+                        contributing_metrics=ep.contributing_metrics,
+                    )
+                )
+
+        has_ep = len(new_episodes) > 0
+        first_ts = (
+            int(new_episodes[0].start_timestamp)
+            if has_ep and isinstance(new_episodes[0].start_timestamp, (int, float))
+            else None
+        )
+        peak_active = max(new_active_counts) if new_active_counts else 0
+        all_contrib = tuple(sorted(set().union(*(ep.contributing_metrics for ep in new_episodes)))) if has_ep else ()
+
+        truncated[entity_name] = EntityEpisodeEvidence(
+            case_id=ev.case_id,
+            entity=ev.entity,
+            timestamps=new_timestamps,
+            active_metric_counts=new_active_counts,
+            is_in_episode=new_is_in_ep,
+            episodes=tuple(new_episodes),
+            first_episode_start_ts=first_ts,
+            peak_active_metrics=peak_active,
+            all_contributing_metrics=all_contrib,
+            has_episode=has_ep,
+        )
+
+    return truncated

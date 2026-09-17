@@ -8,7 +8,10 @@ import unittest
 
 import pyarrow as pa
 
-from digital_detective.anomaly import detect_metric_anomalies
+from digital_detective.anomaly import (
+    detect_metric_anomalies,
+    truncate_metric_anomaly_result,
+)
 from digital_detective.telemetry import (
     CaseMetadata,
     ModalityProvenance,
@@ -290,6 +293,24 @@ class AnomalyDetectionTests(unittest.TestCase):
         self.assertIsNotNone(result)
         # Verify table content unchanged
         self.assertEqual(list(case.metrics.raw_data["cpu"].to_pylist()), orig_cpu_vals)
+
+    def test_truncate_metric_anomaly_result(self) -> None:
+        table = pa.table({
+            "time": [10, 20, 30, 40, 50, 60, 70, 80],
+            "cpu": [0.1, 0.2, 0.1, 0.2, 0.1, 0.9, 0.95, 0.99],
+        })
+        case = _make_case(table)
+        result = detect_metric_anomalies(case, window_size=4, min_warmup=4)
+
+        # Truncate at timestamp 50
+        truncated = truncate_metric_anomaly_result(result, max_timestamp=50)
+
+        self.assertEqual(truncated.timestamps, (10, 20, 30, 40, 50))
+        self.assertEqual(len(truncated.anomaly_scores["cpu"]), 5)
+        self.assertEqual(len(truncated.anomalies["cpu"]), 5)
+        self.assertEqual(len(truncated.evaluation_statuses["cpu"]), 5)
+        # Verify timestamps strictly <= 50
+        self.assertTrue(all(t <= 50 for t in truncated.timestamps))
 
 
 if __name__ == "__main__":

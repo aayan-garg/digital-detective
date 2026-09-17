@@ -376,3 +376,105 @@ def _extract_series(
         return timestamps, metrics_data
 
     raise ValueError(f"Unsupported metrics raw_data type: {type(raw_data).__name__}")
+
+
+def truncate_metric_anomaly_result(
+    result: MetricAnomalyResult,
+    max_timestamp: Any,
+) -> MetricAnomalyResult:
+    """Causally truncate a MetricAnomalyResult at max_timestamp.
+
+    Preserves all discrete observations with timestamp <= max_timestamp,
+    discarding any observations strictly after max_timestamp so downstream
+    analysis cannot observe future data.
+    """
+    if not result.timestamps:
+        return result
+
+    # Find the last index where timestamp <= max_timestamp
+    cutoff_idx = -1
+    for idx, ts in enumerate(result.timestamps):
+        if ts <= max_timestamp:
+            cutoff_idx = idx
+        else:
+            break
+
+    n = cutoff_idx + 1
+    new_timestamps = result.timestamps[:n]
+    new_anomaly_scores: dict[str, tuple[float | None, ...]] = {}
+    new_signed_scores: dict[str, tuple[float | None, ...]] = {}
+    new_anomalies: dict[str, tuple[bool, ...]] = {}
+    new_statuses: dict[str, tuple[str, ...]] = {}
+    new_counts: dict[str, tuple[int, ...]] = {}
+    metric_summaries: dict[str, Any] = {}
+
+    for m in result.metric_names:
+        a_scores = result.anomaly_scores[m][:n]
+        s_scores = result.signed_scores[m][:n]
+        flags = result.anomalies[m][:n]
+        statuses = result.evaluation_statuses[m][:n]
+        v_counts = result.valid_history_counts[m][:n]
+
+        new_anomaly_scores[m] = a_scores
+        new_signed_scores[m] = s_scores
+        new_anomalies[m] = flags
+        new_statuses[m] = statuses
+        new_counts[m] = v_counts
+
+        anom_count = sum(1 for flag in flags if flag)
+        first_idx = next((i for i, flag in enumerate(flags) if flag), None)
+        first_ts = new_timestamps[first_idx] if first_idx is not None else None
+        valid_eval_scores = [s for s in a_scores if s is not None]
+        peak_score = max(valid_eval_scores) if valid_eval_scores else 0.0
+
+        warmup_count = sum(1 for st in statuses if st == "warmup")
+        missing_count = sum(1 for st in statuses if st == "missing_observation")
+        insufficient_hist_count = sum(1 for st in statuses if st == "insufficient_history")
+        evaluated_count = sum(1 for st in statuses if st in ("normal", "anomaly"))
+
+        min_val_hist = result.summary.get("metrics", {}).get(m, {}).get("min_valid_history", 2)
+        metric_summaries[m] = {
+            "peak_score": peak_score,
+            "anomaly_count": anom_count,
+            "first_anomaly_timestamp": first_ts,
+            "evaluated_count": evaluated_count,
+            "warmup_count": warmup_count,
+            "missing_count": missing_count,
+            "insufficient_history_count": insufficient_hist_count,
+            "min_valid_history": min_val_hist,
+        }
+
+    detected_metrics = tuple(m for m in result.metric_names if metric_summaries[m]["anomaly_count"] > 0)
+    first_timestamps = [
+        metric_summaries[m]["first_anomaly_timestamp"]
+        for m in detected_metrics
+        if metric_summaries[m]["first_anomaly_timestamp"] is not None
+    ]
+    earliest_detection_ts = min(first_timestamps) if first_timestamps else None
+
+    observation_has_anomaly = [
+        any(new_anomalies[m][t] for m in result.metric_names)
+        for t in range(n)
+    ]
+    total_anomalous_observations = sum(1 for has_anom in observation_has_anomaly if has_anom)
+    total_anomalies = sum(metric_summaries[m]["anomaly_count"] for m in result.metric_names)
+
+    summary: dict[str, Any] = {
+        "metrics": metric_summaries,
+        "detected_metrics": detected_metrics,
+        "first_anomaly_timestamp": earliest_detection_ts,
+        "total_anomalies": total_anomalies,
+        "total_anomalous_observations": total_anomalous_observations,
+    }
+
+    return MetricAnomalyResult(
+        case_id=result.case_id,
+        timestamps=new_timestamps,
+        metric_names=result.metric_names,
+        anomaly_scores=new_anomaly_scores,
+        signed_scores=new_signed_scores,
+        anomalies=new_anomalies,
+        evaluation_statuses=new_statuses,
+        valid_history_counts=new_counts,
+        summary=summary,
+    )

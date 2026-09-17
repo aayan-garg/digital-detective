@@ -235,6 +235,7 @@ def extract_trace_dependencies(
     case: TelemetryCase,
     *,
     service_aliases: Mapping[str, str] | None = None,
+    max_timestamp: int | float | None = None,
 ) -> tuple[TraceDependencyObservation, ...]:
     """Extract directly observed caller -> callee service edges from case traces.
 
@@ -249,6 +250,9 @@ def extract_trace_dependencies(
     service_aliases:
         Optional explicit mapping from trace serviceName to canonical entity name
         (e.g. {"frontendservice": "frontend"}). No fuzzy matching is performed.
+    max_timestamp:
+        Optional causal timestamp cutoff. Only trace spans whose completion
+        time (startTime + duration) is <= max_timestamp are used to observe dependencies.
 
     Returns
     -------
@@ -268,7 +272,9 @@ def extract_trace_dependencies(
     else:
         raise ValueError(f"Unsupported trace raw_data type: {type(table)!r}")
 
-    required_cols = ("spanID", "parentSpanID", "serviceName")
+    required_cols = ["spanID", "parentSpanID", "serviceName"]
+    if max_timestamp is not None:
+        required_cols.append("startTime")
     missing = [c for c in required_cols if c not in columns]
     if missing:
         raise ValueError(f"Trace data missing required column(s): {missing}")
@@ -276,15 +282,38 @@ def extract_trace_dependencies(
     span_ids = get_col("spanID")
     parent_ids = get_col("parentSpanID")
     service_names = get_col("serviceName")
+    start_times = get_col("startTime") if "startTime" in columns else None
+    durations = get_col("duration") if "duration" in columns else None
 
     # Build spanID -> serviceName/parentSpanID lookup, allowing exact duplicate
     # records (e.g. from network retry/loss telemetry duplication) while strictly
     # rejecting duplicate spanIDs that map to conflicting services or parents.
     span_to_service: dict[str, str] = {}
     span_to_parent: dict[str, str | None] = {}
-    for sid, pid, sname in zip(span_ids, parent_ids, service_names):
+    for i, (sid, pid, sname) in enumerate(zip(span_ids, parent_ids, service_names)):
         if sid is None:
             raise ValueError("Trace spanID cannot be null")
+
+        # Causal temporal restriction: exclude spans whose completion time is > max_timestamp
+        if max_timestamp is not None and start_times is not None:
+            st = start_times[i]
+            dur = durations[i] if durations is not None else 0
+            s_time = int(st) if st is not None else 0
+            dur_val = int(dur) if (dur is not None and str(dur) != "<NA>") else 0
+            s_end = s_time + dur_val
+
+            if s_time > 1e14 and max_timestamp < 1e11:
+                # s_time and s_end in microseconds (~1e15), max_timestamp in seconds (~1e9)
+                if (s_end / 1_000_000.0) > max_timestamp:
+                    continue
+            elif s_time > 1e11 and max_timestamp < 1e11:
+                # s_time and s_end in milliseconds (~1e12), max_timestamp in seconds (~1e9)
+                if (s_end / 1000.0) > max_timestamp:
+                    continue
+            else:
+                if s_end > max_timestamp:
+                    continue
+
         if sid in span_to_service:
             if span_to_service[sid] != sname or span_to_parent.get(sid) != pid:
                 raise ValueError(f"Duplicate spanID detected in trace data: {sid!r}")
@@ -322,3 +351,4 @@ def extract_trace_dependencies(
         TraceDependencyObservation(source=u, target=v, observation_count=edge_counts[(u, v)])
         for u, v in sorted_edges
     )
+

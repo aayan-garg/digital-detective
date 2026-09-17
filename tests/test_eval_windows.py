@@ -66,7 +66,8 @@ class TestIncidentWindow(unittest.TestCase):
         w = resolve_incident_window(case, ep_evidence=ep_evidence, mode="detected")
         self.assertEqual(w.mode, "detected")
         self.assertEqual(w.onset_ts, 1505)
-        self.assertEqual(w.end_ts, 2000)
+        self.assertEqual(w.end_ts, 1505)
+        self.assertEqual(w.onset_ts, w.end_ts)
         self.assertTrue(w.has_detected_window)
         self.assertIn("detected:first_episode_ts=1505", w.source_description)
 
