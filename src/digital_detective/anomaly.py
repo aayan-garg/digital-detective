@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import math
+import statistics
 from typing import Any, Mapping, Sequence
 
 import pyarrow as pa
@@ -41,8 +42,9 @@ def detect_metric_anomalies(
     min_warmup: int | None = None,
     min_valid_history: int | None = None,
     epsilon: float = 1e-6,
+    normalization: str = "mean_std",
 ) -> MetricAnomalyResult:
-    """Detect anomalies across metric time-series using causal rolling z-scores.
+    """Detect anomalies across metric time-series using causal rolling normalization.
 
     Operates strictly over the preceding ``window_size`` discrete observations
     in chronological order without resampling or interpolation.
@@ -54,7 +56,7 @@ def detect_metric_anomalies(
     window_size:
         The number of preceding discrete observations forming the historical window.
     threshold:
-        Standard deviation threshold factor for flagging anomalies (|z| >= threshold).
+        Standard deviation / robust score threshold factor for flagging anomalies (|score| >= threshold).
     min_warmup:
         Minimum number of initial observations before evaluation starts. Defaults to window_size.
     min_valid_history:
@@ -64,7 +66,14 @@ def detect_metric_anomalies(
         Defaults to max(2, effective_warmup // 2).
     epsilon:
         Numerical stability constant to prevent division by zero in floating-point operations.
+    normalization:
+        Normalization method for scoring: 'mean_std' (default) or 'median_mad'.
     """
+    if normalization not in ("mean_std", "median_mad"):
+        raise ValueError(
+            f"Unknown normalization: {normalization!r}. Must be 'mean_std' or 'median_mad'."
+        )
+
     if window_size < 2:
         raise ValueError(f"window_size must be at least 2, got {window_size}")
     if threshold <= 0:
@@ -131,6 +140,7 @@ def detect_metric_anomalies(
             min_valid_history=effective_min_valid,
             threshold=threshold,
             epsilon=epsilon,
+            normalization=normalization,
         )
         signed_scores[metric_name] = s_scores
         anomaly_scores[metric_name] = a_scores
@@ -197,6 +207,30 @@ def detect_metric_anomalies(
     )
 
 
+def detect_metric_anomalies_median_mad(
+    case: TelemetryCase,
+    *,
+    window_size: int = 60,
+    threshold: float = 3.0,
+    min_warmup: int | None = None,
+    min_valid_history: int | None = None,
+    epsilon: float = 1e-6,
+) -> MetricAnomalyResult:
+    """Detect anomalies across metric time-series using causal rolling median/MAD.
+
+    Convenience wrapper invoking detect_metric_anomalies with normalization="median_mad".
+    """
+    return detect_metric_anomalies(
+        case,
+        window_size=window_size,
+        threshold=threshold,
+        min_warmup=min_warmup,
+        min_valid_history=min_valid_history,
+        epsilon=epsilon,
+        normalization="median_mad",
+    )
+
+
 def _score_metric_series(
     values: Sequence[float | None],
     *,
@@ -205,6 +239,7 @@ def _score_metric_series(
     min_valid_history: int,
     threshold: float,
     epsilon: float,
+    normalization: str = "mean_std",
 ) -> tuple[
     tuple[float | None, ...],
     tuple[float | None, ...],
@@ -251,36 +286,63 @@ def _score_metric_series(
             statuses[i] = "insufficient_history"
             continue
 
-        mean = sum(history) / valid_count
-        variance = sum((v - mean) ** 2 for v in history) / valid_count
-        std = math.sqrt(variance)
+        # 3. Normalization calculation
+        if normalization == "mean_std":
+            mean = sum(history) / valid_count
+            variance = sum((v - mean) ** 2 for v in history) / valid_count
+            std = math.sqrt(variance)
 
-        # 3. Explicit zero-variance semantics
-        if math.isclose(std, 0.0, abs_tol=1e-12):
-            if math.isclose(cur_val, mean, rel_tol=1e-9, abs_tol=1e-12):
-                # Equal to constant history -> evaluated normal
+            # Explicit zero-variance semantics
+            if math.isclose(std, 0.0, abs_tol=1e-12):
+                if math.isclose(cur_val, mean, rel_tol=1e-9, abs_tol=1e-12):
+                    # Equal to constant history -> evaluated normal
+                    signed_scores[i] = 0.0
+                    anomaly_scores[i] = 0.0
+                    anomalies[i] = False
+                    statuses[i] = "normal"
+                else:
+                    # Different from constant history -> broken invariant, evaluated anomaly
+                    deviation = cur_val - mean
+                    signed_z = deviation / epsilon if epsilon > 0 else (float("inf") if deviation > 0 else float("-inf"))
+                    signed_scores[i] = signed_z
+                    anomaly_scores[i] = abs(signed_z)
+                    anomalies[i] = True
+                    statuses[i] = "anomaly"
+            else:
+                # Standard z-score evaluation
+                deviation = cur_val - mean
+                signed_z = deviation / (std + epsilon)
+                score = abs(signed_z)
+                signed_scores[i] = signed_z
+                anomaly_scores[i] = score
+                is_anom = score >= threshold
+                anomalies[i] = is_anom
+                statuses[i] = "anomaly" if is_anom else "normal"
+        elif normalization == "median_mad":
+            median = statistics.median(history)
+            abs_devs = [abs(v - median) for v in history]
+            mad = statistics.median(abs_devs)
+            robust_sigma = max(1.4826 * mad, epsilon)
+
+            # Scoring and anomaly decision
+            deviation = cur_val - median
+            if math.isclose(cur_val, median, rel_tol=1e-9, abs_tol=1e-12):
                 signed_scores[i] = 0.0
                 anomaly_scores[i] = 0.0
                 anomalies[i] = False
                 statuses[i] = "normal"
             else:
-                # Different from constant history -> broken invariant, evaluated anomaly
-                deviation = cur_val - mean
-                signed_z = deviation / epsilon if epsilon > 0 else (float("inf") if deviation > 0 else float("-inf"))
+                signed_z = deviation / robust_sigma
+                score = abs(signed_z)
                 signed_scores[i] = signed_z
-                anomaly_scores[i] = abs(signed_z)
-                anomalies[i] = True
-                statuses[i] = "anomaly"
+                anomaly_scores[i] = score
+                is_anom = score >= threshold
+                anomalies[i] = is_anom
+                statuses[i] = "anomaly" if is_anom else "normal"
         else:
-            # Standard z-score evaluation
-            deviation = cur_val - mean
-            signed_z = deviation / (std + epsilon)
-            score = abs(signed_z)
-            signed_scores[i] = signed_z
-            anomaly_scores[i] = score
-            is_anom = score >= threshold
-            anomalies[i] = is_anom
-            statuses[i] = "anomaly" if is_anom else "normal"
+            raise ValueError(
+                f"Unknown normalization: {normalization!r}. Must be 'mean_std' or 'median_mad'."
+            )
 
     return (
         tuple(signed_scores),

@@ -6,7 +6,11 @@ from .aggregation import (
     STANDARD_CONFIGURATIONS,
     aggregate_metric_anomalies,
 )
-from .anomaly import MetricAnomalyResult, detect_metric_anomalies
+from .anomaly import (
+    MetricAnomalyResult,
+    detect_metric_anomalies,
+    detect_metric_anomalies_median_mad,
+)
 from .episodes import (
     EntityEpisodeEvidence,
     EpisodeConfig,
@@ -135,6 +139,7 @@ __all__ = [
     "compute_trace_attribution",
     "decompose_parent_span",
     "detect_metric_anomalies",
+    "detect_metric_anomalies_median_mad",
     "evaluate_anomaly_detection_case",
     "evaluate_anomaly_detection_cases",
     "evaluate_rca_benchmark",
