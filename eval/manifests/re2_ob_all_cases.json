@@ -1,0 +1,614 @@
+{
+  "manifest_id": "stage2_re2ob_rep2_rep3_baseline_v1",
+  "manifest_type": "SCIENTIFIC_BENCHMARK",
+  "manifest_hash": "7f82ef5d38185ad20152e3db5dab45ecab3df2a59ad518d9d1681c3ef3f15659",
+  "description": "Scientific baseline population for RE2-OB (repetitions 2 and 3, 60 cases)",
+  "created_at": "2026-09-17T00:00:00Z",
+  "is_smoke_test": false,
+  "dataset": "RE2-OB",
+  "total_cases": 60,
+  "modality_summary": {},
+  "partition_statistics": {},
+  "cases": [
+    {
+      "case_id": "re2ob_checkoutservice_cpu_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "cpu",
+      "root_cause_service": "checkoutservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_checkoutservice_cpu_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "cpu",
+      "root_cause_service": "checkoutservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_checkoutservice_delay_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "delay",
+      "root_cause_service": "checkoutservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_checkoutservice_delay_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "delay",
+      "root_cause_service": "checkoutservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_checkoutservice_disk_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "disk",
+      "root_cause_service": "checkoutservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_checkoutservice_disk_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "disk",
+      "root_cause_service": "checkoutservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_checkoutservice_loss_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "loss",
+      "root_cause_service": "checkoutservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_checkoutservice_loss_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "loss",
+      "root_cause_service": "checkoutservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_checkoutservice_mem_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "mem",
+      "root_cause_service": "checkoutservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_checkoutservice_mem_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "mem",
+      "root_cause_service": "checkoutservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_checkoutservice_socket_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "socket",
+      "root_cause_service": "checkoutservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_checkoutservice_socket_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "socket",
+      "root_cause_service": "checkoutservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_currencyservice_cpu_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "cpu",
+      "root_cause_service": "currencyservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_currencyservice_cpu_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "cpu",
+      "root_cause_service": "currencyservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_currencyservice_delay_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "delay",
+      "root_cause_service": "currencyservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_currencyservice_delay_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "delay",
+      "root_cause_service": "currencyservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_currencyservice_disk_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "disk",
+      "root_cause_service": "currencyservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_currencyservice_disk_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "disk",
+      "root_cause_service": "currencyservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_currencyservice_loss_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "loss",
+      "root_cause_service": "currencyservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_currencyservice_loss_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "loss",
+      "root_cause_service": "currencyservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_currencyservice_mem_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "mem",
+      "root_cause_service": "currencyservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_currencyservice_mem_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "mem",
+      "root_cause_service": "currencyservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_currencyservice_socket_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "socket",
+      "root_cause_service": "currencyservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_currencyservice_socket_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "socket",
+      "root_cause_service": "currencyservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_emailservice_cpu_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "cpu",
+      "root_cause_service": "emailservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_emailservice_cpu_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "cpu",
+      "root_cause_service": "emailservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_emailservice_delay_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "delay",
+      "root_cause_service": "emailservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_emailservice_delay_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "delay",
+      "root_cause_service": "emailservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_emailservice_disk_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "disk",
+      "root_cause_service": "emailservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_emailservice_disk_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "disk",
+      "root_cause_service": "emailservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_emailservice_loss_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "loss",
+      "root_cause_service": "emailservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_emailservice_loss_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "loss",
+      "root_cause_service": "emailservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_emailservice_mem_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "mem",
+      "root_cause_service": "emailservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_emailservice_mem_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "mem",
+      "root_cause_service": "emailservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_emailservice_socket_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "socket",
+      "root_cause_service": "emailservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_emailservice_socket_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "socket",
+      "root_cause_service": "emailservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_cpu_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "cpu",
+      "root_cause_service": "productcatalogservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_cpu_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "cpu",
+      "root_cause_service": "productcatalogservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_delay_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "delay",
+      "root_cause_service": "productcatalogservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_delay_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "delay",
+      "root_cause_service": "productcatalogservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_disk_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "disk",
+      "root_cause_service": "productcatalogservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_disk_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "disk",
+      "root_cause_service": "productcatalogservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_loss_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "loss",
+      "root_cause_service": "productcatalogservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_loss_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "loss",
+      "root_cause_service": "productcatalogservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_mem_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "mem",
+      "root_cause_service": "productcatalogservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_mem_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "mem",
+      "root_cause_service": "productcatalogservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_socket_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "socket",
+      "root_cause_service": "productcatalogservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_socket_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "socket",
+      "root_cause_service": "productcatalogservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_recommendationservice_cpu_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "cpu",
+      "root_cause_service": "recommendationservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_recommendationservice_cpu_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "cpu",
+      "root_cause_service": "recommendationservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_recommendationservice_delay_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "delay",
+      "root_cause_service": "recommendationservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_recommendationservice_delay_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "delay",
+      "root_cause_service": "recommendationservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_recommendationservice_disk_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "disk",
+      "root_cause_service": "recommendationservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_recommendationservice_disk_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "disk",
+      "root_cause_service": "recommendationservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_recommendationservice_loss_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "loss",
+      "root_cause_service": "recommendationservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_recommendationservice_loss_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "loss",
+      "root_cause_service": "recommendationservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_recommendationservice_mem_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "mem",
+      "root_cause_service": "recommendationservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_recommendationservice_mem_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "mem",
+      "root_cause_service": "recommendationservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_recommendationservice_socket_2",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "socket",
+      "root_cause_service": "recommendationservice",
+      "repetition": 2,
+      "partition": "all",
+      "suite": "RE2"
+    },
+    {
+      "case_id": "re2ob_recommendationservice_socket_3",
+      "dataset": "RE2-OB",
+      "system": "ob",
+      "fault": "socket",
+      "root_cause_service": "recommendationservice",
+      "repetition": 3,
+      "partition": "all",
+      "suite": "RE2"
+    }
+  ]
+}
