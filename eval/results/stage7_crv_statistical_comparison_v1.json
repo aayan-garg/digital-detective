@@ -1,0 +1,82 @@
+{
+  "schema_version": "stage7_statistical_comparison_v1",
+  "experiment_id": "stage7_re2ob_crv_shadow_statistical_comparison_v1",
+  "treatment_artifact": "eval/results/stage7_re2ob_crv_treatment_v1.json",
+  "treatment_hash": "77CFDBB984F77A480DC69E728DCC9F13DF921B29984FCA87B7D98269AD82B364",
+  "manifest_hash": "7f82ef5d38185ad20152e3db5dab45ecab3df2a59ad518d9d1681c3ef3f15659",
+  "population": {
+    "dataset": "RE2-OB",
+    "total_cases": 60,
+    "scenario_families": 30,
+    "repetitions": [
+      2,
+      3
+    ]
+  },
+  "hypothesis_decision": "INCONCLUSIVE",
+  "scientific_conclusion": "Clustered 95% CI for Delta MRR crosses zero -> Inconclusive (no statistically significant incremental discriminatory information).",
+  "comparison_results": [
+    {
+      "metric": "Top@1 Accuracy",
+      "mean_crv_shadow": 0.18333333333333332,
+      "mean_s_comb": 0.25,
+      "difference": -0.06666666666666667,
+      "ci_lower": -0.18333333333333332,
+      "ci_upper": 0.03333333333333333,
+      "raw_p_value": 0.4056594340565943,
+      "is_percentage": true,
+      "adjusted_p_value": 0.8113188681131887,
+      "significant_raw": false,
+      "significant_adjusted": false
+    },
+    {
+      "metric": "Top@3 Accuracy",
+      "mean_crv_shadow": 0.31666666666666665,
+      "mean_s_comb": 0.4,
+      "difference": -0.08333333333333333,
+      "ci_lower": -0.16666666666666666,
+      "ci_upper": 0.0,
+      "raw_p_value": 0.12478752124787522,
+      "is_percentage": true,
+      "adjusted_p_value": 0.4991500849915009,
+      "significant_raw": false,
+      "significant_adjusted": false
+    },
+    {
+      "metric": "Top@5 Accuracy",
+      "mean_crv_shadow": 0.55,
+      "mean_s_comb": 0.55,
+      "difference": 0.0,
+      "ci_lower": 0.0,
+      "ci_upper": 0.0,
+      "raw_p_value": 1.0,
+      "is_percentage": true,
+      "adjusted_p_value": 1.0,
+      "significant_raw": false,
+      "significant_adjusted": false
+    },
+    {
+      "metric": "MRR",
+      "mean_crv_shadow": 0.3509126984126984,
+      "mean_s_comb": 0.4084126984126984,
+      "difference": -0.0575,
+      "ci_lower": -0.13139583333333327,
+      "ci_upper": 0.007777777777777782,
+      "raw_p_value": 0.1277872212778722,
+      "is_percentage": false,
+      "adjusted_p_value": 0.4991500849915009,
+      "significant_raw": false,
+      "significant_adjusted": false
+    }
+  ],
+  "crv_summary": {
+    "total_executions": 60,
+    "total_top5_candidates_evaluated": 300,
+    "total_no_path_candidates": 212,
+    "no_path_candidate_fraction": 0.7066666666666667,
+    "executions_order_changed": 53,
+    "executions_order_changed_fraction": 0.8833333333333333,
+    "executions_top1_changed": 43,
+    "executions_top1_changed_fraction": 0.7166666666666667
+  }
+}
