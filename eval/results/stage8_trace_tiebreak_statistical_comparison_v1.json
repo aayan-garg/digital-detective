@@ -1,0 +1,80 @@
+{
+  "schema_version": "stage8_trace_tiebreak_statistical_comparison_v1",
+  "experiment_id": "stage8_re2ob_trace_tiebreak_statistical_comparison_v1",
+  "treatment_artifact": "eval/results/stage8_re2ob_trace_tiebreak_treatment_v1.json",
+  "treatment_hash": "951F6C42A762F2FE5013B28EEB1A03CF769AD40E9A6C7D922ED9B7AE2736E591",
+  "manifest_hash": "7f82ef5d38185ad20152e3db5dab45ecab3df2a59ad518d9d1681c3ef3f15659",
+  "population": {
+    "dataset": "RE2-OB",
+    "total_cases": 60,
+    "scenario_families": 30,
+    "repetitions": [
+      2,
+      3
+    ]
+  },
+  "hypothesis_decision": "SUPPORT_INCREMENTAL_TRACE_VALUE",
+  "scientific_conclusion": "Clustered 95% CI for Delta MRR is entirely above zero -> Supports hypothesis (Trace tie-break provides statistically significant incremental ranking quality).",
+  "comparison_results": [
+    {
+      "metric": "Top@1 Accuracy",
+      "mean_treatment": 0.25,
+      "mean_control": 0.25,
+      "difference": 0.0,
+      "ci_lower": 0.0,
+      "ci_upper": 0.0,
+      "raw_p_value": 1.0,
+      "is_percentage": true,
+      "adjusted_p_value": 1.0,
+      "significant_raw": false,
+      "significant_adjusted": false
+    },
+    {
+      "metric": "Top@3 Accuracy",
+      "mean_treatment": 0.4166666666666667,
+      "mean_control": 0.4,
+      "difference": 0.016666666666666666,
+      "ci_lower": 0.0,
+      "ci_upper": 0.05,
+      "raw_p_value": 1.0,
+      "is_percentage": true,
+      "adjusted_p_value": 1.0,
+      "significant_raw": false,
+      "significant_adjusted": false
+    },
+    {
+      "metric": "Top@5 Accuracy",
+      "mean_treatment": 0.6333333333333333,
+      "mean_control": 0.55,
+      "difference": 0.08333333333333333,
+      "ci_lower": 0.016666666666666666,
+      "ci_upper": 0.15,
+      "raw_p_value": 0.05929407059294071,
+      "is_percentage": true,
+      "adjusted_p_value": 0.17788221177882213,
+      "significant_raw": false,
+      "significant_adjusted": false
+    },
+    {
+      "metric": "MRR",
+      "mean_treatment": 0.4225727513227513,
+      "mean_control": 0.4084126984126984,
+      "difference": 0.01416005291005291,
+      "ci_lower": 0.007274966931216933,
+      "ci_upper": 0.02169312169312169,
+      "raw_p_value": 0.0004999500049995,
+      "is_percentage": false,
+      "adjusted_p_value": 0.001999800019998,
+      "significant_raw": true,
+      "significant_adjusted": true
+    }
+  ],
+  "tiebreak_summary": {
+    "total_executions": 60,
+    "executions_order_changed": 48,
+    "executions_order_changed_fraction": 0.8,
+    "executions_top1_changed": 0,
+    "executions_top5_changed": 5,
+    "total_ties_resolved": 188
+  }
+}

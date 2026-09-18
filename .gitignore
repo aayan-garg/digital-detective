@@ -2,6 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
+.cache*
+*.cache*
 
 # Virtual environments and local environments
 .venv/

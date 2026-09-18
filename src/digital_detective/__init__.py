@@ -53,6 +53,11 @@ from .crv import (
     CRVResult,
     run_counterfactual_removal_validation,
 )
+from .trace_tiebreak import (
+    CandidateTieBreakDetail,
+    TraceTieBreakResult,
+    apply_trace_tiebreak,
+)
 from .pyrca_ht import (
     build_entity_telemetry_frames,
     convert_entity_graph_to_pyrca_adjacency,
