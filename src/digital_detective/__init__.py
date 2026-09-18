@@ -48,6 +48,11 @@ from .rca import (
     rank_root_cause_entities,
     rank_with_s_comb,
 )
+from .tcec import (
+    TCECConfig,
+    TCECResult,
+    confirm_topology_coherent_episode,
+)
 from .telemetry import (
     CaseMetadata,
     GroundTruth,
@@ -129,6 +134,9 @@ __all__ = [
     "RCAConfig",
     "RootCauseScore",
     "STANDARD_CONFIGURATIONS",
+    "TCECConfig",
+    "TCECResult",
+    "confirm_topology_coherent_episode",
     "SpanDecomposition",
     "SpanRecord",
     "TelemetryCase",
