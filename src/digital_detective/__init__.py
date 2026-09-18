@@ -48,6 +48,11 @@ from .rca import (
     rank_root_cause_entities,
     rank_with_s_comb,
 )
+from .pyrca_ht import (
+    build_entity_telemetry_frames,
+    convert_entity_graph_to_pyrca_adjacency,
+    run_pyrca_ht,
+)
 from .tcec import (
     TCECConfig,
     TCECResult,
@@ -149,6 +154,8 @@ __all__ = [
     "aggregate_entity_episodes",
     "aggregate_metric_anomalies",
     "build_entity_graph",
+    "build_entity_telemetry_frames",
+    "convert_entity_graph_to_pyrca_adjacency",
     "compute_caller_wait_concentration",
     "compute_edge_elevation",
     "compute_interval_union",
@@ -170,4 +177,5 @@ __all__ = [
     "rank_root_cause_entities",
     "rank_with_s_comb",
     "rank_with_trace_elevation",
+    "run_pyrca_ht",
 ]

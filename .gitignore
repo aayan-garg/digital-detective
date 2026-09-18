@@ -5,6 +5,7 @@ __pycache__/
 
 # Virtual environments and local environments
 .venv/
+.venv_pyrca/
 venv/
 env/
 .env

@@ -1,0 +1,61 @@
+{
+  "schema_version": "1.0.0",
+  "comparison_id": "stage6_pyrca_ht_vs_s_comb_statistical_comparison",
+  "manifest_hash": "7f82ef5d38185ad20152e3db5dab45ecab3df2a59ad518d9d1681c3ef3f15659",
+  "treatment_hash": "3EF7AEBEC9CBBEF329AF5EBBC4792C40E6D6D8B50D1049CA48B3EBA99E430248",
+  "population": {
+    "suite": "RE2-OB",
+    "repetitions": [
+      2,
+      3
+    ],
+    "total_cases": 60,
+    "scenario_families": 30
+  },
+  "results": [
+    {
+      "metric": "Top@1 Accuracy",
+      "mean_pyrca_ht": 0.18333333333333332,
+      "mean_s_comb": 0.25,
+      "diff": -0.06666666666666667,
+      "ci_lower": -0.21666666666666667,
+      "ci_upper": 0.08333333333333333,
+      "raw_p": 0.5111488851114888,
+      "is_pct": true,
+      "adj_p": 1.0
+    },
+    {
+      "metric": "Top@3 Accuracy",
+      "mean_pyrca_ht": 0.31666666666666665,
+      "mean_s_comb": 0.4,
+      "diff": -0.08333333333333333,
+      "ci_lower": -0.26666666666666666,
+      "ci_upper": 0.11666666666666667,
+      "raw_p": 0.49595040495950404,
+      "is_pct": true,
+      "adj_p": 1.0
+    },
+    {
+      "metric": "Top@5 Accuracy",
+      "mean_pyrca_ht": 0.4666666666666667,
+      "mean_s_comb": 0.55,
+      "diff": -0.08333333333333333,
+      "ci_lower": -0.26666666666666666,
+      "ci_upper": 0.1,
+      "raw_p": 0.49055094490550943,
+      "is_pct": true,
+      "adj_p": 1.0
+    },
+    {
+      "metric": "MRR",
+      "mean_pyrca_ht": 0.3444318181818182,
+      "mean_s_comb": 0.4084126984126984,
+      "diff": -0.06398088023088024,
+      "ci_lower": -0.18940043290043287,
+      "ci_upper": 0.060565100408850395,
+      "raw_p": 0.3227677232276772,
+      "is_pct": false,
+      "adj_p": 1.0
+    }
+  ]
+}
