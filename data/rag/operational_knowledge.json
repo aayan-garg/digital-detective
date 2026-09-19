@@ -1,0 +1,48 @@
+{
+  "documents": [
+    {
+      "document_id": "synthetic-runbook-cpu-saturation",
+      "title": "Synthetic runbook: CPU saturation triage",
+      "text": "Local test knowledge for CPU saturation: compare utilization, request rate, and latency across the affected service and its immediate callers. Check recent deployment and worker-pool settings before escalating.",
+      "metadata": {
+        "service": "checkoutservice",
+        "failure_mode": "cpu_saturation",
+        "modality": "metrics",
+        "source": "synthetic local runbook"
+      }
+    },
+    {
+      "document_id": "synthetic-runbook-memory-pressure",
+      "title": "Synthetic runbook: memory pressure triage",
+      "text": "Local test knowledge for memory pressure: inspect resident memory, allocation rate, garbage-collection activity, and restart history. Compare the affected service with its normal operating envelope.",
+      "metadata": {
+        "service": "cartservice",
+        "failure_mode": "memory_pressure",
+        "modality": "metrics",
+        "source": "synthetic local runbook"
+      }
+    },
+    {
+      "document_id": "synthetic-runbook-network-latency",
+      "title": "Synthetic runbook: network latency triage",
+      "text": "Local test knowledge for network latency: inspect request timing, retry volume, timeout counters, and dependency edges. Use traces and service logs to describe observed propagation without assigning causality.",
+      "metadata": {
+        "service": "shippingservice",
+        "failure_mode": "network_latency",
+        "modality": "traces,logs",
+        "source": "synthetic local runbook"
+      }
+    },
+    {
+      "document_id": "synthetic-runbook-error-rate",
+      "title": "Synthetic runbook: elevated error-rate checklist",
+      "text": "Local test knowledge for elevated errors: group errors by endpoint and status, compare neighboring services, and record the observation window. This checklist is operational context, not a diagnosis.",
+      "metadata": {
+        "service": "frontend",
+        "failure_mode": "elevated_errors",
+        "modality": "logs,metrics",
+        "source": "synthetic local runbook"
+      }
+    }
+  ]
+}
