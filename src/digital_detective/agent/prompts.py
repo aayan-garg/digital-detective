@@ -75,6 +75,7 @@ For QUERY:
 For FINAL_DIAGNOSIS:
 {
   "action": "FINAL_DIAGNOSIS",
+  "diagnosis_service": "<service>",
   "reasoning": "<evidence-grounded explanation citing E-IDs>",
   "evidence_ids": ["E3", "E7", "E12"]
 }
@@ -284,3 +285,24 @@ def format_state_for_prompt(
     sections.append("=== END STATE ===")
     return "\n".join(sections)
 
+
+def format_rag_context_block(snippets: list[str]) -> str:
+    """Wrap retrieved operational knowledge for injection into the investigator prompt.
+
+    Returns an empty string when no snippets are available so callers can
+    safely concatenate without conditional guards.
+
+    The block is labelled reference-only so the LLM does not treat it as
+    deterministic RCA evidence; it must not override RCA scores, Model B
+    rankings, or safety decisions.
+    """
+    if not snippets:
+        return ""
+    body = "\n\n".join(f"[{i}] {s}" for i, s in enumerate(snippets, 1))
+    return (
+        "\n\nOPERATIONAL KNOWLEDGE (RAG \u2013 REFERENCE ONLY):\n"
+        "The following passages are retrieved reference material. "
+        "They do NOT override deterministic RCA scores, Model B rankings, "
+        "or safety decisions. Use them only as supporting context.\n\n"
+        + body
+    )

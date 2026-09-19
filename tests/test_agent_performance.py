@@ -440,15 +440,22 @@ class TestMalformedResponseHandling(unittest.TestCase):
 
     def test_final_diagnosis_auto_grounds_from_queries(self) -> None:
         state = _make_state(queries=[_make_query_record("checkoutservice", "get_metrics", query_id="q_ok_1")])
-        raw = '{"action": "FINAL_DIAGNOSIS", "reasoning": "Diagnosed root cause."}'
+        raw = '{"action": "FINAL_DIAGNOSIS", "diagnosis_service": "checkoutservice", "reasoning": "Diagnosed root cause."}'
         decision = _parse_llm_response(raw, step=1, state=state)
         self.assertEqual(decision.action, "FINAL_DIAGNOSIS")
         self.assertEqual(decision.evidence_ids, ("q_ok_1",))
         self.assertIn("[auto-grounded from query history]", decision.reasoning)
 
+    def test_final_diagnosis_without_diagnosis_service_becomes_stop(self) -> None:
+        state = _make_state(queries=[_make_query_record("checkoutservice", "get_metrics", query_id="q_ok_1")])
+        raw = '{"action": "FINAL_DIAGNOSIS", "reasoning": "Diagnosed root cause."}'
+        decision = _parse_llm_response(raw, step=1, state=state)
+        self.assertEqual(decision.action, "STOP")
+        self.assertIn("diagnosis service", decision.reasoning)
+
     def test_final_diagnosis_without_queries_becomes_stop(self) -> None:
         state = _make_state(queries=[])
-        raw = '{"action": "FINAL_DIAGNOSIS", "reasoning": "Diagnosed with zero queries."}'
+        raw = '{"action": "FINAL_DIAGNOSIS", "diagnosis_service": "checkoutservice", "reasoning": "Diagnosed with zero queries."}'
         decision = _parse_llm_response(raw, step=1, state=state)
         self.assertEqual(decision.action, "STOP")
         self.assertIn("no queries completed", decision.reasoning)

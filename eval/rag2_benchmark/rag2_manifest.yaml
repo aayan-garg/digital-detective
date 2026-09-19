@@ -1,0 +1,26 @@
+benchmark_id: DD-IR-60
+corpus_id: ddir60-operational-knowledge-v1
+retrieved_date: 2026-09-19
+cutoff_policy: version-controlled official documentation admitted only at pinned tags; undated unversioned material excluded
+temporal_claim: temporally leakage-controlled with respect to benchmark information availability
+retrieval_unit_count: 536
+source_family_count: 4
+source_version_count: 4
+excluded_source_unit_count: 47
+coverage_categories: [cpu, debugging, dependency-failure, disk, dns, error-rate, grpc, logging, memory, metrics, networking, observability, process, resource-limits, safe-operations, service-health, tracing]
+corpus_sha256: 7726693099ae5abfcc34355bdb3e91644be3d789611b0195afc5e9485b65c12b
+source_manifest:
+  - source: grpc/grpc
+    version: v1.64.0
+    license: Apache-2.0
+  - source: kubernetes/website
+    version: release-1.30
+    license: CC BY 4.0
+  - source: open-telemetry/opentelemetry-specification
+    version: v1.28.0
+    license: Apache-2.0
+  - source: prometheus/prometheus
+    version: v2.53.0
+    license: Apache-2.0
+scientific_qrels_present: false
+final_c0_c4_evaluation_run: false

@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "rcaeval_repository": "https://github.com/phamquiluan/RCAEval",
+  "rcaeval_commit": "bb48c5aa9a24f1d5fcc716bdd479ea2d63145c90",
+  "rcaeval_version": "1.7.0",
+  "dataset": "RE2-OB",
+  "dataset_layout": "RCAEval Hugging Face Parquet conversion",
+  "benchmark_condition": {
+    "inject_time_source": "cases.parquet and inject_time.txt",
+    "window": "RCAEval main.py default length=20: 10 minutes before and after inject_time",
+    "tdelta_seconds": 0,
+    "causal_prefix": false
+  },
+  "methods": [
+    "BARO",
+    "RCD",
+    "CausalRCA",
+    "MicroRank",
+    "Multi-source RCD"
+  ],
+  "smoke_cases": [
+    "re2ob_checkoutservice_cpu_2",
+    "re2ob_currencyservice_cpu_2",
+    "re2ob_emailservice_cpu_2"
+  ],
+  "environments": {
+    "default": {
+      "python": "3.12",
+      "requirements": "RCAEval[default] from requirements.txt"
+    },
+    "rcd": {
+      "python": "3.8",
+      "requirements": "RCAEval[rcd] from requirements_rcd.lock"
+    }
+  },
+  "original_algorithms_modified": false,
+  "local_compatibility_patch": null
+}

@@ -63,6 +63,12 @@ from .pyrca_ht import (
     convert_entity_graph_to_pyrca_adjacency,
     run_pyrca_ht,
 )
+from .sequential_tcec import (
+    CorroboratingEvidence,
+    SequentialTCECConfig,
+    SequentialTCECResult,
+    confirm_sequential_tcec,
+)
 from .tcec import (
     TCECConfig,
     TCECResult,
@@ -149,6 +155,10 @@ __all__ = [
     "RCAConfig",
     "RootCauseScore",
     "STANDARD_CONFIGURATIONS",
+    "SequentialTCECConfig",
+    "SequentialTCECResult",
+    "CorroboratingEvidence",
+    "confirm_sequential_tcec",
     "TCECConfig",
     "TCECResult",
     "confirm_topology_coherent_episode",

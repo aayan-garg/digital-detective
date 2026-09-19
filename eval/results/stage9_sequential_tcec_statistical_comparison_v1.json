@@ -1,0 +1,120 @@
+{
+  "schema_version": "stage9_sequential_tcec_statistical_comparison_v1",
+  "experiment_id": "stage9_re2ob_sequential_tcec_statistical_comparison_v1",
+  "treatment_artifact": "eval/results/stage9_re2ob_sequential_tcec_treatment_v1.json",
+  "control_artifact": "eval/results/stage5_tcec_treatment_v1.json",
+  "treatment_hash": "B8E9F3EEFB608A9A57B39F84BC8CAFDD9C54C3E51951595DE80652611C615A32",
+  "control_hash": "F4FD25219D6D0EDC60A8781CE23E2BE58C6C936EA115C39A218BB82B8A0646F5",
+  "manifest_hash": "7f82ef5d38185ad20152e3db5dab45ecab3df2a59ad518d9d1681c3ef3f15659",
+  "population": {
+    "dataset": "RE2-OB",
+    "total_cases": 60,
+    "scenario_families": 30,
+    "repetitions": [
+      2,
+      3
+    ]
+  },
+  "hypothesis_decision": "SUPPORT_FALSE_EARLY_REDUCTION",
+  "scientific_conclusion": "95% clustered bootstrap CI for Delta False-Early is entirely below zero -> Statistically significant reduction in premature confirmations.",
+  "comparison_results": [
+    {
+      "metric": "False-Early Rate",
+      "role": "PRIMARY",
+      "mean_treatment": 0.31666666666666665,
+      "mean_control": 0.8666666666666667,
+      "difference": -0.55,
+      "ci_lower": -0.6833333333333333,
+      "ci_upper": -0.4,
+      "raw_p_value": 9.999000099990002e-05,
+      "is_percentage": true,
+      "adjusted_p_value": 0.0006999300069993001,
+      "significant_raw": true,
+      "significant_adjusted": true
+    },
+    {
+      "metric": "Confirmed Delay (s)",
+      "role": "SECONDARY",
+      "mean_treatment": -43.86666666666667,
+      "mean_control": -344.81666666666666,
+      "difference": 300.95,
+      "ci_lower": 242.3825,
+      "ci_upper": 363.26666666666665,
+      "raw_p_value": 9.999000099990002e-05,
+      "is_percentage": false,
+      "adjusted_p_value": 0.0006999300069993001,
+      "significant_raw": true,
+      "significant_adjusted": true
+    },
+    {
+      "metric": "S_comb MRR",
+      "role": "SECONDARY",
+      "mean_treatment": 0.49714947089947087,
+      "mean_control": 0.4084126984126984,
+      "difference": 0.08873677248677249,
+      "ci_lower": 0.003217427248677288,
+      "ci_upper": 0.1796633597883598,
+      "raw_p_value": 0.0603939606039396,
+      "is_percentage": false,
+      "adjusted_p_value": 0.301969803019698,
+      "significant_raw": false,
+      "significant_adjusted": false
+    },
+    {
+      "metric": "S_comb Top@1",
+      "role": "SECONDARY",
+      "mean_treatment": 0.3333333333333333,
+      "mean_control": 0.25,
+      "difference": 0.08333333333333333,
+      "ci_lower": -0.03333333333333333,
+      "ci_upper": 0.21666666666666667,
+      "raw_p_value": 0.3194680531946805,
+      "is_percentage": true,
+      "adjusted_p_value": 0.3194680531946805,
+      "significant_raw": false,
+      "significant_adjusted": false
+    },
+    {
+      "metric": "S_comb Top@3",
+      "role": "SECONDARY",
+      "mean_treatment": 0.5333333333333333,
+      "mean_control": 0.4,
+      "difference": 0.13333333333333333,
+      "ci_lower": 0.0,
+      "ci_upper": 0.26666666666666666,
+      "raw_p_value": 0.0953904609539046,
+      "is_percentage": true,
+      "adjusted_p_value": 0.301969803019698,
+      "significant_raw": false,
+      "significant_adjusted": false
+    },
+    {
+      "metric": "S_comb Top@5",
+      "role": "SECONDARY",
+      "mean_treatment": 0.7166666666666667,
+      "mean_control": 0.55,
+      "difference": 0.16666666666666666,
+      "ci_lower": 0.016666666666666666,
+      "ci_upper": 0.31666666666666665,
+      "raw_p_value": 0.06369363063693631,
+      "is_percentage": true,
+      "adjusted_p_value": 0.301969803019698,
+      "significant_raw": false,
+      "significant_adjusted": false
+    },
+    {
+      "metric": "Fixed Fusion MRR",
+      "role": "SECONDARY",
+      "mean_treatment": 0.5479232804232804,
+      "mean_control": 0.47224867724867725,
+      "difference": 0.07567460317460317,
+      "ci_lower": -0.020198578042328042,
+      "ci_upper": 0.1740957341269841,
+      "raw_p_value": 0.1478852114788521,
+      "is_percentage": false,
+      "adjusted_p_value": 0.301969803019698,
+      "significant_raw": false,
+      "significant_adjusted": false
+    }
+  ]
+}

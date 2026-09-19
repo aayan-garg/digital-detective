@@ -167,6 +167,20 @@ def validate_decision(
                 "MISSING_REASONING",
                 "FINAL_DIAGNOSIS must include non-empty reasoning."
             ))
+        if not decision.diagnosis_service:
+            violations.append(PolicyViolation(
+                "MISSING_DIAGNOSIS_SERVICE",
+                "FINAL_DIAGNOSIS must include a non-empty diagnosis_service."
+            ))
+        else:
+            from eval.universe import normalize_service_name
+            normalized = normalize_service_name(decision.diagnosis_service)
+            if normalized not in state.candidate_universe:
+                violations.append(PolicyViolation(
+                    "INVALID_DIAGNOSIS_SERVICE",
+                    f"Diagnosis service '{decision.diagnosis_service}' (normalized: '{normalized}') is not in "
+                    f"the candidate universe: {sorted(state.candidate_universe)}."
+                ))
         if not decision.evidence_ids:
             violations.append(PolicyViolation(
                 "MISSING_EVIDENCE_IDS",

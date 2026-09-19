@@ -57,6 +57,7 @@ from eval.windows import resolve_incident_window
 
 from .models import AgentDecision, AgentModel, InvestigationTrajectory, LLMExperimentRecord, StepTiming
 from .policy import validate_decision
+from .prompts import format_rag_context_block
 
 # Tools that are legal for the agent to request
 _REGISTERED_TOOLS = frozenset(DEFAULT_TOOL_COSTS.keys())  # type: ignore[arg-type]
@@ -105,6 +106,8 @@ class AgentOrchestrator:
         fusion_weights: Mapping[str, float] | None = None,
         allow_duplicate_queries: bool = False,
         condition: str = "C",
+        rag_retriever: Any | None = None,
+        rag_top_k: int = 5,
     ) -> None:
         self.agent_model = agent_model
         self.budget = budget
@@ -115,6 +118,9 @@ class AgentOrchestrator:
         self.fusion = EvidenceFusion(weights=fusion_weights)
         self.allow_duplicate_queries = allow_duplicate_queries
         self.condition = str(condition).upper()
+        # Optional RAG retriever — reference-only; never overrides deterministic authority.
+        self._rag_retriever = rag_retriever
+        self._rag_top_k = rag_top_k
 
     @staticmethod
     def _llm_diagnosis_from_decision(
@@ -180,6 +186,7 @@ class AgentOrchestrator:
                 "tool_name": decision.tool_name,
                 "service": decision.service,
                 "condition": condition,
+                **decision.metadata,
             },
         )
 
@@ -336,6 +343,25 @@ class AgentOrchestrator:
         # ------------------------------------------------------------------
         # 4. Agent reasoning loop
         # ------------------------------------------------------------------
+
+        # -- Optional RAG injection (reference-only) -----------------------
+        # Retrieve operational knowledge from the top hypothesis before the
+        # loop starts and prepend it to the system prompt.  The original
+        # prompt is restored afterwards so the model object is not mutated
+        # permanently between investigations.
+        _original_system_prompt = getattr(self.agent_model, "_system_prompt", None)
+        if self._rag_retriever is not None and current_rankings:
+            top_service = current_rankings[0].service
+            rag_query = top_service + " cpu memory latency performance"
+            try:
+                rag_results = self._rag_retriever.retrieve(rag_query, k=self._rag_top_k)
+                snippets = [r.snippet for r in rag_results if r.snippet]
+                rag_block = format_rag_context_block(snippets)
+                if rag_block and _original_system_prompt is not None:
+                    self.agent_model._system_prompt = _original_system_prompt + rag_block
+            except Exception:
+                pass  # RAG failure must never block the investigation
+
         already_queried: set[tuple[str, str]] = set()
         terminated_by = "MAX_STEPS"
         consecutive_invalid = 0
@@ -395,6 +421,9 @@ class AgentOrchestrator:
                     "end_ts": getattr(window, "end_ts", None),
                 },
             )
+            # Restore original system prompt before returning
+            if _original_system_prompt is not None and self._rag_retriever is not None:
+                self.agent_model._system_prompt = _original_system_prompt
             return trajectory
 
         for _step in range(self.max_steps):
@@ -703,9 +732,6 @@ class AgentOrchestrator:
             )
             state.intervention_validation = val_res
 
-        # ------------------------------------------------------------------
-        # 8. Finalize trajectory
-        # ------------------------------------------------------------------
         trajectory.final_state = state
         trajectory.total_budget_used = state.total_query_cost
         trajectory.terminated_by = terminated_by
@@ -725,5 +751,9 @@ class AgentOrchestrator:
                     "end_ts": getattr(window, "end_ts", None),
                 },
             )
+
+        # Restore original system prompt so model is not permanently mutated
+        if _original_system_prompt is not None and self._rag_retriever is not None:
+            self.agent_model._system_prompt = _original_system_prompt
 
         return trajectory

@@ -1,0 +1,32 @@
+benchmark_id: DD-IR-60
+pool_version: ddir60-annotation-pool-v1
+corpus_version: ddir60-operational-knowledge-v1
+corpus_sha256: 551d72f9087c1495a9e401f5c45d281247968d45f8dd4d11f1048c9ecb4e19dc
+query_version: DD-IR-60-final-queries-v1
+query_sha256: 8b70f7102a80fd00436ce1654a2d8c82e5396c39ccf9387397c6ac8a6e753d26
+conditions: [C0, C1, C2, C3, C4]
+models:
+  C0: rag1-tfidf
+  C1: bm25
+  C2: BAAI/bge-small-en-v1.5
+  C3: bm25+BAAI/bge-small-en-v1.5+rrf-60
+  C4: bm25+BAAI/bge-small-en-v1.5+rrf-60+cross-encoder/ettin-reranker-17m-v1
+python_version: 3.12.10
+sentence_transformers_version: 6.1.0
+transformers_version: 5.17.0
+torch_version: 2.14.0
+retrieval_code: src/digital_detective/rag/experiment.py
+retrieval_code_revision: working-tree
+sparse_top_k: 20
+dense_top_k: 20
+rrf_k: 60
+hybrid_candidate_pool: 20
+final_top_k: 5
+query_count: 60
+scenario_family_count: 30
+random_background_count_per_query: 5
+random_seed: 60
+pooled_candidate_rows: 1251
+annotator_identity_blinded: true
+qrels_populated: false
+scientific_comparison_run: false

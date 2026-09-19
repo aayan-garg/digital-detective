@@ -1,0 +1,636 @@
+{
+  "schema_version": "1.0.0",
+  "experiment": "external_rca_smoke",
+  "case_ids": [
+    "re2ob_checkoutservice_cpu_2",
+    "re2ob_currencyservice_cpu_2",
+    "re2ob_emailservice_cpu_2"
+  ],
+  "methods": [
+    "BARO",
+    "RCD",
+    "CausalRCA",
+    "MicroRank",
+    "Multi-source RCD"
+  ],
+  "rcaeval_commit": "bb48c5aa9a24f1d5fcc716bdd479ea2d63145c90",
+  "runtime": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]"
+  },
+  "dataset_root": "C:\\Users\\Aayan\\.cache\\rcaeval_validation",
+  "results": [
+    {
+      "case_id": "re2ob_checkoutservice_cpu_2",
+      "method": "BARO",
+      "ranked_candidates": [],
+      "top_1": false,
+      "top_3": false,
+      "top_5": false,
+      "reciprocal_rank": 0.0,
+      "ground_truth": null,
+      "inject_time": null,
+      "telemetry_window": {},
+      "runtime_seconds": 0.0744806000002427,
+      "success": false,
+      "error": "Traceback (most recent call last):\n  File \"C:\\Users\\Aayan\\Desktop\\Project\\MidNightCluster\\digital-detective\\experiments\\external_rca\\invoke_method.py\", line 10, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'"
+    },
+    {
+      "case_id": "re2ob_checkoutservice_cpu_2",
+      "method": "RCD",
+      "ranked_candidates": [],
+      "top_1": false,
+      "top_3": false,
+      "top_5": false,
+      "reciprocal_rank": 0.0,
+      "ground_truth": null,
+      "inject_time": null,
+      "telemetry_window": {},
+      "runtime_seconds": 0.005019799995352514,
+      "success": false,
+      "error": "[WinError 2] The system cannot find the file specified"
+    },
+    {
+      "case_id": "re2ob_checkoutservice_cpu_2",
+      "method": "CausalRCA",
+      "ranked_candidates": [],
+      "top_1": false,
+      "top_3": false,
+      "top_5": false,
+      "reciprocal_rank": 0.0,
+      "ground_truth": null,
+      "inject_time": null,
+      "telemetry_window": {},
+      "runtime_seconds": 0.07138739999209065,
+      "success": false,
+      "error": "Traceback (most recent call last):\n  File \"C:\\Users\\Aayan\\Desktop\\Project\\MidNightCluster\\digital-detective\\experiments\\external_rca\\invoke_method.py\", line 10, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'"
+    },
+    {
+      "case_id": "re2ob_checkoutservice_cpu_2",
+      "method": "MicroRank",
+      "ranked_candidates": [],
+      "top_1": false,
+      "top_3": false,
+      "top_5": false,
+      "reciprocal_rank": 0.0,
+      "ground_truth": null,
+      "inject_time": null,
+      "telemetry_window": {},
+      "runtime_seconds": 0.07264650000433903,
+      "success": false,
+      "error": "Traceback (most recent call last):\n  File \"C:\\Users\\Aayan\\Desktop\\Project\\MidNightCluster\\digital-detective\\experiments\\external_rca\\invoke_method.py\", line 10, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'"
+    },
+    {
+      "case_id": "re2ob_checkoutservice_cpu_2",
+      "method": "Multi-source RCD",
+      "ranked_candidates": [],
+      "top_1": false,
+      "top_3": false,
+      "top_5": false,
+      "reciprocal_rank": 0.0,
+      "ground_truth": null,
+      "inject_time": null,
+      "telemetry_window": {},
+      "runtime_seconds": 0.004845999996177852,
+      "success": false,
+      "error": "[WinError 2] The system cannot find the file specified"
+    },
+    {
+      "case_id": "re2ob_currencyservice_cpu_2",
+      "method": "BARO",
+      "ranked_candidates": [],
+      "top_1": false,
+      "top_3": false,
+      "top_5": false,
+      "reciprocal_rank": 0.0,
+      "ground_truth": null,
+      "inject_time": null,
+      "telemetry_window": {},
+      "runtime_seconds": 0.07401690000551753,
+      "success": false,
+      "error": "Traceback (most recent call last):\n  File \"C:\\Users\\Aayan\\Desktop\\Project\\MidNightCluster\\digital-detective\\experiments\\external_rca\\invoke_method.py\", line 10, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'"
+    },
+    {
+      "case_id": "re2ob_currencyservice_cpu_2",
+      "method": "RCD",
+      "ranked_candidates": [],
+      "top_1": false,
+      "top_3": false,
+      "top_5": false,
+      "reciprocal_rank": 0.0,
+      "ground_truth": null,
+      "inject_time": null,
+      "telemetry_window": {},
+      "runtime_seconds": 0.0054176999983610585,
+      "success": false,
+      "error": "[WinError 2] The system cannot find the file specified"
+    },
+    {
+      "case_id": "re2ob_currencyservice_cpu_2",
+      "method": "CausalRCA",
+      "ranked_candidates": [],
+      "top_1": false,
+      "top_3": false,
+      "top_5": false,
+      "reciprocal_rank": 0.0,
+      "ground_truth": null,
+      "inject_time": null,
+      "telemetry_window": {},
+      "runtime_seconds": 0.06873040000209585,
+      "success": false,
+      "error": "Traceback (most recent call last):\n  File \"C:\\Users\\Aayan\\Desktop\\Project\\MidNightCluster\\digital-detective\\experiments\\external_rca\\invoke_method.py\", line 10, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'"
+    },
+    {
+      "case_id": "re2ob_currencyservice_cpu_2",
+      "method": "MicroRank",
+      "ranked_candidates": [],
+      "top_1": false,
+      "top_3": false,
+      "top_5": false,
+      "reciprocal_rank": 0.0,
+      "ground_truth": null,
+      "inject_time": null,
+      "telemetry_window": {},
+      "runtime_seconds": 0.07232469999871682,
+      "success": false,
+      "error": "Traceback (most recent call last):\n  File \"C:\\Users\\Aayan\\Desktop\\Project\\MidNightCluster\\digital-detective\\experiments\\external_rca\\invoke_method.py\", line 10, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'"
+    },
+    {
+      "case_id": "re2ob_currencyservice_cpu_2",
+      "method": "Multi-source RCD",
+      "ranked_candidates": [],
+      "top_1": false,
+      "top_3": false,
+      "top_5": false,
+      "reciprocal_rank": 0.0,
+      "ground_truth": null,
+      "inject_time": null,
+      "telemetry_window": {},
+      "runtime_seconds": 0.005280899989884347,
+      "success": false,
+      "error": "[WinError 2] The system cannot find the file specified"
+    },
+    {
+      "case_id": "re2ob_emailservice_cpu_2",
+      "method": "BARO",
+      "ranked_candidates": [],
+      "top_1": false,
+      "top_3": false,
+      "top_5": false,
+      "reciprocal_rank": 0.0,
+      "ground_truth": null,
+      "inject_time": null,
+      "telemetry_window": {},
+      "runtime_seconds": 0.07169379999686498,
+      "success": false,
+      "error": "Traceback (most recent call last):\n  File \"C:\\Users\\Aayan\\Desktop\\Project\\MidNightCluster\\digital-detective\\experiments\\external_rca\\invoke_method.py\", line 10, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'"
+    },
+    {
+      "case_id": "re2ob_emailservice_cpu_2",
+      "method": "RCD",
+      "ranked_candidates": [],
+      "top_1": false,
+      "top_3": false,
+      "top_5": false,
+      "reciprocal_rank": 0.0,
+      "ground_truth": null,
+      "inject_time": null,
+      "telemetry_window": {},
+      "runtime_seconds": 0.0056290000065928325,
+      "success": false,
+      "error": "[WinError 2] The system cannot find the file specified"
+    },
+    {
+      "case_id": "re2ob_emailservice_cpu_2",
+      "method": "CausalRCA",
+      "ranked_candidates": [],
+      "top_1": false,
+      "top_3": false,
+      "top_5": false,
+      "reciprocal_rank": 0.0,
+      "ground_truth": null,
+      "inject_time": null,
+      "telemetry_window": {},
+      "runtime_seconds": 0.07174750001286156,
+      "success": false,
+      "error": "Traceback (most recent call last):\n  File \"C:\\Users\\Aayan\\Desktop\\Project\\MidNightCluster\\digital-detective\\experiments\\external_rca\\invoke_method.py\", line 10, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'"
+    },
+    {
+      "case_id": "re2ob_emailservice_cpu_2",
+      "method": "MicroRank",
+      "ranked_candidates": [],
+      "top_1": false,
+      "top_3": false,
+      "top_5": false,
+      "reciprocal_rank": 0.0,
+      "ground_truth": null,
+      "inject_time": null,
+      "telemetry_window": {},
+      "runtime_seconds": 0.08153409999795258,
+      "success": false,
+      "error": "Traceback (most recent call last):\n  File \"C:\\Users\\Aayan\\Desktop\\Project\\MidNightCluster\\digital-detective\\experiments\\external_rca\\invoke_method.py\", line 10, in <module>\n    import pandas as pd\nModuleNotFoundError: No module named 'pandas'"
+    },
+    {
+      "case_id": "re2ob_emailservice_cpu_2",
+      "method": "Multi-source RCD",
+      "ranked_candidates": [],
+      "top_1": false,
+      "top_3": false,
+      "top_5": false,
+      "reciprocal_rank": 0.0,
+      "ground_truth": null,
+      "inject_time": null,
+      "telemetry_window": {},
+      "runtime_seconds": 0.007067400001687929,
+      "success": false,
+      "error": "[WinError 2] The system cannot find the file specified"
+    }
+  ],
+  "digital_detective_reference": {
+    "success": true,
+    "results": [
+      {
+        "case_id": "re2ob_checkoutservice_cpu_2",
+        "system": "ob",
+        "fault": "cpu",
+        "target": "checkoutservice",
+        "repetition": 2,
+        "partition": "smoke",
+        "candidate_universe": [
+          "adservice",
+          "cartservice",
+          "checkoutservice",
+          "currencyservice",
+          "emailservice",
+          "frontend",
+          "paymentservice",
+          "productcatalogservice",
+          "recommendationservice",
+          "redis",
+          "shippingservice"
+        ],
+        "window": {
+          "onset_ts": 1708475361,
+          "end_ts": 1708475570,
+          "mode": "oracle",
+          "source": "oracle:inject_time=1708475361"
+        },
+        "modalities": {
+          "has_metrics": true,
+          "has_traces": true,
+          "has_logs": true
+        },
+        "methods": {
+          "fixed_equal_weight_fusion": {
+            "case_id": "re2ob_checkoutservice_cpu_2",
+            "method_name": "fixed_equal_weight_fusion",
+            "window_mode": "oracle",
+            "status": "SUCCESS",
+            "exclusion_reason": null,
+            "runtime_sec": 0.000402,
+            "candidate_universe": [
+              "adservice",
+              "cartservice",
+              "checkoutservice",
+              "currencyservice",
+              "emailservice",
+              "frontend",
+              "paymentservice",
+              "productcatalogservice",
+              "recommendationservice",
+              "redis",
+              "shippingservice"
+            ],
+            "ranking": [
+              {
+                "rank": 1,
+                "entity": "checkoutservice",
+                "score": 0.875119
+              },
+              {
+                "rank": 2,
+                "entity": "currencyservice",
+                "score": 0.763626
+              },
+              {
+                "rank": 3,
+                "entity": "productcatalogservice",
+                "score": 0.702716
+              },
+              {
+                "rank": 4,
+                "entity": "paymentservice",
+                "score": 0.469312
+              },
+              {
+                "rank": 5,
+                "entity": "recommendationservice",
+                "score": 0.395908
+              },
+              {
+                "rank": 6,
+                "entity": "emailservice",
+                "score": 0.394865
+              },
+              {
+                "rank": 7,
+                "entity": "cartservice",
+                "score": 0.337126
+              },
+              {
+                "rank": 8,
+                "entity": "adservice",
+                "score": 0.24497
+              },
+              {
+                "rank": 9,
+                "entity": "frontend",
+                "score": 0.244932
+              },
+              {
+                "rank": 10,
+                "entity": "shippingservice",
+                "score": 0.241328
+              },
+              {
+                "rank": 11,
+                "entity": "redis",
+                "score": 0.0
+              }
+            ],
+            "metrics": {
+              "top1": true,
+              "top3": true,
+              "top5": true,
+              "mrr": 1.0,
+              "ac1": 1.0,
+              "ac2": 1.0,
+              "ac3": 1.0,
+              "ac4": 1.0,
+              "ac5": 1.0,
+              "avg3": 1.0,
+              "avg5": 1.0,
+              "target_rank": 1
+            },
+            "metadata": {}
+          }
+        }
+      },
+      {
+        "case_id": "re2ob_currencyservice_cpu_2",
+        "system": "ob",
+        "fault": "cpu",
+        "target": "currencyservice",
+        "repetition": 2,
+        "partition": "smoke",
+        "candidate_universe": [
+          "adservice",
+          "cartservice",
+          "checkoutservice",
+          "currencyservice",
+          "emailservice",
+          "frontend",
+          "paymentservice",
+          "productcatalogservice",
+          "recommendationservice",
+          "redis",
+          "shippingservice"
+        ],
+        "window": {
+          "onset_ts": 1705685216,
+          "end_ts": 1705685936,
+          "mode": "oracle",
+          "source": "oracle:inject_time=1705685216"
+        },
+        "modalities": {
+          "has_metrics": true,
+          "has_traces": true,
+          "has_logs": true
+        },
+        "methods": {
+          "fixed_equal_weight_fusion": {
+            "case_id": "re2ob_currencyservice_cpu_2",
+            "method_name": "fixed_equal_weight_fusion",
+            "window_mode": "oracle",
+            "status": "SUCCESS",
+            "exclusion_reason": null,
+            "runtime_sec": 0.000318,
+            "candidate_universe": [
+              "adservice",
+              "cartservice",
+              "checkoutservice",
+              "currencyservice",
+              "emailservice",
+              "frontend",
+              "paymentservice",
+              "productcatalogservice",
+              "recommendationservice",
+              "redis",
+              "shippingservice"
+            ],
+            "ranking": [
+              {
+                "rank": 1,
+                "entity": "currencyservice",
+                "score": 1.0
+              },
+              {
+                "rank": 2,
+                "entity": "checkoutservice",
+                "score": 0.808417
+              },
+              {
+                "rank": 3,
+                "entity": "productcatalogservice",
+                "score": 0.587699
+              },
+              {
+                "rank": 4,
+                "entity": "paymentservice",
+                "score": 0.437468
+              },
+              {
+                "rank": 5,
+                "entity": "recommendationservice",
+                "score": 0.376897
+              },
+              {
+                "rank": 6,
+                "entity": "frontend",
+                "score": 0.375321
+              },
+              {
+                "rank": 7,
+                "entity": "adservice",
+                "score": 0.361833
+              },
+              {
+                "rank": 8,
+                "entity": "emailservice",
+                "score": 0.357193
+              },
+              {
+                "rank": 9,
+                "entity": "cartservice",
+                "score": 0.31532
+              },
+              {
+                "rank": 10,
+                "entity": "shippingservice",
+                "score": 0.225688
+              },
+              {
+                "rank": 11,
+                "entity": "redis",
+                "score": 0.0
+              }
+            ],
+            "metrics": {
+              "top1": true,
+              "top3": true,
+              "top5": true,
+              "mrr": 1.0,
+              "ac1": 1.0,
+              "ac2": 1.0,
+              "ac3": 1.0,
+              "ac4": 1.0,
+              "ac5": 1.0,
+              "avg3": 1.0,
+              "avg5": 1.0,
+              "target_rank": 1
+            },
+            "metadata": {}
+          }
+        }
+      },
+      {
+        "case_id": "re2ob_emailservice_cpu_2",
+        "system": "ob",
+        "fault": "cpu",
+        "target": "emailservice",
+        "repetition": 2,
+        "partition": "smoke",
+        "candidate_universe": [
+          "adservice",
+          "cartservice",
+          "checkoutservice",
+          "currencyservice",
+          "emailservice",
+          "frontend",
+          "paymentservice",
+          "productcatalogservice",
+          "recommendationservice",
+          "redis",
+          "shippingservice"
+        ],
+        "window": {
+          "onset_ts": 1705592998,
+          "end_ts": 1705593718,
+          "mode": "oracle",
+          "source": "oracle:inject_time=1705592998"
+        },
+        "modalities": {
+          "has_metrics": true,
+          "has_traces": true,
+          "has_logs": true
+        },
+        "methods": {
+          "fixed_equal_weight_fusion": {
+            "case_id": "re2ob_emailservice_cpu_2",
+            "method_name": "fixed_equal_weight_fusion",
+            "window_mode": "oracle",
+            "status": "SUCCESS",
+            "exclusion_reason": null,
+            "runtime_sec": 0.000363,
+            "candidate_universe": [
+              "adservice",
+              "cartservice",
+              "checkoutservice",
+              "currencyservice",
+              "emailservice",
+              "frontend",
+              "paymentservice",
+              "productcatalogservice",
+              "recommendationservice",
+              "redis",
+              "shippingservice"
+            ],
+            "ranking": [
+              {
+                "rank": 1,
+                "entity": "emailservice",
+                "score": 1.0
+              },
+              {
+                "rank": 2,
+                "entity": "currencyservice",
+                "score": 0.832812
+              },
+              {
+                "rank": 3,
+                "entity": "checkoutservice",
+                "score": 0.754018
+              },
+              {
+                "rank": 4,
+                "entity": "paymentservice",
+                "score": 0.575781
+              },
+              {
+                "rank": 5,
+                "entity": "productcatalogservice",
+                "score": 0.555297
+              },
+              {
+                "rank": 6,
+                "entity": "recommendationservice",
+                "score": 0.405065
+              },
+              {
+                "rank": 7,
+                "entity": "cartservice",
+                "score": 0.375528
+              },
+              {
+                "rank": 8,
+                "entity": "frontend",
+                "score": 0.33894
+              },
+              {
+                "rank": 9,
+                "entity": "adservice",
+                "score": 0.252406
+              },
+              {
+                "rank": 10,
+                "entity": "redis",
+                "score": 0.0
+              },
+              {
+                "rank": 11,
+                "entity": "shippingservice",
+                "score": 0.0
+              }
+            ],
+            "metrics": {
+              "top1": true,
+              "top3": true,
+              "top5": true,
+              "mrr": 1.0,
+              "ac1": 1.0,
+              "ac2": 1.0,
+              "ac3": 1.0,
+              "ac4": 1.0,
+              "ac5": 1.0,
+              "avg3": 1.0,
+              "avg5": 1.0,
+              "target_rank": 1
+            },
+            "metadata": {}
+          }
+        }
+      }
+    ]
+  },
+  "full_run_requested": false
+}

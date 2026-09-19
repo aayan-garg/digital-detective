@@ -1,0 +1,954 @@
+{
+  "schema_version": "rag2-v1",
+  "corpus_snapshot": "61bbfc7a40ea3ede8f0ea3f134aba5b80c5495e657ff8306e584840df6a9ab58",
+  "conditions": [
+    "C0",
+    "C1",
+    "C2",
+    "C3",
+    "C4"
+  ],
+  "fixed_parameters": {
+    "sparse_top_k": 20,
+    "dense_top_k": 20,
+    "rrf_k": 60,
+    "hybrid_candidate_pool": 20,
+    "final_context_k": 5
+  },
+  "records": [
+    {
+      "query_id": "q-cpu",
+      "condition": "C0",
+      "query": "checkoutservice CPU utilization metrics",
+      "query_hash": "fb343e9f539922b5ecec3809fd790fb4ed1ba2b31d37f660d36de02c41eb2d10",
+      "corpus_snapshot": "61bbfc7a40ea3ede8f0ea3f134aba5b80c5495e657ff8306e584840df6a9ab58",
+      "retrieved": [
+        {
+          "document_id": "synthetic-runbook-cpu-saturation",
+          "score": 0.39660755845745266,
+          "rrf_score": null,
+          "reranker_score": null
+        }
+      ],
+      "top_5_document_ids": [
+        "synthetic-runbook-cpu-saturation"
+      ],
+      "latency_ms": 0.02519998815841973,
+      "model_name": "rag1-tfidf",
+      "provenance": [
+        {
+          "service": "checkoutservice",
+          "failure_mode": "cpu_saturation",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        }
+      ],
+      "relevance": {
+        "synthetic-runbook-cpu-saturation": 1
+      },
+      "context_token_count_est": 47
+    },
+    {
+      "query_id": "q-memory",
+      "condition": "C0",
+      "query": "cartservice memory garbage collection metrics",
+      "query_hash": "8d540a06415ff0de8b9b42d8181d7d419b4a425795bf773b76d0fdddc33f8529",
+      "corpus_snapshot": "61bbfc7a40ea3ede8f0ea3f134aba5b80c5495e657ff8306e584840df6a9ab58",
+      "retrieved": [
+        {
+          "document_id": "synthetic-runbook-memory-pressure",
+          "score": 0.5287404356869803,
+          "rrf_score": null,
+          "reranker_score": null
+        }
+      ],
+      "top_5_document_ids": [
+        "synthetic-runbook-memory-pressure"
+      ],
+      "latency_ms": 0.0219999928958714,
+      "model_name": "rag1-tfidf",
+      "provenance": [
+        {
+          "service": "cartservice",
+          "failure_mode": "memory_pressure",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        }
+      ],
+      "relevance": {
+        "synthetic-runbook-memory-pressure": 1
+      },
+      "context_token_count_est": 44
+    },
+    {
+      "query_id": "q-network",
+      "condition": "C0",
+      "query": "shippingservice network latency retries traces logs",
+      "query_hash": "97f99f14404c19bc66de142cd1565e9cdf74640022a223562bfc2070f0705fc1",
+      "corpus_snapshot": "61bbfc7a40ea3ede8f0ea3f134aba5b80c5495e657ff8306e584840df6a9ab58",
+      "retrieved": [
+        {
+          "document_id": "synthetic-runbook-network-latency",
+          "score": 0.5182045612240876,
+          "rrf_score": null,
+          "reranker_score": null
+        },
+        {
+          "document_id": "synthetic-runbook-cpu-saturation",
+          "score": 0.06106759461159061,
+          "rrf_score": null,
+          "reranker_score": null
+        }
+      ],
+      "top_5_document_ids": [
+        "synthetic-runbook-network-latency",
+        "synthetic-runbook-cpu-saturation"
+      ],
+      "latency_ms": 0.023300002794712782,
+      "model_name": "rag1-tfidf",
+      "provenance": [
+        {
+          "service": "shippingservice",
+          "failure_mode": "network_latency",
+          "modality": "traces,logs",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "checkoutservice",
+          "failure_mode": "cpu_saturation",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        }
+      ],
+      "relevance": {
+        "synthetic-runbook-network-latency": 1
+      },
+      "context_token_count_est": 94
+    },
+    {
+      "query_id": "q-cpu",
+      "condition": "C1",
+      "query": "checkoutservice CPU utilization metrics",
+      "query_hash": "fb343e9f539922b5ecec3809fd790fb4ed1ba2b31d37f660d36de02c41eb2d10",
+      "corpus_snapshot": "61bbfc7a40ea3ede8f0ea3f134aba5b80c5495e657ff8306e584840df6a9ab58",
+      "retrieved": [
+        {
+          "document_id": "synthetic-runbook-cpu-saturation",
+          "score": 2.891145744703782,
+          "rrf_score": null,
+          "reranker_score": null
+        }
+      ],
+      "top_5_document_ids": [
+        "synthetic-runbook-cpu-saturation"
+      ],
+      "latency_ms": 0.018099992303177714,
+      "model_name": "bm25",
+      "provenance": [
+        {
+          "service": "checkoutservice",
+          "failure_mode": "cpu_saturation",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        }
+      ],
+      "relevance": {
+        "synthetic-runbook-cpu-saturation": 1
+      },
+      "context_token_count_est": 47
+    },
+    {
+      "query_id": "q-memory",
+      "condition": "C1",
+      "query": "cartservice memory garbage collection metrics",
+      "query_hash": "8d540a06415ff0de8b9b42d8181d7d419b4a425795bf773b76d0fdddc33f8529",
+      "corpus_snapshot": "61bbfc7a40ea3ede8f0ea3f134aba5b80c5495e657ff8306e584840df6a9ab58",
+      "retrieved": [
+        {
+          "document_id": "synthetic-runbook-memory-pressure",
+          "score": 4.512950540442438,
+          "rrf_score": null,
+          "reranker_score": null
+        }
+      ],
+      "top_5_document_ids": [
+        "synthetic-runbook-memory-pressure"
+      ],
+      "latency_ms": 0.012200005585327744,
+      "model_name": "bm25",
+      "provenance": [
+        {
+          "service": "cartservice",
+          "failure_mode": "memory_pressure",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        }
+      ],
+      "relevance": {
+        "synthetic-runbook-memory-pressure": 1
+      },
+      "context_token_count_est": 44
+    },
+    {
+      "query_id": "q-network",
+      "condition": "C1",
+      "query": "shippingservice network latency retries traces logs",
+      "query_hash": "97f99f14404c19bc66de142cd1565e9cdf74640022a223562bfc2070f0705fc1",
+      "corpus_snapshot": "61bbfc7a40ea3ede8f0ea3f134aba5b80c5495e657ff8306e584840df6a9ab58",
+      "retrieved": [
+        {
+          "document_id": "synthetic-runbook-network-latency",
+          "score": 5.118117015631703,
+          "rrf_score": null,
+          "reranker_score": null
+        },
+        {
+          "document_id": "synthetic-runbook-cpu-saturation",
+          "score": 0.6838223305972554,
+          "rrf_score": null,
+          "reranker_score": null
+        }
+      ],
+      "top_5_document_ids": [
+        "synthetic-runbook-network-latency",
+        "synthetic-runbook-cpu-saturation"
+      ],
+      "latency_ms": 0.011800002539530396,
+      "model_name": "bm25",
+      "provenance": [
+        {
+          "service": "shippingservice",
+          "failure_mode": "network_latency",
+          "modality": "traces,logs",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "checkoutservice",
+          "failure_mode": "cpu_saturation",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        }
+      ],
+      "relevance": {
+        "synthetic-runbook-network-latency": 1
+      },
+      "context_token_count_est": 94
+    },
+    {
+      "query_id": "q-cpu",
+      "condition": "C2",
+      "query": "checkoutservice CPU utilization metrics",
+      "query_hash": "fb343e9f539922b5ecec3809fd790fb4ed1ba2b31d37f660d36de02c41eb2d10",
+      "corpus_snapshot": "61bbfc7a40ea3ede8f0ea3f134aba5b80c5495e657ff8306e584840df6a9ab58",
+      "retrieved": [
+        {
+          "document_id": "synthetic-runbook-cpu-saturation",
+          "score": 0.6901255249977112,
+          "rrf_score": null,
+          "reranker_score": null
+        },
+        {
+          "document_id": "synthetic-runbook-network-latency",
+          "score": 0.6598572731018066,
+          "rrf_score": null,
+          "reranker_score": null
+        },
+        {
+          "document_id": "synthetic-runbook-error-rate",
+          "score": 0.5932979583740234,
+          "rrf_score": null,
+          "reranker_score": null
+        },
+        {
+          "document_id": "synthetic-runbook-memory-pressure",
+          "score": 0.588407576084137,
+          "rrf_score": null,
+          "reranker_score": null
+        }
+      ],
+      "top_5_document_ids": [
+        "synthetic-runbook-cpu-saturation",
+        "synthetic-runbook-network-latency",
+        "synthetic-runbook-error-rate",
+        "synthetic-runbook-memory-pressure"
+      ],
+      "latency_ms": 19345.19249998266,
+      "model_name": "BAAI/bge-small-en-v1.5",
+      "provenance": [
+        {
+          "service": "checkoutservice",
+          "failure_mode": "cpu_saturation",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "shippingservice",
+          "failure_mode": "network_latency",
+          "modality": "traces,logs",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "frontend",
+          "failure_mode": "elevated_errors",
+          "modality": "logs,metrics",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "cartservice",
+          "failure_mode": "memory_pressure",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        }
+      ],
+      "relevance": {
+        "synthetic-runbook-cpu-saturation": 1
+      },
+      "context_token_count_est": 185
+    },
+    {
+      "query_id": "q-memory",
+      "condition": "C2",
+      "query": "cartservice memory garbage collection metrics",
+      "query_hash": "8d540a06415ff0de8b9b42d8181d7d419b4a425795bf773b76d0fdddc33f8529",
+      "corpus_snapshot": "61bbfc7a40ea3ede8f0ea3f134aba5b80c5495e657ff8306e584840df6a9ab58",
+      "retrieved": [
+        {
+          "document_id": "synthetic-runbook-memory-pressure",
+          "score": 0.6526771187782288,
+          "rrf_score": null,
+          "reranker_score": null
+        },
+        {
+          "document_id": "synthetic-runbook-network-latency",
+          "score": 0.6190415620803833,
+          "rrf_score": null,
+          "reranker_score": null
+        },
+        {
+          "document_id": "synthetic-runbook-cpu-saturation",
+          "score": 0.587466299533844,
+          "rrf_score": null,
+          "reranker_score": null
+        },
+        {
+          "document_id": "synthetic-runbook-error-rate",
+          "score": 0.5462056398391724,
+          "rrf_score": null,
+          "reranker_score": null
+        }
+      ],
+      "top_5_document_ids": [
+        "synthetic-runbook-memory-pressure",
+        "synthetic-runbook-network-latency",
+        "synthetic-runbook-cpu-saturation",
+        "synthetic-runbook-error-rate"
+      ],
+      "latency_ms": 17.299599974649027,
+      "model_name": "BAAI/bge-small-en-v1.5",
+      "provenance": [
+        {
+          "service": "cartservice",
+          "failure_mode": "memory_pressure",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "shippingservice",
+          "failure_mode": "network_latency",
+          "modality": "traces,logs",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "checkoutservice",
+          "failure_mode": "cpu_saturation",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "frontend",
+          "failure_mode": "elevated_errors",
+          "modality": "logs,metrics",
+          "source": "synthetic local runbook"
+        }
+      ],
+      "relevance": {
+        "synthetic-runbook-memory-pressure": 1
+      },
+      "context_token_count_est": 185
+    },
+    {
+      "query_id": "q-network",
+      "condition": "C2",
+      "query": "shippingservice network latency retries traces logs",
+      "query_hash": "97f99f14404c19bc66de142cd1565e9cdf74640022a223562bfc2070f0705fc1",
+      "corpus_snapshot": "61bbfc7a40ea3ede8f0ea3f134aba5b80c5495e657ff8306e584840df6a9ab58",
+      "retrieved": [
+        {
+          "document_id": "synthetic-runbook-network-latency",
+          "score": 0.7367550730705261,
+          "rrf_score": null,
+          "reranker_score": null
+        },
+        {
+          "document_id": "synthetic-runbook-cpu-saturation",
+          "score": 0.609434187412262,
+          "rrf_score": null,
+          "reranker_score": null
+        },
+        {
+          "document_id": "synthetic-runbook-error-rate",
+          "score": 0.5656401515007019,
+          "rrf_score": null,
+          "reranker_score": null
+        },
+        {
+          "document_id": "synthetic-runbook-memory-pressure",
+          "score": 0.5464309453964233,
+          "rrf_score": null,
+          "reranker_score": null
+        }
+      ],
+      "top_5_document_ids": [
+        "synthetic-runbook-network-latency",
+        "synthetic-runbook-cpu-saturation",
+        "synthetic-runbook-error-rate",
+        "synthetic-runbook-memory-pressure"
+      ],
+      "latency_ms": 16.697400016710162,
+      "model_name": "BAAI/bge-small-en-v1.5",
+      "provenance": [
+        {
+          "service": "shippingservice",
+          "failure_mode": "network_latency",
+          "modality": "traces,logs",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "checkoutservice",
+          "failure_mode": "cpu_saturation",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "frontend",
+          "failure_mode": "elevated_errors",
+          "modality": "logs,metrics",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "cartservice",
+          "failure_mode": "memory_pressure",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        }
+      ],
+      "relevance": {
+        "synthetic-runbook-network-latency": 1
+      },
+      "context_token_count_est": 185
+    },
+    {
+      "query_id": "q-cpu",
+      "condition": "C3",
+      "query": "checkoutservice CPU utilization metrics",
+      "query_hash": "fb343e9f539922b5ecec3809fd790fb4ed1ba2b31d37f660d36de02c41eb2d10",
+      "corpus_snapshot": "61bbfc7a40ea3ede8f0ea3f134aba5b80c5495e657ff8306e584840df6a9ab58",
+      "retrieved": [
+        {
+          "document_id": "synthetic-runbook-cpu-saturation",
+          "score": 0.03278688524590164,
+          "rrf_score": 0.03278688524590164,
+          "reranker_score": null
+        },
+        {
+          "document_id": "synthetic-runbook-network-latency",
+          "score": 0.016129032258064516,
+          "rrf_score": 0.016129032258064516,
+          "reranker_score": null
+        },
+        {
+          "document_id": "synthetic-runbook-error-rate",
+          "score": 0.015873015873015872,
+          "rrf_score": 0.015873015873015872,
+          "reranker_score": null
+        },
+        {
+          "document_id": "synthetic-runbook-memory-pressure",
+          "score": 0.015625,
+          "rrf_score": 0.015625,
+          "reranker_score": null
+        }
+      ],
+      "top_5_document_ids": [
+        "synthetic-runbook-cpu-saturation",
+        "synthetic-runbook-network-latency",
+        "synthetic-runbook-error-rate",
+        "synthetic-runbook-memory-pressure"
+      ],
+      "latency_ms": 17.6295000128448,
+      "model_name": "bm25+BAAI/bge-small-en-v1.5+rrf-60",
+      "provenance": [
+        {
+          "service": "checkoutservice",
+          "failure_mode": "cpu_saturation",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "shippingservice",
+          "failure_mode": "network_latency",
+          "modality": "traces,logs",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "frontend",
+          "failure_mode": "elevated_errors",
+          "modality": "logs,metrics",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "cartservice",
+          "failure_mode": "memory_pressure",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        }
+      ],
+      "relevance": {
+        "synthetic-runbook-cpu-saturation": 1
+      },
+      "context_token_count_est": 185
+    },
+    {
+      "query_id": "q-memory",
+      "condition": "C3",
+      "query": "cartservice memory garbage collection metrics",
+      "query_hash": "8d540a06415ff0de8b9b42d8181d7d419b4a425795bf773b76d0fdddc33f8529",
+      "corpus_snapshot": "61bbfc7a40ea3ede8f0ea3f134aba5b80c5495e657ff8306e584840df6a9ab58",
+      "retrieved": [
+        {
+          "document_id": "synthetic-runbook-memory-pressure",
+          "score": 0.03278688524590164,
+          "rrf_score": 0.03278688524590164,
+          "reranker_score": null
+        },
+        {
+          "document_id": "synthetic-runbook-network-latency",
+          "score": 0.016129032258064516,
+          "rrf_score": 0.016129032258064516,
+          "reranker_score": null
+        },
+        {
+          "document_id": "synthetic-runbook-cpu-saturation",
+          "score": 0.015873015873015872,
+          "rrf_score": 0.015873015873015872,
+          "reranker_score": null
+        },
+        {
+          "document_id": "synthetic-runbook-error-rate",
+          "score": 0.015625,
+          "rrf_score": 0.015625,
+          "reranker_score": null
+        }
+      ],
+      "top_5_document_ids": [
+        "synthetic-runbook-memory-pressure",
+        "synthetic-runbook-network-latency",
+        "synthetic-runbook-cpu-saturation",
+        "synthetic-runbook-error-rate"
+      ],
+      "latency_ms": 15.06189999054186,
+      "model_name": "bm25+BAAI/bge-small-en-v1.5+rrf-60",
+      "provenance": [
+        {
+          "service": "cartservice",
+          "failure_mode": "memory_pressure",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "shippingservice",
+          "failure_mode": "network_latency",
+          "modality": "traces,logs",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "checkoutservice",
+          "failure_mode": "cpu_saturation",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "frontend",
+          "failure_mode": "elevated_errors",
+          "modality": "logs,metrics",
+          "source": "synthetic local runbook"
+        }
+      ],
+      "relevance": {
+        "synthetic-runbook-memory-pressure": 1
+      },
+      "context_token_count_est": 185
+    },
+    {
+      "query_id": "q-network",
+      "condition": "C3",
+      "query": "shippingservice network latency retries traces logs",
+      "query_hash": "97f99f14404c19bc66de142cd1565e9cdf74640022a223562bfc2070f0705fc1",
+      "corpus_snapshot": "61bbfc7a40ea3ede8f0ea3f134aba5b80c5495e657ff8306e584840df6a9ab58",
+      "retrieved": [
+        {
+          "document_id": "synthetic-runbook-network-latency",
+          "score": 0.03278688524590164,
+          "rrf_score": 0.03278688524590164,
+          "reranker_score": null
+        },
+        {
+          "document_id": "synthetic-runbook-cpu-saturation",
+          "score": 0.03225806451612903,
+          "rrf_score": 0.03225806451612903,
+          "reranker_score": null
+        },
+        {
+          "document_id": "synthetic-runbook-error-rate",
+          "score": 0.015873015873015872,
+          "rrf_score": 0.015873015873015872,
+          "reranker_score": null
+        },
+        {
+          "document_id": "synthetic-runbook-memory-pressure",
+          "score": 0.015625,
+          "rrf_score": 0.015625,
+          "reranker_score": null
+        }
+      ],
+      "top_5_document_ids": [
+        "synthetic-runbook-network-latency",
+        "synthetic-runbook-cpu-saturation",
+        "synthetic-runbook-error-rate",
+        "synthetic-runbook-memory-pressure"
+      ],
+      "latency_ms": 14.452800009166822,
+      "model_name": "bm25+BAAI/bge-small-en-v1.5+rrf-60",
+      "provenance": [
+        {
+          "service": "shippingservice",
+          "failure_mode": "network_latency",
+          "modality": "traces,logs",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "checkoutservice",
+          "failure_mode": "cpu_saturation",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "frontend",
+          "failure_mode": "elevated_errors",
+          "modality": "logs,metrics",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "cartservice",
+          "failure_mode": "memory_pressure",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        }
+      ],
+      "relevance": {
+        "synthetic-runbook-network-latency": 1
+      },
+      "context_token_count_est": 185
+    },
+    {
+      "query_id": "q-cpu",
+      "condition": "C4",
+      "query": "checkoutservice CPU utilization metrics",
+      "query_hash": "fb343e9f539922b5ecec3809fd790fb4ed1ba2b31d37f660d36de02c41eb2d10",
+      "corpus_snapshot": "61bbfc7a40ea3ede8f0ea3f134aba5b80c5495e657ff8306e584840df6a9ab58",
+      "retrieved": [
+        {
+          "document_id": "synthetic-runbook-cpu-saturation",
+          "score": 8.207157135009766,
+          "rrf_score": null,
+          "reranker_score": 8.207157135009766
+        },
+        {
+          "document_id": "synthetic-runbook-memory-pressure",
+          "score": 5.486790657043457,
+          "rrf_score": null,
+          "reranker_score": 5.486790657043457
+        },
+        {
+          "document_id": "synthetic-runbook-error-rate",
+          "score": 5.245042324066162,
+          "rrf_score": null,
+          "reranker_score": 5.245042324066162
+        },
+        {
+          "document_id": "synthetic-runbook-network-latency",
+          "score": 5.149098873138428,
+          "rrf_score": null,
+          "reranker_score": 5.149098873138428
+        }
+      ],
+      "top_5_document_ids": [
+        "synthetic-runbook-cpu-saturation",
+        "synthetic-runbook-memory-pressure",
+        "synthetic-runbook-error-rate",
+        "synthetic-runbook-network-latency"
+      ],
+      "latency_ms": 10756.607300019823,
+      "model_name": "bm25+BAAI/bge-small-en-v1.5+rrf-60+cross-encoder/ettin-reranker-17m-v1",
+      "provenance": [
+        {
+          "service": "checkoutservice",
+          "failure_mode": "cpu_saturation",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "cartservice",
+          "failure_mode": "memory_pressure",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "frontend",
+          "failure_mode": "elevated_errors",
+          "modality": "logs,metrics",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "shippingservice",
+          "failure_mode": "network_latency",
+          "modality": "traces,logs",
+          "source": "synthetic local runbook"
+        }
+      ],
+      "relevance": {
+        "synthetic-runbook-cpu-saturation": 1
+      },
+      "context_token_count_est": 185
+    },
+    {
+      "query_id": "q-memory",
+      "condition": "C4",
+      "query": "cartservice memory garbage collection metrics",
+      "query_hash": "8d540a06415ff0de8b9b42d8181d7d419b4a425795bf773b76d0fdddc33f8529",
+      "corpus_snapshot": "61bbfc7a40ea3ede8f0ea3f134aba5b80c5495e657ff8306e584840df6a9ab58",
+      "retrieved": [
+        {
+          "document_id": "synthetic-runbook-memory-pressure",
+          "score": 7.378381252288818,
+          "rrf_score": null,
+          "reranker_score": 7.378381252288818
+        },
+        {
+          "document_id": "synthetic-runbook-error-rate",
+          "score": 5.124326705932617,
+          "rrf_score": null,
+          "reranker_score": 5.124326705932617
+        },
+        {
+          "document_id": "synthetic-runbook-cpu-saturation",
+          "score": 4.963438987731934,
+          "rrf_score": null,
+          "reranker_score": 4.963438987731934
+        },
+        {
+          "document_id": "synthetic-runbook-network-latency",
+          "score": 4.798217296600342,
+          "rrf_score": null,
+          "reranker_score": 4.798217296600342
+        }
+      ],
+      "top_5_document_ids": [
+        "synthetic-runbook-memory-pressure",
+        "synthetic-runbook-error-rate",
+        "synthetic-runbook-cpu-saturation",
+        "synthetic-runbook-network-latency"
+      ],
+      "latency_ms": 35.4300000180956,
+      "model_name": "bm25+BAAI/bge-small-en-v1.5+rrf-60+cross-encoder/ettin-reranker-17m-v1",
+      "provenance": [
+        {
+          "service": "cartservice",
+          "failure_mode": "memory_pressure",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "frontend",
+          "failure_mode": "elevated_errors",
+          "modality": "logs,metrics",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "checkoutservice",
+          "failure_mode": "cpu_saturation",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "shippingservice",
+          "failure_mode": "network_latency",
+          "modality": "traces,logs",
+          "source": "synthetic local runbook"
+        }
+      ],
+      "relevance": {
+        "synthetic-runbook-memory-pressure": 1
+      },
+      "context_token_count_est": 185
+    },
+    {
+      "query_id": "q-network",
+      "condition": "C4",
+      "query": "shippingservice network latency retries traces logs",
+      "query_hash": "97f99f14404c19bc66de142cd1565e9cdf74640022a223562bfc2070f0705fc1",
+      "corpus_snapshot": "61bbfc7a40ea3ede8f0ea3f134aba5b80c5495e657ff8306e584840df6a9ab58",
+      "retrieved": [
+        {
+          "document_id": "synthetic-runbook-network-latency",
+          "score": 10.470968246459961,
+          "rrf_score": null,
+          "reranker_score": 10.470968246459961
+        },
+        {
+          "document_id": "synthetic-runbook-cpu-saturation",
+          "score": 5.103022575378418,
+          "rrf_score": null,
+          "reranker_score": 5.103022575378418
+        },
+        {
+          "document_id": "synthetic-runbook-memory-pressure",
+          "score": 4.452479839324951,
+          "rrf_score": null,
+          "reranker_score": 4.452479839324951
+        },
+        {
+          "document_id": "synthetic-runbook-error-rate",
+          "score": 4.049905300140381,
+          "rrf_score": null,
+          "reranker_score": 4.049905300140381
+        }
+      ],
+      "top_5_document_ids": [
+        "synthetic-runbook-network-latency",
+        "synthetic-runbook-cpu-saturation",
+        "synthetic-runbook-memory-pressure",
+        "synthetic-runbook-error-rate"
+      ],
+      "latency_ms": 46.4837999898009,
+      "model_name": "bm25+BAAI/bge-small-en-v1.5+rrf-60+cross-encoder/ettin-reranker-17m-v1",
+      "provenance": [
+        {
+          "service": "shippingservice",
+          "failure_mode": "network_latency",
+          "modality": "traces,logs",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "checkoutservice",
+          "failure_mode": "cpu_saturation",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "cartservice",
+          "failure_mode": "memory_pressure",
+          "modality": "metrics",
+          "source": "synthetic local runbook"
+        },
+        {
+          "service": "frontend",
+          "failure_mode": "elevated_errors",
+          "modality": "logs,metrics",
+          "source": "synthetic local runbook"
+        }
+      ],
+      "relevance": {
+        "synthetic-runbook-network-latency": 1
+      },
+      "context_token_count_est": 185
+    }
+  ],
+  "summary": [
+    {
+      "condition": "C0",
+      "query_count": 3,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_20": 1.0,
+      "mrr": 1.0,
+      "ndcg_at_5": null,
+      "p50_latency_ms": 0.023300002794712782,
+      "p95_latency_ms": 0.02519998815841973,
+      "mean_context_size": 61.666666666666664
+    },
+    {
+      "condition": "C1",
+      "query_count": 3,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_20": 1.0,
+      "mrr": 1.0,
+      "ndcg_at_5": null,
+      "p50_latency_ms": 0.012200005585327744,
+      "p95_latency_ms": 0.018099992303177714,
+      "mean_context_size": 61.666666666666664
+    },
+    {
+      "condition": "C2",
+      "query_count": 3,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_20": 1.0,
+      "mrr": 1.0,
+      "ndcg_at_5": null,
+      "p50_latency_ms": 17.299599974649027,
+      "p95_latency_ms": 19345.19249998266,
+      "mean_context_size": 185
+    },
+    {
+      "condition": "C3",
+      "query_count": 3,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_20": 1.0,
+      "mrr": 1.0,
+      "ndcg_at_5": null,
+      "p50_latency_ms": 15.06189999054186,
+      "p95_latency_ms": 17.6295000128448,
+      "mean_context_size": 185
+    },
+    {
+      "condition": "C4",
+      "query_count": 3,
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_20": 1.0,
+      "mrr": 1.0,
+      "ndcg_at_5": null,
+      "p50_latency_ms": 46.4837999898009,
+      "p95_latency_ms": 10756.607300019823,
+      "mean_context_size": 185
+    }
+  ],
+  "smoke": true,
+  "evaluation_labels": "synthetic local qrels; not a scientific benchmark",
+  "blocked_conditions": [],
+  "successful_conditions": [
+    "C0",
+    "C1",
+    "C2",
+    "C3",
+    "C4"
+  ]
+}

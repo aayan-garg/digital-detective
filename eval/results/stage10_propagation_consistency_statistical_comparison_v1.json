@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "comparison_id": "stage10_propagation_consistency_statistical_comparison_v1",
+  "treatment_artifact": "stage10_re2ob_propagation_consistency_treatment_v1.json",
+  "treatment_hash": "5B18F004F8F2885B472E70BEE0803D26F0BE8133226B423CA3FB50E42200887C",
+  "manifest_hash": "7f82ef5d38185ad20152e3db5dab45ecab3df2a59ad518d9d1681c3ef3f15659",
+  "methodology": "paired_cluster_randomization_and_bootstrap_ci_10k_seed42",
+  "primary_endpoints": [
+    {
+      "endpoint": "Top@1",
+      "treatment_mean": 0.1833,
+      "control_mean": 0.35,
+      "diff": -0.1667,
+      "ci_lower": -0.2833,
+      "ci_upper": -0.05,
+      "raw_p_value": 0.0195,
+      "holm_p_value": 0.0585,
+      "significant": false
+    },
+    {
+      "endpoint": "Top@3",
+      "treatment_mean": 0.45,
+      "control_mean": 0.65,
+      "diff": -0.2,
+      "ci_lower": -0.35,
+      "ci_upper": -0.0333,
+      "raw_p_value": 0.034,
+      "holm_p_value": 0.068,
+      "significant": false
+    },
+    {
+      "endpoint": "Top@5",
+      "treatment_mean": 0.75,
+      "control_mean": 0.8333,
+      "diff": -0.0833,
+      "ci_lower": -0.1833,
+      "ci_upper": 0.0,
+      "raw_p_value": 0.1819,
+      "holm_p_value": 0.1819,
+      "significant": false
+    },
+    {
+      "endpoint": "MRR",
+      "treatment_mean": 0.3964,
+      "control_mean": 0.5479,
+      "diff": -0.1515,
+      "ci_lower": -0.2412,
+      "ci_upper": -0.0638,
+      "raw_p_value": 0.0026,
+      "holm_p_value": 0.0104,
+      "significant": true
+    }
+  ],
+  "secondary_endpoints": {
+    "avg5": {
+      "treatment_mean": 0.46,
+      "control_mean": 0.63,
+      "diff": -0.17,
+      "ci_lower": -0.2767,
+      "ci_upper": -0.0633,
+      "raw_p_value": 0.0058
+    }
+  },
+  "family_consistency": {
+    "improved": 5,
+    "degraded": 19,
+    "tied": 6
+  },
+  "shifts_summary": {
+    "true_root_promoted": 9,
+    "true_root_demoted": 27,
+    "true_root_unchanged": 24,
+    "winner_changed": 33,
+    "downstream_symptom_demoted": 27,
+    "unrelated_candidate_promoted": 27
+  },
+  "verdict": "FAILURE"
+}

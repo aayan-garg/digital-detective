@@ -729,6 +729,7 @@ class _OpenAICompatibleAdapter(AgentModel):
         self.json_mode = json_mode  # Whether to send response_format: json_object
         self.extra_payload = extra_payload
         self.max_tokens = max_tokens
+        self.last_response_metadata: dict[str, Any] = {}
 
         if system_prompt is None:
             from .prompts import SYSTEM_PROMPT
@@ -784,6 +785,11 @@ class _OpenAICompatibleAdapter(AgentModel):
                 with urllib.request.urlopen(req, timeout=self.timeout) as resp:
                     body = resp.read().decode("utf-8")
                     data = json.loads(body)
+                    self.last_response_metadata = {
+                        "response_model": data.get("model", ""),
+                        "live_backend": self.model_name,
+                        "live_ollama": isinstance(self, OllamaAgentModel),
+                    }
                     msg = data["choices"][0]["message"]
                     content = msg.get("content") or ""
                     if not content and msg.get("reasoning"):
@@ -845,6 +851,7 @@ class _OpenAICompatibleAdapter(AgentModel):
                 "prompt_tokens_est": max(1, total_prompt_chars // 4),
                 "output_chars": len(raw),
                 "output_tokens_est": max(1, len(raw) // 4),
+                **self.last_response_metadata,
             })
             return decision
         except RuntimeError as exc:
@@ -870,6 +877,7 @@ _OLLAMA_TEMPERATURE_ENV = "DIGITAL_DETECTIVE_OLLAMA_TEMPERATURE"
 _OLLAMA_DEFAULT_TEMPERATURE = 0.0
 _OLLAMA_MAX_TOKENS_ENV = "DIGITAL_DETECTIVE_OLLAMA_MAX_TOKENS"
 _OLLAMA_DEFAULT_MAX_TOKENS = 750
+_OLLAMA_CONTEXT_SIZE = 4096
 
 # Concise prompt tailored for local models (smaller context window awareness)
 _OLLAMA_SYSTEM_PROMPT = """\
@@ -895,7 +903,7 @@ Example QUERY:
 {"action": "QUERY", "tool_name": "<tool_name>", "service": "<service_name>", "reasoning": "<brief query rationale>"}
 
 Example FINAL_DIAGNOSIS:
-{"action": "FINAL_DIAGNOSIS", "reasoning": "<brief summary citing evidence>", "evidence_ids": ["E1", "E2"]}
+{"action": "FINAL_DIAGNOSIS", "diagnosis_service": "<service>", "reasoning": "<brief summary citing evidence>", "evidence_ids": ["E1", "E2"]}
 
 Example STOP:
 {"action": "STOP", "reasoning": "<why investigation stopped>"}
@@ -977,8 +985,14 @@ class OllamaAgentModel(_OpenAICompatibleAdapter):
             options["num_predict"] = resolved_tokens
         if resolved_temp is not None:
             options["temperature"] = resolved_temp
+        options["num_ctx"] = _OLLAMA_CONTEXT_SIZE
 
-        extra = {"options": options} if options else None
+        extra = {
+            "options": options,
+            # Ollama's OpenAI-compatible endpoint uses this to disable Qwen3
+            # reasoning output; native-only "think": false is ignored on /v1.
+            "reasoning_effort": "none",
+        }
 
         super().__init__(
             base_url=resolved_url,

@@ -8,6 +8,7 @@ __pycache__/
 # Virtual environments and local environments
 .venv/
 .venv_pyrca/
+.venv_rcaeval_default/
 venv/
 env/
 .env
@@ -47,6 +48,20 @@ scratch/*
 outputs/
 artifacts/
 experiments/
+!experiments/
+experiments/*
+!experiments/external_rca/
+experiments/external_rca/RCAEval/
+experiments/external_rca/environments/*
+!experiments/external_rca/README.md
+!experiments/external_rca/manifest.json
+!experiments/external_rca/run_smoke.py
+!experiments/external_rca/runner.py
+!experiments/external_rca/invoke_method.py
+!experiments/external_rca/adapters/
+!experiments/external_rca/adapters/*.py
+!experiments/external_rca/results/
+!experiments/external_rca/results/*.json
 checkpoints/
 models/
 *.ckpt

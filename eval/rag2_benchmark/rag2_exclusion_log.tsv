@@ -1,0 +1,48 @@
+source_url	section	reason	admission_status
+https://github.com/kubernetes/website/blob/release-1.30/content/en/docs/tasks/configure-pod-container/assign-memory-resource.md	For cluster administrators	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/querying/basics.md	Instant vector selectors	prohibited benchmark-specific material	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/querying/functions.md	labelreplace()	prohibited benchmark-specific material	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional HTTP basic authentication information, currently not support by Azure.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional HTTP basic authentication information.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional Authorization header configuration.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional HTTP basic authentication information, not currently supported by DigitalOcean.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional Authorization header configuration.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional HTTP basic authentication information.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional Authorization header configuration.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional HTTP basic authentication information.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional Authorization header configuration.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional HTTP basic authentication information, currently not supported by AWS.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional HTTP basic authentication information.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Role hcloud does not support basic auth.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	hcloud. Role robot does not support bearer token authentication.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional HTTP basic authentication information.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional Authorization header configuration.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Cloud username and password as authentication method.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Cloud token as authentication method.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional HTTP basic authentication information.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional Authorization header configuration.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional HTTP basic authentication information.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional the Authorization header configuration.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional HTTP basic authentication information, currently not supported by AWS.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional Authorization header configuration, currently not supported by AWS.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional HTTP basic authentication information, not currently supported by Linode APIv4.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional the Authorization header configuration.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	password and passwordfile are mutually exclusive.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	instead.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional HTTP basic authentication information.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional Authorization header configuration.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	password and passwordfile are mutually exclusive.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional Authorization header configuration.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional HTTP basic authentication information, currently not supported by Uyuni.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional Authorization header configuration, currently not supported by Uyuni.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional HTTP basic authentication information, not currently supported by Vultr.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional Authorization header configuration.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Action to perform based on regex matching.	prohibited benchmark-specific material	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	password and passwordfile are mutually exclusive.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional Authorization header configuration.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	password and passwordfile are mutually exclusive.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional Authorization header configuration.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	To use the default credentials from the AWS SDK, use sigv4: {}.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	password and passwordfile are mutually exclusive.	duplicate normalized chunk	excluded
+https://github.com/prometheus/prometheus/blob/v2.53.0/docs/configuration/configuration.md	Optional Authorization header configuration.	duplicate normalized chunk	excluded
+https://github.com/open-telemetry/opentelemetry-specification/blob/v1.28.0/specification/trace/semantic_conventions/README.md		download failure: HTTP Error 404: Not Found	excluded

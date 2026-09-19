@@ -29,12 +29,20 @@ def load_corpus(path: str | Path) -> tuple[KnowledgeDocument, ...]:
 
     documents: list[KnowledgeDocument] = []
     for file_path in files:
-        with file_path.open(encoding="utf-8") as handle:
-            payload = json.load(handle)
-        entries = payload.get("documents") if isinstance(payload, dict) else payload
-        if not isinstance(entries, list):
-            raise ValueError(f"{file_path} must contain a JSON list or a 'documents' list.")
-        documents.extend(_document_from_entry(entry, file_path) for entry in entries)
+        if file_path.suffix == ".jsonl":
+            with file_path.open(encoding="utf-8") as handle:
+                documents.extend(
+                    _document_from_entry(json.loads(line), file_path)
+                    for line in handle
+                    if line.strip()
+                )
+        else:
+            with file_path.open(encoding="utf-8") as handle:
+                payload = json.load(handle)
+            entries = payload.get("documents") if isinstance(payload, dict) else payload
+            if not isinstance(entries, list):
+                raise ValueError(f"{file_path} must contain a JSON list or a 'documents' list.")
+            documents.extend(_document_from_entry(entry, file_path) for entry in entries)
 
     identifiers = [document.document_id for document in documents]
     if len(identifiers) != len(set(identifiers)):

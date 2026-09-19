@@ -174,25 +174,36 @@ class TestParseLLMResponse(unittest.TestCase):
     def test_valid_final_diagnosis_with_evidence(self) -> None:
         q = _make_query_record(query_id="q1")
         state = _make_state(queries=[q], evidence=[_make_evidence()])
-        raw = '{"action": "FINAL_DIAGNOSIS", "reasoning": "svcA is root cause per E1", "evidence_ids": ["q1"]}'
+        raw = '{"action": "FINAL_DIAGNOSIS", "diagnosis_service": "svcA", "reasoning": "svcA is root cause per E1", "evidence_ids": ["q1"]}'
         decision = _parse_llm_response(raw, step=1, state=state)
         self.assertEqual(decision.action, "FINAL_DIAGNOSIS")
+        self.assertEqual(decision.diagnosis_service, "svcA")
         self.assertIn("q1", decision.evidence_ids)
 
     def test_final_diagnosis_no_evidence_ids_auto_populates(self) -> None:
         """Missing evidence_ids → auto-populated from successful queries."""
         q = _make_query_record(query_id="q1")
         state = _make_state(queries=[q])
-        raw = '{"action": "FINAL_DIAGNOSIS", "reasoning": "svcA is culprit"}'
+        raw = '{"action": "FINAL_DIAGNOSIS", "diagnosis_service": "svcA", "reasoning": "svcA is culprit"}'
         decision = _parse_llm_response(raw, step=1, state=state)
         # Should auto-populate from query history
         self.assertEqual(decision.action, "FINAL_DIAGNOSIS")
+        self.assertEqual(decision.diagnosis_service, "svcA")
         self.assertIn("q1", decision.evidence_ids)
+
+    def test_final_diagnosis_missing_diagnosis_service_becomes_stop(self) -> None:
+        """Missing diagnosis_service is treated as invalid abstention."""
+        q = _make_query_record(query_id="q1")
+        state = _make_state(queries=[q])
+        raw = '{"action": "FINAL_DIAGNOSIS", "reasoning": "svcA is culprit"}'
+        decision = _parse_llm_response(raw, step=0, state=state)
+        self.assertEqual(decision.action, "STOP")
+        self.assertIn("diagnosis service", decision.reasoning)
 
     def test_final_diagnosis_no_evidence_no_queries_becomes_stop(self) -> None:
         """FINAL_DIAGNOSIS with no evidence and no queries → demoted to STOP."""
         state = _make_state()
-        raw = '{"action": "FINAL_DIAGNOSIS", "reasoning": "svcA is culprit"}'
+        raw = '{"action": "FINAL_DIAGNOSIS", "diagnosis_service": "svcA", "reasoning": "svcA is culprit"}'
         decision = _parse_llm_response(raw, step=0, state=state)
         self.assertEqual(decision.action, "STOP")
 
@@ -316,6 +327,7 @@ class TestPolicyValidateDecision(unittest.TestCase):
         with self.assertRaises(ValueError):
             AgentDecision(
                 action="FINAL_DIAGNOSIS",
+                diagnosis_service="svcA",
                 reasoning="No evidence cited.",
                 evidence_ids=(),
             )
@@ -325,6 +337,7 @@ class TestPolicyValidateDecision(unittest.TestCase):
         state = _make_state(queries=[q], evidence=[_make_evidence()])
         decision = AgentDecision(
             action="FINAL_DIAGNOSIS",
+            diagnosis_service="svcA",
             reasoning="svcA is the root cause because E1 shows CPU spike.",
             evidence_ids=("q1",),
         )
@@ -337,6 +350,7 @@ class TestPolicyValidateDecision(unittest.TestCase):
         state.queries_executed.append(q)
         decision = AgentDecision(
             action="FINAL_DIAGNOSIS",
+            diagnosis_service="svcA",
             reasoning="E1 shows high CPU on svcA.",
             evidence_ids=("E1",),
         )
@@ -349,6 +363,7 @@ class TestPolicyValidateDecision(unittest.TestCase):
         state.queries_executed.append(q)
         decision = AgentDecision(
             action="FINAL_DIAGNOSIS",
+            diagnosis_service="svcA",
             reasoning="E99 shows root cause.",
             evidence_ids=("E99",),  # E99 doesn't exist
         )
@@ -362,6 +377,7 @@ class TestPolicyValidateDecision(unittest.TestCase):
         state = _make_state(queries=[q])
         decision = AgentDecision(
             action="FINAL_DIAGNOSIS",
+            diagnosis_service="svcA",
             reasoning="The ground truth shows svcA caused the fault.",
             evidence_ids=("q1",),
         )
@@ -507,6 +523,11 @@ class TestOllamaAgentModel(unittest.TestCase):
     def test_default_model_name(self) -> None:
         agent = OllamaAgentModel()
         self.assertIn("qwen3", agent.model_name.lower())
+
+    def test_prompt_requires_final_diagnosis_service(self) -> None:
+        """Ollama's final-response example includes the required diagnosis field."""
+        agent = OllamaAgentModel()
+        self.assertIn('"diagnosis_service": "<service>"', agent._system_prompt)
 
     def test_env_override_model(self) -> None:
         with patch.dict(os.environ, {"DIGITAL_DETECTIVE_OLLAMA_MODEL": "llama3.2:3b"}):

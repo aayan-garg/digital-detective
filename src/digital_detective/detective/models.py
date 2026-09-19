@@ -220,6 +220,30 @@ class InterventionValidationResult:
 
 
 @dataclass
+class LLMDiagnosis:
+    """Model's own diagnosis proposal, kept separate from the deterministic RCA."""
+
+    diagnosis_service: str = ""
+    abstain: bool = False
+    reasoning: str = ""
+    evidence_ids: tuple[str, ...] = ()
+    condition: str = "unknown"
+    model_name: str = "unknown"
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "diagnosis_service": self.diagnosis_service,
+            "abstain": self.abstain,
+            "reasoning": self.reasoning,
+            "evidence_ids": list(self.evidence_ids),
+            "condition": self.condition,
+            "model_name": self.model_name,
+            "metadata": self.metadata,
+        }
+
+
+@dataclass
 class InvestigationState:
     """Mutable container tracking the complete trajectory of an active investigation."""
 
@@ -234,6 +258,7 @@ class InvestigationState:
     evidence_collected: list[EvidenceItem] = field(default_factory=list)
     current_rankings: tuple[RankedHypothesis, ...] = ()
     decision: RootCauseDecision | None = None
+    llm_diagnosis: LLMDiagnosis | None = None
     remediation_action: RemediationAction | None = None
     remediation_result: RemediationExecutionResult | None = None
     verification_result: RecoveryVerificationResult | None = None
@@ -263,6 +288,7 @@ class InvestigationState:
             "evidence_count": len(self.evidence_collected),
             "current_rankings": [r.to_dict() for r in self.current_rankings],
             "decision": self.decision.to_dict() if self.decision else None,
+            "llm_diagnosis": self.llm_diagnosis.to_dict() if self.llm_diagnosis else None,
             "remediation_action": self.remediation_action.to_dict() if self.remediation_action else None,
             "remediation_result": self.remediation_result.to_dict() if self.remediation_result else None,
             "verification_result": self.verification_result.to_dict() if self.verification_result else None,
