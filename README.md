@@ -32,7 +32,7 @@ ML Candidate Ranking (Model B supervised pairwise candidate ranker)
        ▼
 LLM Investigator (Bounded tool-augmented investigation loop)
        │
-       ├── Hybrid RAG (BM25 + BGE-small + RRF operational knowledge context)
+       ├── Hybrid RAG (Operational knowledge retrieval context)
        ▼
 Safety Gate Policy (Pre-execution Blast-radius & risk validation)
        │
@@ -51,7 +51,7 @@ Post-Intervention Validation
 * **Deterministic RCA ($S_{\text{comb}}$, $E_{\text{elev}}$)**: Sole causal ground truth authority for candidate scoring and baseline ordering.
 * **ML Candidate Ranking (Model B)**: Supervised ranking enhancement on causal-prefix features; operates under strict family-aware split boundaries.
 * **LLM Investigator**: Bounded hypothesis explorer and orchestrator. It collects observations and proposes diagnoses, but cannot override deterministic RCA authority.
-* **Hybrid RAG**: Operational knowledge retrieval supplying reference-only context; strictly prohibited from altering scoring formulas or safety verdicts.
+* **RAG Operational Layer**: Operational knowledge retrieval supplying reference-only context; strictly prohibited from altering scoring formulas or safety verdicts.
 * **Safety Gate Policy**: Deterministic policy enforcement controlling simulated remediation actions and verifying multi-symptom recovery.
 
 ---
@@ -71,13 +71,13 @@ Model B uses pairwise candidate differences on causal-prefix features (combining
 A compact temporal deep learning model operating over causal-prefix metric sequences was evaluated as a candidate ranker complement:
 * **Development Validation MRR**: Model B = 0.623 vs DL + Model B = 0.587
 * **Locked RE2-OB Test**: Model B (0.817 / 0.967 / 1.000 / 0.892) vs DL + Model B (0.767 / 0.883 / 0.933 / 0.846)
-* **Decision**: **REJECTED**. The temporal DL enhancement did not improve Model B. Model B is retained as the frozen ranker.
+* **Decision**: **REJECTED**. The temporal DL enhancement degraded ranking performance on both development and locked-test evaluations and was therefore rejected. Model B is retained as the frozen ranker.
 
-### C. Hybrid Operational Knowledge RAG
-* **Retrieval Architecture**: Okapi BM25 sparse retrieval + BGE-small dense semantic retrieval combined via Reciprocal Rank Fusion (RRF, $k=60$).
+### C. Operational Knowledge RAG
 * **Operational Corpus**: Provenance-backed microservice operational runbooks, architecture specifications, and troubleshooting guides (536 documents).
 * **Role**: Injected as `OPERATIONAL KNOWLEDGE (RAG – REFERENCE ONLY)` to provide system context to the investigator agent without altering deterministic scoring.
-* *Note*: Full relevance-labeled RAG benchmark evaluation was not completed before freeze; the retrieval and injection pipeline is functionally and end-to-end verified.
+* **Validation**: RAG retrieval and context injection were end-to-end verified. The separate RAG-2 hybrid BM25 + BGE-small + RRF implementation was validated through its controlled retrieval experiments.
+* *Note*: Full human/expert RAG relevance labeling was not completed before freeze; RAG remains an operational/reference knowledge layer.
 
 ### D. LLM Investigator & Safety Gate
 * **Investigator**: Bounded reasoning loop supporting tool actions (`QUERY`, `FINAL_DIAGNOSIS`, `STOP`) across Conditions A and C.
@@ -102,6 +102,8 @@ py -3.12 -m venv .venv
 pip install -e ".[test]"
 ```
 
+*Note on RAG-2 dependencies*: The heavier RAG-2 dense retrieval and reranker stack (e.g. `sentence-transformers`, `torch`) may require additional runtime packages beyond the core package dependencies declared in `pyproject.toml`.
+
 ---
 
 ## 5. Running the System
@@ -118,7 +120,7 @@ $env:PYTHONPATH='src;.'
 & '.venv/Scripts/python.exe' experiments/run_ml_rca_experiment.py
 ```
 
-### Hybrid RAG Smoke & Audit
+### RAG Smoke & Audit
 ```powershell
 $env:PYTHONPATH='src;.'
 & '.venv/Scripts/python.exe' scripts/run_rag2_smoke.py
@@ -140,6 +142,7 @@ $env:PYTHONPATH='src;.'
 
 ## 6. Reproducibility & Leakage Controls
 
+To support reproducibility and reduce leakage risk:
 * **Family-Aware Partitioning**: Split allocations are grouped strictly by scenario family (`RE2-SS` and `RE2-TT` for development, `RE2-OB` repetitions 2–3 locked).
 * **Causal-Prefix Isolation**: All features and sequential anomalies are extracted strictly prior to or at the confirmed injection boundary to prevent future-leakage.
 * **Fixed Seeds**: All stochastic processes (cross-validation folds, ranker initialization) use locked seeds (`seed=42`).
@@ -150,6 +153,7 @@ $env:PYTHONPATH='src;.'
 
 * **Local Ollama / Windows GPU Instability**: Under Windows with CUDA-enabled local Ollama instances, GPU memory allocation exceptions may occur under sustained load. The orchestrator includes graceful fallbacks and timeout guards.
 * **Simulation Sandboxing**: Remediation actions execute inside an in-memory simulation model rather than live cloud infrastructure.
+* **RAG Relevance Benchmarking**: Full human/expert relevance labeling on the operational benchmark pool was not finalized prior to freeze.
 
 ---
 
