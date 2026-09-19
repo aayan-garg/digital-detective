@@ -1,0 +1,68 @@
+# requirements.txt — Digital Detective
+# Reproducible dependency list for the core pipeline and test suite.
+#
+# Python compatibility: >=3.11, <3.13  (mirrors pyproject.toml)
+#
+# Usage:
+#   pip install -e ".[test]"          # preferred (installs editable package + test deps)
+#   pip install -r requirements.txt   # alternative flat install
+#
+# Optional RAG-2 dense/reranker stack is listed at the bottom of this file.
+# It is NOT required for the core pipeline, all evaluations, or the test suite.
+
+# ---------------------------------------------------------------------------
+# 1. Core runtime dependencies
+#    (declared in pyproject.toml [project.dependencies], pinned versions kept)
+# ---------------------------------------------------------------------------
+
+# Columnar in-memory data and Parquet I/O used throughout telemetry ingestion,
+# anomaly detection, and evaluation harness.
+pyarrow==25.0.1
+
+# Numerical kernels: BOCPD hazard/posterior, CRV scoring, anomaly statistics.
+numpy>=1.24.0
+
+# Statistical distributions (Gaussian hazard in BOCPD, CRV parametric tests).
+scipy>=1.10.0
+
+# ---------------------------------------------------------------------------
+# 2. Testing dependencies
+#    (declared in pyproject.toml [project.optional-dependencies.test])
+# ---------------------------------------------------------------------------
+
+# Test runner; also imported directly in a small number of test modules for
+# pytest.mark and pytest.raises.
+pytest>=8.0.0
+
+# ---------------------------------------------------------------------------
+# 3. ML / evaluation dependencies
+#    Used by src/, eval/, experiments/, tests/, and scripts/.
+#    Not declared in pyproject.toml but required to run the documented workflow.
+# ---------------------------------------------------------------------------
+
+# Tabular data manipulation used by pyrca_ht adapter (optional import guard)
+# and by the Stage-6 PyRCA experiment script.
+pandas>=1.5.0
+
+# Logistic-regression pairwise ranker (Model A / Model B) in
+# experiments/ml_rca_ranker.py, imported by tests/test_ml_rca_ranker.py.
+scikit-learn>=1.2.0
+
+# PyRCA Hypothesis-Testing (HT) RCA backend used by
+# src/digital_detective/pyrca_ht.py and tested in tests/test_pyrca_ht.py.
+# pyrca also pulls in networkx as a transitive dependency; networkx is also
+# imported directly in tests/test_pyrca_ht.py.
+pyrca>=0.2.0
+networkx>=2.8
+
+# ---------------------------------------------------------------------------
+# 4. Optional RAG-2 dependencies
+#    Required only for the dense-retrieval (BGE-small) and cross-encoder
+#    reranker arms in src/digital_detective/rag/dense.py and reranker.py.
+#    Both modules raise ModelUnavailableError on import if unavailable, so the
+#    core pipeline and all other tests run without these packages.
+#    Install these only when running RAG-2 dense/reranker experiments.
+# ---------------------------------------------------------------------------
+
+# sentence-transformers>=2.2.0
+# torch>=2.0.0
