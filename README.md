@@ -18,10 +18,10 @@ The logical pipeline separates causal reasoning from generative hypothesis inves
 Telemetry Ingestion
        │
        ▼
-Anomaly Detection (Streaming rolling z-score / BOCPD / MAD)
+Anomaly Detection
        │
        ▼
-Sequential Confirmation (Multi-metric persistent episode aggregation & TCEC)
+Sequential Incident Confirmation
        │
        ▼
 Deterministic RCA (S_comb metric scoring & E_elev trace attribution)
@@ -32,7 +32,7 @@ ML Candidate Ranking (Model B supervised pairwise candidate ranker)
        ▼
 LLM Investigator (Bounded tool-augmented investigation loop)
        │
-       ├── Hybrid RAG (Operational knowledge retrieval context)
+       ├── Hybrid Operational Knowledge RAG
        ▼
 Safety Gate Policy (Pre-execution Blast-radius & risk validation)
        │
@@ -51,14 +51,17 @@ Post-Intervention Validation
 * **Deterministic RCA ($S_{\text{comb}}$, $E_{\text{elev}}$)**: Sole causal ground truth authority for candidate scoring and baseline ordering.
 * **ML Candidate Ranking (Model B)**: Supervised ranking enhancement on causal-prefix features; operates under strict family-aware split boundaries.
 * **LLM Investigator**: Bounded hypothesis explorer and orchestrator. It collects observations and proposes diagnoses, but cannot override deterministic RCA authority.
-* **RAG Operational Layer**: Operational knowledge retrieval supplying reference-only context; strictly prohibited from altering scoring formulas or safety verdicts.
+* **Hybrid Operational Knowledge RAG**: Operational knowledge retrieval supplying reference-only context; strictly prohibited from altering scoring formulas or safety verdicts.
 * **Safety Gate Policy**: Deterministic policy enforcement controlling simulated remediation actions and verifying multi-symptom recovery.
 
 ---
 
 ## 3. Main Contributions & Research Results
 
-### A. Accepted Supervised Candidate Ranking (Model B)
+### A. Telemetry, Detection & Incident Confirmation
+The telemetry subsystem processes heterogeneous metric series (CPU, memory, sockets, latency), distributed traces, and dynamic service dependency topologies. During research iterations, standard rolling z-score and robust median absolute deviation (MAD) estimators were evaluated as experimental alternatives; the final frozen detector and confirmation design uses the BOCPD/TCEC-based approach with multi-metric persistence ($K=3, M=2$) to filter transient noise before initiating RCA.
+
+### B. Accepted Supervised Candidate Ranking (Model B)
 Model B uses pairwise candidate differences on causal-prefix features (combining $S_{\text{comb}}$, $E_{\text{elev}}$, anomaly coverage, and topological distance) trained with family-grouped cross-validation:
 
 **Locked RE2-OB Repetitions 2–3 Evaluation (60 Cases):**
@@ -67,19 +70,19 @@ Model B uses pairwise candidate differences on causal-prefix features (combining
 * **Top@5**: 1.0000 (60/60)
 * **MRR**: 0.8916667
 
-### B. Temporal Deep Learning Complement (Evaluated and Rejected)
+### C. Temporal Deep Learning Complement (Evaluated and Rejected)
 A compact temporal deep learning model operating over causal-prefix metric sequences was evaluated as a candidate ranker complement:
 * **Development Validation MRR**: Model B = 0.623 vs DL + Model B = 0.587
 * **Locked RE2-OB Test**: Model B (0.817 / 0.967 / 1.000 / 0.892) vs DL + Model B (0.767 / 0.883 / 0.933 / 0.846)
 * **Decision**: **REJECTED**. The temporal DL enhancement degraded ranking performance on both development and locked-test evaluations and was therefore rejected. Model B is retained as the frozen ranker.
 
-### C. Operational Knowledge RAG
+### D. Hybrid Operational Knowledge RAG
 * **Operational Corpus**: Provenance-backed microservice operational runbooks, architecture specifications, and troubleshooting guides (536 documents).
 * **Role**: Injected as `OPERATIONAL KNOWLEDGE (RAG – REFERENCE ONLY)` to provide system context to the investigator agent without altering deterministic scoring.
 * **Validation**: RAG retrieval and context injection were end-to-end verified. The separate RAG-2 hybrid BM25 + BGE-small + RRF implementation was validated through its controlled retrieval experiments.
 * *Note*: Full human/expert RAG relevance labeling was not completed before freeze; RAG remains an operational/reference knowledge layer.
 
-### D. LLM Investigator & Safety Gate
+### E. LLM Investigator & Safety Gate
 * **Investigator**: Bounded reasoning loop supporting tool actions (`QUERY`, `FINAL_DIAGNOSIS`, `STOP`) across Conditions A and C.
 * **Local Backend**: Evaluated with `qwen3:8b` via Ollama OpenAI-compatible endpoints with deterministic authority preservation and structured JSON schema enforcement.
 

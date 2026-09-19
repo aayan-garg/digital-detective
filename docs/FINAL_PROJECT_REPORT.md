@@ -26,10 +26,10 @@ The complete system comprises 11 functional stages arranged in a unidirectional 
 [ Telemetry Ingestion (Metrics, Spans, Topology) ]
                        │
                        ▼
-[ Anomaly Detection (Rolling Z-Score / BOCPD / MAD) ]
+[ Anomaly Detection ]
                        │
                        ▼
-[ Sequential Confirmation (Multi-Metric Episode Aggregation & TCEC) ]
+[ Sequential Incident Confirmation ]
                        │
                        ▼
 [ Deterministic RCA (S_comb Metric Scoring & E_elev Trace Attribution) ]
@@ -40,7 +40,7 @@ The complete system comprises 11 functional stages arranged in a unidirectional 
                        ▼
 [ LLM Investigator (Bounded Tool-Augmented Exploration Loop) ]
                        │
-                       ├── [ Operational Knowledge RAG Context ]
+                       ├── [ Hybrid Operational Knowledge RAG ]
                        ▼
 [ Safety Gate Policy (Blast-Radius & Pre-Condition Validation) ]
                        │
@@ -61,7 +61,7 @@ The complete system comprises 11 functional stages arranged in a unidirectional 
 | **Causal Core** | Deterministic RCA ($S_{\text{comb}}$, $E_{\text{elev}}$) | Ground-truth scoring, graph traversal | **No** |
 | **Ranking Core** | Supervised Model B Ranker | Causal-prefix candidate re-ranking | **No** |
 | **Exploration** | LLM Investigator (Qwen3:8B) | Dynamic observation gathering, hypothesis probing | N/A (Proposes only) |
-| **Context** | Operational Knowledge RAG | Operational runbooks, reference knowledge | **No** (Reference only) |
+| **Context** | Hybrid Operational Knowledge RAG | Operational runbooks, reference knowledge | **No** (Reference only) |
 | **Safety Gate** | Safety Policy & Recovery Verifier | Remediation authorization, recovery proof | **No** (Strict gate) |
 
 ---
@@ -73,7 +73,8 @@ The telemetry subsystem processes heterogeneous signals:
 * **Distributed Traces**: Span start/end timestamps, parent-child relations, and edge duration profiles.
 * **Topology**: Dynamic directed service dependency graphs extracted directly from runtime span traces.
 
-Incident detection utilizes streaming rolling z-scores with MAD-based robust baseline estimation alongside Bayesian Online Changepoint Detection (BOCPD) principles. Sequential confirmation (Stage 9 TCEC and episode aggregation with persistence $K=3$ and consensus $M=2$) filters transient false positives, ensuring only persistent anomalies initiate downstream RCA.
+### Detector Evolution and Final Design
+During pipeline development, rolling z-scores and robust Median Absolute Deviation (MAD) baseline estimation were systematically evaluated as experimental detection alternatives. While providing baseline sensitivity, simple thresholding proved vulnerable to transient noise bursts. The final frozen architecture adopts Bayesian Online Changepoint Detection (BOCPD) integrated with Topology-Coherent Episode Confirmation (TCEC) and multi-metric persistence ($K=3, M=2$) to establish statistically grounded incident confirmation prior to invoking downstream RCA.
 
 ---
 
@@ -152,7 +153,7 @@ The investigative agent serves as an interactive explorer operating within stric
 
 ---
 
-## 9. Operational Knowledge RAG
+## 9. Hybrid Operational Knowledge RAG
 
 * **Corpus**: 536 provenance-backed operational runbooks, architecture maps, and microservice failure playbooks stored in `eval/rag2_benchmark/rag2_corpus.jsonl`.
 * **Retrieval & Role**: Injected as `OPERATIONAL KNOWLEDGE (RAG – REFERENCE ONLY)` to supply system context to the investigator agent without altering deterministic scoring.
@@ -191,7 +192,7 @@ A comprehensive end-to-end verification pass was conducted on the representative
 ```
 [PASS] 1. Telemetry Ingestion (Metrics, Spans, Topology loaded)
 [PASS] 2. Anomaly Detection (11 anomalous entities identified)
-[PASS] 3. Sequential Confirmation (Episode persistence K=3, M=2 aggregated)
+[PASS] 3. Sequential Incident Confirmation (Episode persistence K=3, M=2 aggregated)
 [PASS] 4. Deterministic RCA (S_comb candidate scoring produced)
 [PASS] 5. Model B Ranking (Pairwise causal ranking computed)
 [PASS] 6. RAG Retrieval (536 docs indexed, top-5 operational passages retrieved)
@@ -227,14 +228,14 @@ Digital Detective demonstrates that autonomous microservice incident investigati
 
 | Component | Status | Empirical Validation / Benchmark Result |
 |---|:---:|---|
-| **Anomaly Detection** | **Frozen** | Streaming Z-Score / BOCPD / MAD baseline verification |
-| **Sequential Confirmation** | **Frozen** | Multi-metric persistence ($K=3, M=2$) & TCEC filtering |
+| **Anomaly Detection** | **Frozen** | BOCPD/TCEC-based detection (Z-score & MAD evaluated as alternatives) |
+| **Sequential Incident Confirmation** | **Frozen** | Multi-metric persistence ($K=3, M=2$) & TCEC topological confirmation |
 | **Deterministic RCA** | **Validated** | Multi-Modal Fusion: Top@1 = 86.7%, MRR = 0.9194 (RE2-OB Rep 1) |
 | **Model B Supervised Ranker** | **Selected** | Locked RE2-OB (Reps 2–3): Top@1 = 0.8167, Top@5 = 1.0000, MRR = 0.8917 |
 | **Temporal DL Complement** | **Rejected** | Evaluated & Rejected ($\Delta$ MRR = -0.0458 on locked test) |
 | **LLM Investigator (A/C)** | **Accepted** | Bounded reasoning loop, JSON schema enforcement, tool use |
 | **Live Qwen3:8B Backend** | **Verified** | Verified with Ollama; documented Windows GPU runtime limitation |
-| **Operational Knowledge RAG** | **Implemented** | RAG retrieval/injection E2E verified; RAG-2 hybrid evaluated in controlled experiments |
+| **Hybrid Operational Knowledge RAG** | **Implemented** | RAG retrieval/injection E2E verified; RAG-2 hybrid evaluated in controlled experiments |
 | **Safety Policy Gate** | **Implemented** | Deterministic pre-execution blast-radius & permission checks |
 | **Recovery Verification** | **Implemented** | Multi-symptom recovery & post-intervention topological checks |
 | **End-to-End Pipeline** | **Verified** | Full software pipeline verified on `re2ob_checkoutservice_cpu_1` |
