@@ -44,6 +44,9 @@ def load_rcaeval_case(
     dataset_root: str | Path,
     case_id: str,
     source_revision: str | None = None,
+    *,
+    include_logs: bool = True,
+    trace_columns: tuple[str, ...] | None = None,
 ) -> TelemetryCase:
     """Load one current-layout RCAEval case from an already local dataset root.
 
@@ -93,14 +96,18 @@ def load_rcaeval_case(
             }
         ),
         metrics=metrics,
-        logs=_load_optional_modality(
-            case_directory / "logs.parquet",
-            "logs",
-            index_row,
-            case_id,
-            source_revision,
-            timestamp_field="timestamp",
-            identity_fields=("container_name",),
+        logs=(
+            _load_optional_modality(
+                case_directory / "logs.parquet",
+                "logs",
+                index_row,
+                case_id,
+                source_revision,
+                timestamp_field="timestamp",
+                identity_fields=("container_name",),
+            )
+            if include_logs
+            else None
         ),
         traces=_load_optional_modality(
             case_directory / "traces.parquet",
@@ -110,6 +117,7 @@ def load_rcaeval_case(
             source_revision,
             timestamp_field="time",
             identity_fields=("traceID", "spanID", "serviceName"),
+            columns=trace_columns,
         ),
     )
 
@@ -146,13 +154,15 @@ def _load_optional_modality(
     *,
     timestamp_field: str,
     identity_fields: tuple[str, ...],
+    columns: tuple[str, ...] | None = None,
 ) -> TelemetryModality | None:
     if not path.exists():
         return None
     if not path.is_file():
         raise ValueError(f"RCAEval optional {modality} path is not a file: {path}")
+    table = _read_parquet(path, f"RCAEval {modality}", columns=columns)
     return _make_modality(
-        _read_parquet(path, f"RCAEval {modality}"),
+        table,
         index_row,
         case_id,
         source_revision,
@@ -199,10 +209,10 @@ def _verify_inject_time(path: Path, index_value: Any) -> None:
         raise ValueError(f"RCAEval injection time in {path} does not match the case index")
 
 
-def _read_parquet(path: Path, description: str) -> Any:
+def _read_parquet(path: Path, description: str, columns: tuple[str, ...] | None = None) -> Any:
     if not path.is_file():
         raise FileNotFoundError(f"Required {description} file is missing: {path}")
     try:
-        return pq.read_table(path)
+        return pq.read_table(path, columns=list(columns) if columns else None)
     except Exception as error:
         raise ValueError(f"Could not read {description} Parquet file: {path}") from error

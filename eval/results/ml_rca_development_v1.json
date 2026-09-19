@@ -1,0 +1,3298 @@
+{
+  "experiment": "ml_rca_development_v1",
+  "development_datasets": [
+    "RE2-SS",
+    "RE2-TT"
+  ],
+  "family_count": 60,
+  "case_count": 180,
+  "grouped_folds": 3,
+  "validation": {
+    "Model A": {
+      "aggregate": {
+        "top1": 0.4388888888888889,
+        "top3": 0.7611111111111111,
+        "top5": 0.85,
+        "mrr": 0.6153954277121432
+      },
+      "cases": [
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_cpu_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_carts_cpu_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_carts_cpu_3",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_loss_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_carts_loss_2",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_loss_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_catalogue_cpu_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_catalogue_cpu_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.25,
+          "target_rank": 4,
+          "case_id": "re2ss_catalogue_cpu_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_catalogue_loss_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_catalogue_loss_2",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_catalogue_loss_3",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_orders_cpu_1",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_orders_cpu_2",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_orders_cpu_3",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_orders_loss_1",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_orders_loss_2",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_orders_loss_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_payment_cpu_1",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_payment_cpu_2",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_payment_cpu_3",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_payment_loss_1",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_payment_loss_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_payment_loss_3",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_user_cpu_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_user_cpu_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_user_cpu_3",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_user_loss_1",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_user_loss_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_user_loss_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.0625,
+          "target_rank": 16,
+          "case_id": "re2tt_ts-auth-service_cpu_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.047619047619047616,
+          "target_rank": 21,
+          "case_id": "re2tt_ts-auth-service_cpu_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.041666666666666664,
+          "target_rank": 24,
+          "case_id": "re2tt_ts-auth-service_cpu_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.034482758620689655,
+          "target_rank": 29,
+          "case_id": "re2tt_ts-auth-service_loss_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.037037037037037035,
+          "target_rank": 27,
+          "case_id": "re2tt_ts-auth-service_loss_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.25,
+          "target_rank": 4,
+          "case_id": "re2tt_ts-auth-service_loss_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.07692307692307693,
+          "target_rank": 13,
+          "case_id": "re2tt_ts-order-service_cpu_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.1111111111111111,
+          "target_rank": 9,
+          "case_id": "re2tt_ts-order-service_cpu_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-order-service_cpu_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.16666666666666666,
+          "target_rank": 6,
+          "case_id": "re2tt_ts-order-service_loss_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.2,
+          "target_rank": 5,
+          "case_id": "re2tt_ts-order-service_loss_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.08333333333333333,
+          "target_rank": 12,
+          "case_id": "re2tt_ts-order-service_loss_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.25,
+          "target_rank": 4,
+          "case_id": "re2tt_ts-route-service_cpu_1",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_cpu_2",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_cpu_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.06666666666666667,
+          "target_rank": 15,
+          "case_id": "re2tt_ts-route-service_loss_1",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_loss_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.2,
+          "target_rank": 5,
+          "case_id": "re2tt_ts-route-service_loss_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-train-service_cpu_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.125,
+          "target_rank": 8,
+          "case_id": "re2tt_ts-train-service_cpu_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-train-service_cpu_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-train-service_loss_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.2,
+          "target_rank": 5,
+          "case_id": "re2tt_ts-train-service_loss_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2tt_ts-train-service_loss_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.16666666666666666,
+          "target_rank": 6,
+          "case_id": "re2tt_ts-travel-service_cpu_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-travel-service_cpu_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.125,
+          "target_rank": 8,
+          "case_id": "re2tt_ts-travel-service_cpu_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-travel-service_loss_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.2,
+          "target_rank": 5,
+          "case_id": "re2tt_ts-travel-service_loss_2",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-travel-service_loss_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_carts_delay_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.25,
+          "target_rank": 4,
+          "case_id": "re2ss_carts_delay_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_carts_delay_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_carts_mem_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_carts_mem_2",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_mem_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_catalogue_delay_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_catalogue_delay_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_catalogue_delay_3",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_catalogue_mem_1",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_catalogue_mem_2",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_catalogue_mem_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_orders_delay_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_orders_delay_2",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_orders_delay_3",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_orders_mem_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_orders_mem_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_orders_mem_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.2,
+          "target_rank": 5,
+          "case_id": "re2ss_payment_delay_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.16666666666666666,
+          "target_rank": 6,
+          "case_id": "re2ss_payment_delay_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.16666666666666666,
+          "target_rank": 6,
+          "case_id": "re2ss_payment_delay_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.25,
+          "target_rank": 4,
+          "case_id": "re2ss_payment_mem_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.25,
+          "target_rank": 4,
+          "case_id": "re2ss_payment_mem_2",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_payment_mem_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_user_delay_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_user_delay_2",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_user_delay_3",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_user_mem_1",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_user_mem_2",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_user_mem_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.05555555555555555,
+          "target_rank": 18,
+          "case_id": "re2tt_ts-auth-service_delay_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.05555555555555555,
+          "target_rank": 18,
+          "case_id": "re2tt_ts-auth-service_delay_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.037037037037037035,
+          "target_rank": 27,
+          "case_id": "re2tt_ts-auth-service_delay_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.05,
+          "target_rank": 20,
+          "case_id": "re2tt_ts-auth-service_mem_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.058823529411764705,
+          "target_rank": 17,
+          "case_id": "re2tt_ts-auth-service_mem_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.041666666666666664,
+          "target_rank": 24,
+          "case_id": "re2tt_ts-auth-service_mem_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2tt_ts-order-service_delay_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-order-service_delay_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2tt_ts-order-service_delay_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-order-service_mem_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2tt_ts-order-service_mem_2",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-order-service_mem_3",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_delay_1",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_delay_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-route-service_delay_3",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_mem_1",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_mem_2",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_mem_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-train-service_delay_1",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-train-service_delay_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.2,
+          "target_rank": 5,
+          "case_id": "re2tt_ts-train-service_delay_3",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-train-service_mem_1",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-train-service_mem_2",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-train-service_mem_3",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-travel-service_delay_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.25,
+          "target_rank": 4,
+          "case_id": "re2tt_ts-travel-service_delay_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-travel-service_delay_3",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-travel-service_mem_1",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-travel-service_mem_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-travel-service_mem_3",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_disk_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_disk_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_disk_3",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_carts_socket_1",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_carts_socket_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_socket_3",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_catalogue_disk_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_catalogue_disk_2",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_catalogue_disk_3",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_catalogue_socket_1",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_catalogue_socket_2",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_catalogue_socket_3",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_orders_disk_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_orders_disk_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_orders_disk_3",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_orders_socket_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_orders_socket_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_orders_socket_3",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_payment_disk_1",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_payment_disk_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_payment_disk_3",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_payment_socket_1",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_payment_socket_2",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_payment_socket_3",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_user_disk_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_user_disk_2",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_user_disk_3",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_user_socket_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_user_socket_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_user_socket_3",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.2,
+          "target_rank": 5,
+          "case_id": "re2tt_ts-auth-service_disk_1",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.041666666666666664,
+          "target_rank": 24,
+          "case_id": "re2tt_ts-auth-service_disk_2",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.045454545454545456,
+          "target_rank": 22,
+          "case_id": "re2tt_ts-auth-service_disk_3",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.043478260869565216,
+          "target_rank": 23,
+          "case_id": "re2tt_ts-auth-service_socket_1",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.043478260869565216,
+          "target_rank": 23,
+          "case_id": "re2tt_ts-auth-service_socket_2",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.045454545454545456,
+          "target_rank": 22,
+          "case_id": "re2tt_ts-auth-service_socket_3",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-order-service_disk_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-order-service_disk_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-order-service_disk_3",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-order-service_socket_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-order-service_socket_2",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-order-service_socket_3",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.25,
+          "target_rank": 4,
+          "case_id": "re2tt_ts-route-service_disk_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_disk_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_disk_3",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.125,
+          "target_rank": 8,
+          "case_id": "re2tt_ts-route-service_socket_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_socket_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_socket_3",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-train-service_disk_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-train-service_disk_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-train-service_disk_3",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-train-service_socket_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-train-service_socket_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-train-service_socket_3",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-travel-service_disk_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-travel-service_disk_2",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-travel-service_disk_3",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-travel-service_socket_1",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.25,
+          "target_rank": 4,
+          "case_id": "re2tt_ts-travel-service_socket_2",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2tt_ts-travel-service_socket_3",
+          "fold": 120
+        }
+      ]
+    },
+    "Model B": {
+      "aggregate": {
+        "top1": 0.45,
+        "top3": 0.7888888888888889,
+        "top5": 0.8277777777777777,
+        "mrr": 0.6233336715772199
+      },
+      "cases": [
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_carts_cpu_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_carts_cpu_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_carts_cpu_3",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_loss_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_carts_loss_2",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_loss_3",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_catalogue_cpu_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_catalogue_cpu_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_catalogue_cpu_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_catalogue_loss_1",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_catalogue_loss_2",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_catalogue_loss_3",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_orders_cpu_1",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_orders_cpu_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_orders_cpu_3",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_orders_loss_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_orders_loss_2",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_orders_loss_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_payment_cpu_1",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_payment_cpu_2",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_payment_cpu_3",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_payment_loss_1",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_payment_loss_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_payment_loss_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_user_cpu_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_user_cpu_2",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_user_cpu_3",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_user_loss_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_user_loss_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_user_loss_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.1111111111111111,
+          "target_rank": 9,
+          "case_id": "re2tt_ts-auth-service_cpu_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.05,
+          "target_rank": 20,
+          "case_id": "re2tt_ts-auth-service_cpu_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.05263157894736842,
+          "target_rank": 19,
+          "case_id": "re2tt_ts-auth-service_cpu_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.037037037037037035,
+          "target_rank": 27,
+          "case_id": "re2tt_ts-auth-service_loss_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.03333333333333333,
+          "target_rank": 30,
+          "case_id": "re2tt_ts-auth-service_loss_2",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-auth-service_loss_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.0625,
+          "target_rank": 16,
+          "case_id": "re2tt_ts-order-service_cpu_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.1,
+          "target_rank": 10,
+          "case_id": "re2tt_ts-order-service_cpu_2",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-order-service_cpu_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2tt_ts-order-service_loss_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.25,
+          "target_rank": 4,
+          "case_id": "re2tt_ts-order-service_loss_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.06666666666666667,
+          "target_rank": 15,
+          "case_id": "re2tt_ts-order-service_loss_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2tt_ts-route-service_cpu_1",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_cpu_2",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_cpu_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.05263157894736842,
+          "target_rank": 19,
+          "case_id": "re2tt_ts-route-service_loss_1",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_loss_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.2,
+          "target_rank": 5,
+          "case_id": "re2tt_ts-route-service_loss_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.25,
+          "target_rank": 4,
+          "case_id": "re2tt_ts-train-service_cpu_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.14285714285714285,
+          "target_rank": 7,
+          "case_id": "re2tt_ts-train-service_cpu_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-train-service_cpu_3",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-train-service_loss_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.25,
+          "target_rank": 4,
+          "case_id": "re2tt_ts-train-service_loss_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.1111111111111111,
+          "target_rank": 9,
+          "case_id": "re2tt_ts-train-service_loss_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2tt_ts-travel-service_cpu_1",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-travel-service_cpu_2",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.05263157894736842,
+          "target_rank": 19,
+          "case_id": "re2tt_ts-travel-service_cpu_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2tt_ts-travel-service_loss_1",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.16666666666666666,
+          "target_rank": 6,
+          "case_id": "re2tt_ts-travel-service_loss_2",
+          "fold": 0
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-travel-service_loss_3",
+          "fold": 0
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_carts_delay_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_carts_delay_2",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_delay_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_carts_mem_1",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_mem_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_carts_mem_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_catalogue_delay_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_catalogue_delay_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.16666666666666666,
+          "target_rank": 6,
+          "case_id": "re2ss_catalogue_delay_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_catalogue_mem_1",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_catalogue_mem_2",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_catalogue_mem_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_orders_delay_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_orders_delay_2",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_orders_delay_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_orders_mem_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_orders_mem_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_orders_mem_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.16666666666666666,
+          "target_rank": 6,
+          "case_id": "re2ss_payment_delay_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.16666666666666666,
+          "target_rank": 6,
+          "case_id": "re2ss_payment_delay_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.16666666666666666,
+          "target_rank": 6,
+          "case_id": "re2ss_payment_delay_3",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_payment_mem_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_payment_mem_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_payment_mem_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.2,
+          "target_rank": 5,
+          "case_id": "re2ss_user_delay_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.25,
+          "target_rank": 4,
+          "case_id": "re2ss_user_delay_2",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_user_delay_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_user_mem_1",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_user_mem_2",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_user_mem_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.07142857142857142,
+          "target_rank": 14,
+          "case_id": "re2tt_ts-auth-service_delay_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.07692307692307693,
+          "target_rank": 13,
+          "case_id": "re2tt_ts-auth-service_delay_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.038461538461538464,
+          "target_rank": 26,
+          "case_id": "re2tt_ts-auth-service_delay_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.1111111111111111,
+          "target_rank": 9,
+          "case_id": "re2tt_ts-auth-service_mem_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.05,
+          "target_rank": 20,
+          "case_id": "re2tt_ts-auth-service_mem_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.05,
+          "target_rank": 20,
+          "case_id": "re2tt_ts-auth-service_mem_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": true,
+          "mrr": 0.25,
+          "target_rank": 4,
+          "case_id": "re2tt_ts-order-service_delay_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-order-service_delay_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-order-service_delay_3",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-order-service_mem_1",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-order-service_mem_2",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-order-service_mem_3",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_delay_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-route-service_delay_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-route-service_delay_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-route-service_mem_1",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_mem_2",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_mem_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2tt_ts-train-service_delay_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2tt_ts-train-service_delay_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-train-service_delay_3",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-train-service_mem_1",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-train-service_mem_2",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-train-service_mem_3",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-travel-service_delay_1",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2tt_ts-travel-service_delay_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-travel-service_delay_3",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-travel-service_mem_1",
+          "fold": 60
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-travel-service_mem_2",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.16666666666666666,
+          "target_rank": 6,
+          "case_id": "re2tt_ts-travel-service_mem_3",
+          "fold": 60
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_carts_disk_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_disk_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_disk_3",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_carts_socket_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_socket_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_socket_3",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_catalogue_disk_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_catalogue_disk_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_catalogue_disk_3",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_catalogue_socket_1",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_catalogue_socket_2",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_catalogue_socket_3",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_orders_disk_1",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_orders_disk_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_orders_disk_3",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_orders_socket_1",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_orders_socket_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_orders_socket_3",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_payment_disk_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_payment_disk_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_payment_disk_3",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_payment_socket_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_payment_socket_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_payment_socket_3",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_user_disk_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_user_disk_2",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_user_disk_3",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_user_socket_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_user_socket_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_user_socket_3",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.1111111111111111,
+          "target_rank": 9,
+          "case_id": "re2tt_ts-auth-service_disk_1",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.047619047619047616,
+          "target_rank": 21,
+          "case_id": "re2tt_ts-auth-service_disk_2",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.05,
+          "target_rank": 20,
+          "case_id": "re2tt_ts-auth-service_disk_3",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.047619047619047616,
+          "target_rank": 21,
+          "case_id": "re2tt_ts-auth-service_socket_1",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.05555555555555555,
+          "target_rank": 18,
+          "case_id": "re2tt_ts-auth-service_socket_2",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.043478260869565216,
+          "target_rank": 23,
+          "case_id": "re2tt_ts-auth-service_socket_3",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-order-service_disk_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-order-service_disk_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-order-service_disk_3",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-order-service_socket_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-order-service_socket_2",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2tt_ts-order-service_socket_3",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2tt_ts-route-service_disk_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_disk_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_disk_3",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2tt_ts-route-service_socket_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_socket_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-route-service_socket_3",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-train-service_disk_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-train-service_disk_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-train-service_disk_3",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-train-service_socket_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-train-service_socket_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-train-service_socket_3",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-travel-service_disk_1",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-travel-service_disk_2",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-travel-service_disk_3",
+          "fold": 120
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2tt_ts-travel-service_socket_1",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.09090909090909091,
+          "target_rank": 11,
+          "case_id": "re2tt_ts-travel-service_socket_2",
+          "fold": 120
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2tt_ts-travel-service_socket_3",
+          "fold": 120
+        }
+      ]
+    }
+  },
+  "selected_model": "Model B",
+  "feature_sets": {
+    "Model A": [
+      "s_comb",
+      "e_elev",
+      "r_strength",
+      "r_early",
+      "r_coverage",
+      "r_prop"
+    ],
+    "Model B": [
+      "s_comb",
+      "e_elev",
+      "r_strength",
+      "r_early",
+      "r_coverage",
+      "r_prop",
+      "peak_anomaly_strength",
+      "anomalous_metric_count",
+      "episode_active",
+      "episode_timing",
+      "trace_wait_concentration",
+      "trace_terminal_factor"
+    ]
+  },
+  "elapsed_seconds": 2018.9884621999809
+}
