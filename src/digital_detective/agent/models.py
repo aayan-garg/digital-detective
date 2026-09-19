@@ -43,7 +43,7 @@ import urllib.request
 from dataclasses import dataclass, field
 from typing import Any, Sequence
 
-from digital_detective.detective.models import InvestigationState
+from digital_detective.detective.models import InvestigationState, LLMDiagnosis
 
 _log = logging.getLogger(__name__)
 
@@ -87,6 +87,7 @@ class AgentDecision:
     reasoning: str
     tool_name: str = ""
     service: str = ""
+    diagnosis_service: str = ""
     evidence_ids: tuple[str, ...] = ()
     step_index: int = 0
     metadata: dict[str, Any] = field(default_factory=dict)
@@ -100,19 +101,25 @@ class AgentDecision:
             raise ValueError("AgentDecision with action='QUERY' requires a non-empty tool_name.")
         if self.action == "QUERY" and not self.service:
             raise ValueError("AgentDecision with action='QUERY' requires a non-empty service.")
-        if self.action == "FINAL_DIAGNOSIS" and not self.reasoning:
-            raise ValueError("FINAL_DIAGNOSIS must include a non-empty reasoning string.")
-        if self.action == "FINAL_DIAGNOSIS" and not self.evidence_ids:
-            raise ValueError(
-                "FINAL_DIAGNOSIS must reference at least one evidence_id "
-                "from state.queries_executed to ground the diagnosis."
-            )
+        if self.action == "FINAL_DIAGNOSIS":
+            if not self.reasoning:
+                raise ValueError("FINAL_DIAGNOSIS must include a non-empty reasoning string.")
+            if not self.diagnosis_service and self.service:
+                object.__setattr__(self, "diagnosis_service", self.service)
+            if not self.diagnosis_service:
+                raise ValueError("FINAL_DIAGNOSIS must include a non-empty diagnosis_service.")
+            if not self.evidence_ids:
+                raise ValueError(
+                    "FINAL_DIAGNOSIS must reference at least one evidence_id "
+                    "from state.queries_executed to ground the diagnosis."
+                )
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "action": self.action,
             "tool_name": self.tool_name,
             "service": self.service,
+            "diagnosis_service": self.diagnosis_service,
             "reasoning": self.reasoning,
             "evidence_ids": list(self.evidence_ids),
             "step_index": self.step_index,
@@ -161,6 +168,48 @@ class StepTiming:
 
 
 @dataclass
+class LLMExperimentRecord:
+    """Per-run summary for evaluating the LLM's proposal separately from RCA."""
+
+    case_id: str
+    condition: str = "C"
+    model: str = "unknown"
+    detected_window: dict[str, Any] = field(default_factory=dict)
+    oracle_window: dict[str, Any] = field(default_factory=dict)
+    llm_diagnosis: str = ""
+    abstain: bool = False
+    reasoning: str = ""
+    evidence_ids: tuple[str, ...] = ()
+    query_count: int = 0
+    query_cost: int = 0
+    termination_action: str = ""
+    latency_sec: float = 0.0
+    deterministic_top_service: str = ""
+    deterministic_rankings: tuple[str, ...] = ()
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "case_id": self.case_id,
+            "condition": self.condition,
+            "model": self.model,
+            "detected_window": self.detected_window,
+            "oracle_window": self.oracle_window,
+            "llm_diagnosis": self.llm_diagnosis,
+            "abstain": self.abstain,
+            "reasoning": self.reasoning,
+            "evidence_ids": list(self.evidence_ids),
+            "query_count": self.query_count,
+            "query_cost": self.query_cost,
+            "termination_action": self.termination_action,
+            "latency_sec": round(self.latency_sec, 4),
+            "deterministic_top_service": self.deterministic_top_service,
+            "deterministic_rankings": list(self.deterministic_rankings),
+            "metadata": self.metadata,
+        }
+
+
+@dataclass
 class InvestigationTrajectory:
     """Structured, exportable record of a complete agent-driven investigation.
 
@@ -188,6 +237,8 @@ class InvestigationTrajectory:
     incident_id: str
     decisions: list[AgentDecision] = field(default_factory=list)
     final_state: InvestigationState | None = None
+    llm_diagnosis: LLMDiagnosis | None = None
+    experiment: LLMExperimentRecord | None = None
     total_steps: int = 0
     total_budget_used: int = 0
     terminated_by: str = ""
@@ -238,6 +289,8 @@ class InvestigationTrajectory:
             "terminated_by": self.terminated_by,
             "decisions": [d.to_dict() for d in self.decisions],
             "final_state": self.final_state.to_dict() if self.final_state else None,
+            "llm_diagnosis": self.llm_diagnosis.to_dict() if self.llm_diagnosis else None,
+            "experiment": self.experiment.to_dict() if self.experiment else None,
             "step_timings": [t.to_dict() for t in self.step_timings],
             "total_llm_time_sec": round(self.total_llm_time_sec, 4),
             "total_tool_time_sec": round(self.total_tool_time_sec, 4),
@@ -418,6 +471,7 @@ class MockAgentModel(AgentModel):
                     f"causal consistency: {top_hyp.consistency_score:.2f}. "
                     f"Diagnosing '{top_hyp.service}' as root cause."
                 ),
+                diagnosis_service=top_hyp.service,
                 evidence_ids=evidence_ids,
                 step_index=step,
             )
@@ -433,6 +487,7 @@ class MockAgentModel(AgentModel):
                         f"Accepting top hypothesis '{top_hyp.service}' "
                         f"(confidence={top_hyp.confidence:.1%}) as best available diagnosis."
                     ),
+                    diagnosis_service=top_hyp.service,
                     evidence_ids=evidence_ids,
                     step_index=step,
                 )
@@ -498,6 +553,7 @@ class MockAgentModel(AgentModel):
                     f"Accepting top hypothesis '{top_hyp.service}' "
                     f"(confidence={top_hyp.confidence:.1%}) as final diagnosis."
                 ),
+                diagnosis_service=top_hyp.service,
                 evidence_ids=evidence_ids,
                 step_index=step,
             )
@@ -571,6 +627,7 @@ def _parse_llm_response(raw_text: str, step: int, state: InvestigationState) -> 
     reasoning = str(data.get("reasoning", "")).strip() or "No reasoning provided."
     tool_name = str(data.get("tool_name", "")).strip()
     service = str(data.get("service", "")).strip()
+    diagnosis_service = str(data.get("diagnosis_service", "")).strip() or service
     evidence_ids_raw = data.get("evidence_ids", [])
     if isinstance(evidence_ids_raw, list):
         evidence_ids: tuple[str, ...] = tuple(str(e) for e in evidence_ids_raw)
@@ -578,25 +635,36 @@ def _parse_llm_response(raw_text: str, step: int, state: InvestigationState) -> 
         evidence_ids = ()
 
     # For FINAL_DIAGNOSIS: auto-populate evidence_ids from query history if absent
-    if action == "FINAL_DIAGNOSIS" and not evidence_ids:
-        fallback_ids = tuple(
-            q.query_id for q in state.queries_executed if q.status == "SUCCESS"
-        )[:3]
-        if not fallback_ids:
-            _log.warning(
-                "LLM FINAL_DIAGNOSIS has no evidence_ids and no successful queries; "
-                "converting to STOP."
-            )
+    if action == "FINAL_DIAGNOSIS":
+        if not diagnosis_service:
+            _log.warning("LLM FINAL_DIAGNOSIS had no diagnosis_service; converting to STOP.")
             return AgentDecision(
                 action="STOP",
                 reasoning=(
-                    "Agent issued FINAL_DIAGNOSIS without evidence IDs and no queries "
-                    f"completed. Original reasoning: {reasoning}"
+                    "Agent issued FINAL_DIAGNOSIS without a diagnosis service. "
+                    f"Original reasoning: {reasoning}"
                 ),
                 step_index=step,
             )
-        evidence_ids = fallback_ids
-        reasoning = f"[auto-grounded from query history] {reasoning}"
+        if not evidence_ids:
+            fallback_ids = tuple(
+                q.query_id for q in state.queries_executed if q.status == "SUCCESS"
+            )[:3]
+            if not fallback_ids:
+                _log.warning(
+                    "LLM FINAL_DIAGNOSIS has no evidence_ids and no successful queries; "
+                    "converting to STOP."
+                )
+                return AgentDecision(
+                    action="STOP",
+                    reasoning=(
+                        "Agent issued FINAL_DIAGNOSIS without evidence IDs and no queries "
+                        f"completed. Original reasoning: {reasoning}"
+                    ),
+                    step_index=step,
+                )
+            evidence_ids = fallback_ids
+            reasoning = f"[auto-grounded from query history] {reasoning}"
 
     try:
         return AgentDecision(
@@ -604,6 +672,7 @@ def _parse_llm_response(raw_text: str, step: int, state: InvestigationState) -> 
             reasoning=reasoning,
             tool_name=tool_name,
             service=service,
+            diagnosis_service=diagnosis_service,
             evidence_ids=evidence_ids,
             step_index=step,
         )

@@ -32,6 +32,7 @@ from typing import Any, Mapping, Sequence
 from digital_detective.detective.investigator import InvestigationEngine
 from digital_detective.detective.models import (
     InvestigationState,
+    LLMDiagnosis,
     RootCauseDecision,
 )
 from digital_detective.detective.remediation import (
@@ -54,7 +55,7 @@ from digital_detective.traces import extract_trace_latency_evidence
 from eval.universe import normalize_service_name, resolve_candidate_universe
 from eval.windows import resolve_incident_window
 
-from .models import AgentDecision, AgentModel, InvestigationTrajectory, StepTiming
+from .models import AgentDecision, AgentModel, InvestigationTrajectory, LLMExperimentRecord, StepTiming
 from .policy import validate_decision
 
 # Tools that are legal for the agent to request
@@ -103,6 +104,7 @@ class AgentOrchestrator:
         tool_costs: Mapping[str, int] | None = None,
         fusion_weights: Mapping[str, float] | None = None,
         allow_duplicate_queries: bool = False,
+        condition: str = "C",
     ) -> None:
         self.agent_model = agent_model
         self.budget = budget
@@ -112,6 +114,74 @@ class AgentOrchestrator:
         self.tool_costs = dict(DEFAULT_TOOL_COSTS if tool_costs is None else tool_costs)  # type: ignore[arg-type]
         self.fusion = EvidenceFusion(weights=fusion_weights)
         self.allow_duplicate_queries = allow_duplicate_queries
+        self.condition = str(condition).upper()
+
+    @staticmethod
+    def _llm_diagnosis_from_decision(
+        decision: AgentDecision,
+        *,
+        condition: str,
+        model_name: str,
+    ) -> LLMDiagnosis:
+        diagnosis_service = getattr(decision, "diagnosis_service", "")
+        abstain = (
+            decision.action == "STOP"
+            or (decision.action == "QUERY" and condition == "A")
+            or not diagnosis_service
+        )
+        return LLMDiagnosis(
+            diagnosis_service=diagnosis_service,
+            abstain=abstain,
+            reasoning=decision.reasoning,
+            evidence_ids=decision.evidence_ids,
+            condition=condition,
+            model_name=model_name,
+            metadata={
+                "action": decision.action,
+                "tool_name": decision.tool_name,
+                "service": decision.service,
+            },
+        )
+
+    @staticmethod
+    def _build_experiment_record(
+        *,
+        trajectory: InvestigationTrajectory,
+        state: InvestigationState,
+        decision: AgentDecision,
+        condition: str,
+        detected_window: Mapping[str, Any] | None,
+    ) -> LLMExperimentRecord:
+        llm_diagnosis = trajectory.llm_diagnosis or AgentOrchestrator._llm_diagnosis_from_decision(
+            decision,
+            condition=condition,
+            model_name=trajectory.model_name,
+        )
+        deterministic_rankings = tuple(h.service for h in state.current_rankings)
+        deterministic_top = state.current_rankings[0].service if state.current_rankings else ""
+        return LLMExperimentRecord(
+            case_id=state.incident_id,
+            condition=condition,
+            model=trajectory.model_name,
+            detected_window=dict(detected_window or {}),
+            oracle_window={},
+            llm_diagnosis=llm_diagnosis.diagnosis_service,
+            abstain=bool(llm_diagnosis.abstain),
+            reasoning=llm_diagnosis.reasoning,
+            evidence_ids=llm_diagnosis.evidence_ids,
+            query_count=len(state.queries_executed),
+            query_cost=state.total_query_cost,
+            termination_action=trajectory.terminated_by or decision.action,
+            latency_sec=trajectory.total_llm_time_sec,
+            deterministic_top_service=deterministic_top,
+            deterministic_rankings=deterministic_rankings,
+            metadata={
+                "action": decision.action,
+                "tool_name": decision.tool_name,
+                "service": decision.service,
+                "condition": condition,
+            },
+        )
 
     # ------------------------------------------------------------------
     # Public entry point
@@ -123,6 +193,7 @@ class AgentOrchestrator:
         candidate_universe: Sequence[str] | None = None,
         allow_low_confidence_remediation: bool = False,
         custom_onset_ts: int | None = None,
+        condition: str | None = None,
     ) -> InvestigationTrajectory:
         """Run the complete agent-driven investigation for an incident case.
 
@@ -144,6 +215,10 @@ class AgentOrchestrator:
         InvestigationTrajectory
             Fully populated trajectory including the final ``InvestigationState``.
         """
+        mode = str(condition or self.condition).upper()
+        if mode not in {"A", "C"}:
+            mode = "C"
+
         cid = str(case.metadata.case_id)
         trajectory = InvestigationTrajectory(
             incident_id=cid,
@@ -271,6 +346,57 @@ class AgentOrchestrator:
             and (not (t == "get_logs") or has_logs)
         ]
 
+        if mode == "A":
+            t_llm_start = time.perf_counter()
+            decision = self.agent_model.decide(
+                state=state,
+                trajectory=trajectory,
+                available_tools=available_tools,
+                already_queried=set(already_queried),
+            )
+            t_llm_end = time.perf_counter()
+            llm_call_sec = decision.metadata.get("llm_call_sec", t_llm_end - t_llm_start)
+            if decision.action == "QUERY":
+                decision = AgentDecision(
+                    action="STOP",
+                    reasoning=(
+                        "Condition A is single-shot and forbids executing a QUERY after the initial LLM step. "
+                        "The model must either finalize or abstain."
+                    ),
+                    evidence_ids=(),
+                    step_index=decision.step_index,
+                    metadata={**decision.metadata, "condition": "A", "query_rejected": True},
+                )
+            if decision.action == "FINAL_DIAGNOSIS":
+                trajectory.terminated_by = "FINAL_DIAGNOSIS"
+                state.status = "DIAGNOSIS_COMPLETE"
+            else:
+                trajectory.terminated_by = "STOP"
+                state.status = "BUDGET_EXHAUSTED"
+            trajectory.append_decision(decision)
+            trajectory.llm_diagnosis = self._llm_diagnosis_from_decision(
+                decision,
+                condition="A",
+                model_name=trajectory.model_name,
+            )
+            state.llm_diagnosis = trajectory.llm_diagnosis
+            trajectory.total_steps = len(trajectory.decisions)
+            trajectory.total_budget_used = state.budget - state.remaining_budget
+            trajectory.total_llm_time_sec = llm_call_sec
+            trajectory.total_orchestration_sec = llm_call_sec
+            trajectory.experiment = self._build_experiment_record(
+                trajectory=trajectory,
+                state=state,
+                decision=decision,
+                condition="A",
+                detected_window={
+                    "mode": "detected",
+                    "onset_ts": getattr(window, "onset_ts", None),
+                    "end_ts": getattr(window, "end_ts", None),
+                },
+            )
+            return trajectory
+
         for _step in range(self.max_steps):
             t_step_start = time.perf_counter()
 
@@ -351,6 +477,12 @@ class AgentOrchestrator:
                 consecutive_invalid = 0
 
             trajectory.append_decision(decision)
+            trajectory.llm_diagnosis = self._llm_diagnosis_from_decision(
+                decision,
+                condition=mode,
+                model_name=trajectory.model_name,
+            )
+            state.llm_diagnosis = trajectory.llm_diagnosis
 
             # ---- Handle terminal actions --------------------------------
             if decision.action == "FINAL_DIAGNOSIS":
@@ -577,5 +709,21 @@ class AgentOrchestrator:
         trajectory.final_state = state
         trajectory.total_budget_used = state.total_query_cost
         trajectory.terminated_by = terminated_by
+        if trajectory.llm_diagnosis is not None:
+            trajectory.experiment = self._build_experiment_record(
+                trajectory=trajectory,
+                state=state,
+                decision=trajectory.decisions[-1] if trajectory.decisions else AgentDecision(
+                    action="STOP",
+                    reasoning="No agent decision recorded.",
+                    step_index=0,
+                ),
+                condition=mode,
+                detected_window={
+                    "mode": "detected",
+                    "onset_ts": getattr(window, "onset_ts", None),
+                    "end_ts": getattr(window, "end_ts", None),
+                },
+            )
 
         return trajectory

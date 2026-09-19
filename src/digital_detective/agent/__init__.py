@@ -29,11 +29,19 @@ AgentDecision
     Structured control signal emitted by the agent model each step.
 """
 
+from .evaluation import (
+    LLMEvaluationSummary,
+    llm_abstention_rate,
+    llm_topk_accuracy,
+    summarize_condition_records,
+    summarize_llm_records,
+)
 from .models import (
     AgentDecision,
     AgentModel,
     GrokAgentModel,
     InvestigationTrajectory,
+    LLMExperimentRecord,
     MockAgentModel,
     OllamaAgentModel,
     OpenAIChatAdapter,
@@ -47,8 +55,14 @@ __all__ = [
     "AgentOrchestrator",
     "GrokAgentModel",
     "InvestigationTrajectory",
+    "LLMEvaluationSummary",
+    "LLMExperimentRecord",
     "MockAgentModel",
     "OllamaAgentModel",
     "OpenAIChatAdapter",
     "build_agent_model",
+    "llm_abstention_rate",
+    "llm_topk_accuracy",
+    "summarize_condition_records",
+    "summarize_llm_records",
 ]

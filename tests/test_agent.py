@@ -16,15 +16,18 @@ from dataclasses import dataclass, field
 from typing import Any, Sequence
 from unittest.mock import MagicMock, patch
 
+from digital_detective.agent.evaluation import summarize_llm_records
 from digital_detective.agent.models import (
     AgentDecision,
     AgentModel,
     InvestigationTrajectory,
+    LLMExperimentRecord,
     MockAgentModel,
 )
 from digital_detective.detective.models import (
     EvidenceItem,
     InvestigationState,
+    LLMDiagnosis,
     RankedHypothesis,
     ToolQueryRecord,
 )
@@ -118,10 +121,12 @@ class TestAgentDecisionValidation(unittest.TestCase):
     def test_valid_final_diagnosis(self) -> None:
         d = AgentDecision(
             action="FINAL_DIAGNOSIS",
+            diagnosis_service="svcA",
             reasoning="Evidence collected.",
             evidence_ids=("q_1", "q_2"),
         )
         self.assertEqual(d.action, "FINAL_DIAGNOSIS")
+        self.assertEqual(d.diagnosis_service, "svcA")
         self.assertEqual(len(d.evidence_ids), 2)
 
     def test_valid_stop(self) -> None:
@@ -145,11 +150,15 @@ class TestAgentDecisionValidation(unittest.TestCase):
 
     def test_final_diagnosis_requires_reasoning(self) -> None:
         with self.assertRaises(ValueError):
-            AgentDecision(action="FINAL_DIAGNOSIS", reasoning="", evidence_ids=("q1",))
+            AgentDecision(action="FINAL_DIAGNOSIS", reasoning="", evidence_ids=("q1",), diagnosis_service="svcA")
+
+    def test_final_diagnosis_requires_diagnosis_service(self) -> None:
+        with self.assertRaises(ValueError):
+            AgentDecision(action="FINAL_DIAGNOSIS", reasoning="Some reasoning.", evidence_ids=("q1",))
 
     def test_final_diagnosis_requires_evidence_ids(self) -> None:
         with self.assertRaises(ValueError):
-            AgentDecision(action="FINAL_DIAGNOSIS", reasoning="Some reasoning.")
+            AgentDecision(action="FINAL_DIAGNOSIS", reasoning="Some reasoning.", diagnosis_service="svcA")
 
     def test_to_dict_round_trips(self) -> None:
         d = AgentDecision(
@@ -182,6 +191,29 @@ class TestInvestigationTrajectory(unittest.TestCase):
         traj = _empty_trajectory("inc-42")
         traj.terminated_by = "FINAL_DIAGNOSIS"
         traj.total_budget_used = 7
+        traj.llm_diagnosis = LLMDiagnosis(
+            diagnosis_service="svcA",
+            abstain=False,
+            reasoning="evidence supports svcA",
+            evidence_ids=("q1",),
+            condition="C",
+            model_name="MockAgentModel",
+        )
+        traj.experiment = LLMExperimentRecord(
+            case_id="inc-42",
+            condition="C",
+            model="MockAgentModel",
+            llm_diagnosis="svcA",
+            abstain=False,
+            reasoning="evidence supports svcA",
+            evidence_ids=("q1",),
+            query_count=2,
+            query_cost=3,
+            termination_action="FINAL_DIAGNOSIS",
+            latency_sec=0.75,
+            deterministic_top_service="svcA",
+            deterministic_rankings=("svcA", "svcB"),
+        )
         d = AgentDecision(action="STOP", reasoning="done.")
         traj.append_decision(d)
         d_dict = traj.to_dict()
@@ -189,6 +221,66 @@ class TestInvestigationTrajectory(unittest.TestCase):
         self.assertEqual(d_dict["terminated_by"], "FINAL_DIAGNOSIS")
         self.assertEqual(d_dict["total_budget_used"], 7)
         self.assertEqual(len(d_dict["decisions"]), 1)
+        self.assertEqual(d_dict["llm_diagnosis"]["diagnosis_service"], "svcA")
+        self.assertEqual(d_dict["experiment"]["llm_diagnosis"], "svcA")
+
+
+class TestLLMEvaluationSummary(unittest.TestCase):
+    def test_summary_tracks_topk_abstention_and_cost(self) -> None:
+        records = [
+            LLMExperimentRecord(
+                case_id="case-1",
+                condition="A",
+                model="mock",
+                llm_diagnosis="svcA",
+                abstain=False,
+                reasoning="svcA",
+                evidence_ids=("q1",),
+                query_count=0,
+                query_cost=0,
+                termination_action="FINAL_DIAGNOSIS",
+                latency_sec=0.3,
+                deterministic_top_service="svcA",
+                deterministic_rankings=("svcA", "svcB", "svcC"),
+            ),
+            LLMExperimentRecord(
+                case_id="case-2",
+                condition="A",
+                model="mock",
+                llm_diagnosis="svcC",
+                abstain=False,
+                reasoning="svcC",
+                evidence_ids=("q2",),
+                query_count=0,
+                query_cost=0,
+                termination_action="FINAL_DIAGNOSIS",
+                latency_sec=0.4,
+                deterministic_top_service="svcA",
+                deterministic_rankings=("svcA", "svcB", "svcC"),
+            ),
+            LLMExperimentRecord(
+                case_id="case-3",
+                condition="A",
+                model="mock",
+                llm_diagnosis="",
+                abstain=True,
+                reasoning="abstain",
+                evidence_ids=(),
+                query_count=0,
+                query_cost=0,
+                termination_action="STOP",
+                latency_sec=0.5,
+                deterministic_top_service="svcA",
+                deterministic_rankings=("svcA", "svcB", "svcC"),
+            ),
+        ]
+        summary = summarize_llm_records(records)
+        self.assertAlmostEqual(summary.top1, 0.5)
+        self.assertAlmostEqual(summary.top3, 1.0)
+        self.assertAlmostEqual(summary.abstention_rate, 1 / 3)
+        self.assertAlmostEqual(summary.mean_query_count, 0.0)
+        self.assertAlmostEqual(summary.mean_query_cost, 0.0)
+        self.assertAlmostEqual(summary.mean_latency_sec, 0.4, places=2)
 
 
 # ===========================================================================
@@ -416,6 +508,7 @@ class TestAgentOrchestratorSmoke(unittest.TestCase):
                     evidence_ids = (successful[0].query_id,)
                     return AgentDecision(
                         action="FINAL_DIAGNOSIS",
+                        diagnosis_service="svcA",
                         reasoning="Smoke stop.",
                         evidence_ids=evidence_ids,
                         step_index=len(trajectory.decisions),
@@ -438,12 +531,13 @@ class TestAgentOrchestratorSmoke(unittest.TestCase):
 
 
 class TestAgentDecisionGrounding(unittest.TestCase):
-    """FINAL_DIAGNOSIS without evidence_ids must raise at construction time."""
+    """FINAL_DIAGNOSIS requires a diagnosis service and evidence IDs."""
 
     def test_final_diagnosis_requires_evidence(self) -> None:
         with self.assertRaises(ValueError) as ctx:
             AgentDecision(
                 action="FINAL_DIAGNOSIS",
+                diagnosis_service="svcA",
                 reasoning="No supporting evidence collected.",
                 evidence_ids=(),
             )
@@ -452,9 +546,11 @@ class TestAgentDecisionGrounding(unittest.TestCase):
     def test_final_diagnosis_with_evidence_succeeds(self) -> None:
         d = AgentDecision(
             action="FINAL_DIAGNOSIS",
+            diagnosis_service="svcA",
             reasoning="Supported by q1 and q2.",
             evidence_ids=("q1", "q2"),
         )
+        self.assertEqual(d.diagnosis_service, "svcA")
         self.assertEqual(len(d.evidence_ids), 2)
 
 
