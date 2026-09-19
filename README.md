@@ -32,9 +32,9 @@ ML Candidate Ranking (Model B supervised pairwise candidate ranker)
        ▼
 LLM Investigator (Bounded tool-augmented investigation loop)
        │
-       ├── Hybrid Operational Knowledge RAG
+       ├── Operational Knowledge RAG
        ▼
-Safety Gate Policy (Pre-execution Blast-radius & risk validation)
+Safety Gate Policy (Pre-execution validation & safety checks)
        │
        ▼
 Simulated Sandbox Remediation
@@ -51,8 +51,8 @@ Post-Intervention Validation
 * **Deterministic RCA ($S_{\text{comb}}$, $E_{\text{elev}}$)**: Sole causal ground truth authority for candidate scoring and baseline ordering.
 * **ML Candidate Ranking (Model B)**: Supervised ranking enhancement on causal-prefix features; operates under strict family-aware split boundaries.
 * **LLM Investigator**: Bounded hypothesis explorer and orchestrator. It collects observations and proposes diagnoses, but cannot override deterministic RCA authority.
-* **Hybrid Operational Knowledge RAG**: Operational knowledge retrieval supplying reference-only context; strictly prohibited from altering scoring formulas or safety verdicts.
-* **Safety Gate Policy**: Deterministic policy enforcement controlling simulated remediation actions and verifying multi-symptom recovery.
+* **Operational Knowledge RAG**: Operational knowledge retrieval supplying reference-only context; strictly prohibited from altering scoring formulas or safety verdicts.
+* **Safety Gate Policy**: Deterministic policy enforcement verifying action legality, rollback definitions, degradation evidence, and confidence thresholds before authorizing simulated remediation.
 
 ---
 
@@ -76,15 +76,16 @@ A compact temporal deep learning model operating over causal-prefix metric seque
 * **Locked RE2-OB Test**: Model B (0.817 / 0.967 / 1.000 / 0.892) vs DL + Model B (0.767 / 0.883 / 0.933 / 0.846)
 * **Decision**: **REJECTED**. The temporal DL enhancement degraded ranking performance on both development and locked-test evaluations and was therefore rejected. Model B is retained as the frozen ranker.
 
-### D. Hybrid Operational Knowledge RAG
+### D. Operational Knowledge RAG
 * **Operational Corpus**: Provenance-backed microservice operational runbooks, architecture specifications, and troubleshooting guides (536 documents).
 * **Role**: Injected as `OPERATIONAL KNOWLEDGE (RAG – REFERENCE ONLY)` to provide system context to the investigator agent without altering deterministic scoring.
-* **Validation**: RAG retrieval and context injection were end-to-end verified. The separate RAG-2 hybrid BM25 + BGE-small + RRF implementation was validated through its controlled retrieval experiments.
+* **Validation**: RAG retrieval and context injection were end-to-end verified using `DeterministicRetriever` on the operational corpus. The separate RAG-2 hybrid BM25 + BGE-small + RRF implementation was validated through its controlled retrieval experiments.
 * *Note*: Full human/expert RAG relevance labeling was not completed before freeze; RAG remains an operational/reference knowledge layer.
 
 ### E. LLM Investigator & Safety Gate
 * **Investigator**: Bounded reasoning loop supporting tool actions (`QUERY`, `FINAL_DIAGNOSIS`, `STOP`) across Conditions A and C.
 * **Local Backend**: Evaluated with `qwen3:8b` via Ollama OpenAI-compatible endpoints with deterministic authority preservation and structured JSON schema enforcement.
+* **Safety Gate**: Deterministic pre-execution validation enforcing supported action types, rollback requirements, candidate universe and root-cause target matching, degradation evidence, and confidence thresholds.
 
 ---
 

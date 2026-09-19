@@ -40,9 +40,9 @@ The complete system comprises 11 functional stages arranged in a unidirectional 
                        ▼
 [ LLM Investigator (Bounded Tool-Augmented Exploration Loop) ]
                        │
-                       ├── [ Hybrid Operational Knowledge RAG ]
+                       ├── [ Operational Knowledge RAG ]
                        ▼
-[ Safety Gate Policy (Blast-Radius & Pre-Condition Validation) ]
+[ Safety Gate Policy (Pre-Condition & Safety Validation) ]
                        │
                        ▼
 [ Simulated Sandbox Remediation ]
@@ -61,7 +61,7 @@ The complete system comprises 11 functional stages arranged in a unidirectional 
 | **Causal Core** | Deterministic RCA ($S_{\text{comb}}$, $E_{\text{elev}}$) | Ground-truth scoring, graph traversal | **No** |
 | **Ranking Core** | Supervised Model B Ranker | Causal-prefix candidate re-ranking | **No** |
 | **Exploration** | LLM Investigator (Qwen3:8B) | Dynamic observation gathering, hypothesis probing | N/A (Proposes only) |
-| **Context** | Hybrid Operational Knowledge RAG | Operational runbooks, reference knowledge | **No** (Reference only) |
+| **Context** | Operational Knowledge RAG | Operational runbooks, reference knowledge | **No** (Reference only) |
 | **Safety Gate** | Safety Policy & Recovery Verifier | Remediation authorization, recovery proof | **No** (Strict gate) |
 
 ---
@@ -84,7 +84,7 @@ The deterministic RCA engine combines metric and trace evidence without stochast
 
 1. **Metric Scoring ($S_{\text{comb}}$)**:
    $$S_{\text{comb}}(v) = w_{\text{str}} R_{\text{str}}(v) + w_{\text{early}} R_{\text{early}}(v) + w_{\text{cov}} R_{\text{cov}}(v) + w_{\text{prop}} R_{\text{prop}}(v)$$
-   integrating anomaly intensity, onset earliness, metric coverage, and downstream reachability.
+   integrating anomaly intensity ($R_{\text{str}}$), onset earliness ($R_{\text{early}}$), callee anomaly coverage ($R_{\text{cov}}$), and downstream propagation consistency ($R_{\text{prop}}$).
 2. **Trace Edge Attribution ($E_{\text{elev}}$)**: Quantifies edge duration elevation relative to baseline distributions along trace call paths.
 3. **Multi-Modal Fusion**: Generates unified deterministic hypothesis rankings.
 
@@ -153,11 +153,11 @@ The investigative agent serves as an interactive explorer operating within stric
 
 ---
 
-## 9. Hybrid Operational Knowledge RAG
+## 9. Operational Knowledge RAG
 
 * **Corpus**: 536 provenance-backed operational runbooks, architecture maps, and microservice failure playbooks stored in `eval/rag2_benchmark/rag2_corpus.jsonl`.
 * **Retrieval & Role**: Injected as `OPERATIONAL KNOWLEDGE (RAG – REFERENCE ONLY)` to supply system context to the investigator agent without altering deterministic scoring.
-* **Validation**: RAG retrieval and context injection were end-to-end verified. The separate RAG-2 hybrid BM25 + BGE-small + RRF implementation was validated through its controlled retrieval experiments.
+* **Validation**: RAG retrieval and context injection were end-to-end verified using `DeterministicRetriever` on the 536-document corpus. The separate RAG-2 hybrid BM25 + BGE-small + RRF implementation was validated through its controlled retrieval experiments.
 * **Benchmark Status**: Full human/expert RAG relevance labeling was not completed before freeze; RAG remains an operational/reference knowledge layer.
 * **Dependency Note**: The heavier RAG-2 dense retrieval and reranker stack may require additional runtime packages beyond the core dependencies in `pyproject.toml`.
 
@@ -166,10 +166,10 @@ The investigative agent serves as an interactive explorer operating within stric
 ## 10. Safety and Remediation
 
 Autonomous remediation adheres to safety-by-design:
-1. **Safety Policy Gate**: Evaluates proposed actions against service criticalities, blast radius thresholds, and causal evidence requirements. Unauthorized actions are blocked.
-2. **Simulated Sandbox Remediation**: Applies in-memory state transformations (e.g., container restart, traffic throttling, cache flush) to simulate recovery.
+1. **Safety Policy Gate**: Evaluates proposed actions against deterministic invariant checks: supported action type, mandatory non-empty rollback action, candidate universe membership, target match with root-cause decision, degradation evidence on the target entity (preventing actions on healthy bystanders), and decision confidence threshold (default $\ge 0.80$). Unauthorized actions are blocked.
+2. **Simulated Sandbox Remediation**: Applies in-memory state transformations (e.g., `scale_service`, `restart_service`, `clear_connection_pool`, `rollback_deployment`) to simulate recovery.
 3. **Multi-Symptom Recovery Verification**: Assesses post-intervention metric trends across all affected services to verify symptom alleviation without secondary degradation.
-4. **Post-Intervention Validation**: Re-runs topological consistency checks to ensure complete recovery.
+4. **Post-Intervention Validation**: Performs post-hoc causal validation (`validate_intervention`) assessing whether targeted intervention resolved root-cause and downstream symptoms without inducing new regressions, classifying outcomes as supporting, contradicting, or inconclusive for the diagnosis.
 
 ---
 
@@ -220,7 +220,7 @@ Live `qwen3:8b` execution via Ollama was verified. Under Windows GPU environment
 
 ## 14. Conclusion
 
-Digital Detective demonstrates that autonomous microservice incident investigation can achieve high accuracy (0.8917 MRR on locked RE2-OB) while remaining safe, explainable, and resilient to hallucination. By placing deterministic causal analytics and supervised pairwise ranking at the center of authority, and employing LLM agents and hybrid RAG strictly for investigative exploration and operational synthesis, the system provides a dependable foundation for autonomous cloud operations.
+Digital Detective demonstrates that autonomous microservice incident investigation can achieve high accuracy (0.8917 MRR on locked RE2-OB) while remaining safe, explainable, and resilient to hallucination. By placing deterministic causal analytics and supervised pairwise ranking at the center of authority, and employing LLM agents and operational RAG strictly for investigative exploration and operational synthesis, the system provides a dependable foundation for autonomous cloud operations.
 
 ---
 
@@ -235,8 +235,8 @@ Digital Detective demonstrates that autonomous microservice incident investigati
 | **Temporal DL Complement** | **Rejected** | Evaluated & Rejected ($\Delta$ MRR = -0.0458 on locked test) |
 | **LLM Investigator (A/C)** | **Accepted** | Bounded reasoning loop, JSON schema enforcement, tool use |
 | **Live Qwen3:8B Backend** | **Verified** | Verified with Ollama; documented Windows GPU runtime limitation |
-| **Hybrid Operational Knowledge RAG** | **Implemented** | RAG retrieval/injection E2E verified; RAG-2 hybrid evaluated in controlled experiments |
-| **Safety Policy Gate** | **Implemented** | Deterministic pre-execution blast-radius & permission checks |
-| **Recovery Verification** | **Implemented** | Multi-symptom recovery & post-intervention topological checks |
+| **Operational Knowledge RAG** | **Implemented** | RAG retrieval/injection E2E verified via DeterministicRetriever; RAG-2 hybrid evaluated in controlled experiments |
+| **Safety Policy Gate** | **Implemented** | Deterministic pre-execution safety, rollback, target, degradation & confidence checks |
+| **Recovery Verification** | **Implemented** | Multi-symptom recovery & post-intervention causal validation |
 | **End-to-End Pipeline** | **Verified** | Full software pipeline verified on `re2ob_checkoutservice_cpu_1` |
 | **Reproducibility & Splits** | **Documented** | Family-grouped 3-fold dev splits, locked RE2-OB test, fixed seeds |
