@@ -1,0 +1,874 @@
+{
+  "evaluation_name": "locked_test_canonical_evaluation",
+  "model_artifact": "C:\\Users\\Aayan\\Desktop\\Project\\MidNightCluster\\digital-detective\\models\\model_b_ranker_v1.pkl",
+  "dataset_split": {
+    "training_dataset": "RE2-SS (90) + RE2-TT (90) = 180 cases",
+    "locked_test_dataset": "RE2-OB repetitions 2 & 3 = 60 cases",
+    "demo_case": "re2ob_checkoutservice_cpu_1",
+    "leakage_overlap_count": 0
+  },
+  "model_b_metrics": {
+    "top1": 0.8166666666666667,
+    "top1_numerator": 49,
+    "top3": 0.9666666666666667,
+    "top3_numerator": 58,
+    "top5": 1.0,
+    "top5_numerator": 60,
+    "mrr": 0.8916666666666668,
+    "mrr_sum": 53.50000000000001,
+    "total_cases": 60
+  },
+  "baseline_s_comb_metrics": {
+    "top1": 0.6166666666666667,
+    "top1_numerator": 37,
+    "top3": 0.8166666666666667,
+    "top3_numerator": 49,
+    "top5": 0.8666666666666667,
+    "top5_numerator": 52,
+    "mrr": 0.7383928571428572,
+    "mrr_sum": 44.30357142857143,
+    "total_cases": 60
+  },
+  "case_evaluations": [
+    {
+      "case_id": "re2ob_checkoutservice_cpu_2",
+      "root_cause": "checkoutservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "checkoutservice",
+        "productcatalogservice",
+        "currencyservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_checkoutservice_cpu_3",
+      "root_cause": "checkoutservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "checkoutservice",
+        "productcatalogservice",
+        "recommendationservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_checkoutservice_delay_2",
+      "root_cause": "checkoutservice",
+      "rank": 3,
+      "is_top1": false,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 0.3333333333333333,
+      "top_candidates": [
+        "paymentservice",
+        "currencyservice",
+        "checkoutservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_checkoutservice_delay_3",
+      "root_cause": "checkoutservice",
+      "rank": 3,
+      "is_top1": false,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 0.3333333333333333,
+      "top_candidates": [
+        "productcatalogservice",
+        "currencyservice",
+        "checkoutservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_checkoutservice_disk_2",
+      "root_cause": "checkoutservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "checkoutservice",
+        "currencyservice",
+        "emailservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_checkoutservice_disk_3",
+      "root_cause": "checkoutservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "checkoutservice",
+        "currencyservice",
+        "emailservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_checkoutservice_loss_2",
+      "root_cause": "checkoutservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "checkoutservice",
+        "emailservice",
+        "productcatalogservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_checkoutservice_loss_3",
+      "root_cause": "checkoutservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "checkoutservice",
+        "emailservice",
+        "currencyservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_checkoutservice_mem_2",
+      "root_cause": "checkoutservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "checkoutservice",
+        "currencyservice",
+        "emailservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_checkoutservice_mem_3",
+      "root_cause": "checkoutservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "checkoutservice",
+        "currencyservice",
+        "paymentservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_checkoutservice_socket_2",
+      "root_cause": "checkoutservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "checkoutservice",
+        "currencyservice",
+        "emailservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_checkoutservice_socket_3",
+      "root_cause": "checkoutservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "checkoutservice",
+        "recommendationservice",
+        "currencyservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_currencyservice_cpu_2",
+      "root_cause": "currencyservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "currencyservice",
+        "checkoutservice",
+        "productcatalogservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_currencyservice_cpu_3",
+      "root_cause": "currencyservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "currencyservice",
+        "productcatalogservice",
+        "frontend"
+      ]
+    },
+    {
+      "case_id": "re2ob_currencyservice_delay_2",
+      "root_cause": "currencyservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "currencyservice",
+        "checkoutservice",
+        "recommendationservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_currencyservice_delay_3",
+      "root_cause": "currencyservice",
+      "rank": 2,
+      "is_top1": false,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 0.5,
+      "top_candidates": [
+        "checkoutservice",
+        "currencyservice",
+        "emailservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_currencyservice_disk_2",
+      "root_cause": "currencyservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "currencyservice",
+        "checkoutservice",
+        "paymentservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_currencyservice_disk_3",
+      "root_cause": "currencyservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "currencyservice",
+        "checkoutservice",
+        "productcatalogservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_currencyservice_loss_2",
+      "root_cause": "currencyservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "currencyservice",
+        "frontend",
+        "recommendationservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_currencyservice_loss_3",
+      "root_cause": "currencyservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "currencyservice",
+        "checkoutservice",
+        "productcatalogservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_currencyservice_mem_2",
+      "root_cause": "currencyservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "currencyservice",
+        "checkoutservice",
+        "adservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_currencyservice_mem_3",
+      "root_cause": "currencyservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "currencyservice",
+        "checkoutservice",
+        "recommendationservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_currencyservice_socket_2",
+      "root_cause": "currencyservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "currencyservice",
+        "checkoutservice",
+        "adservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_currencyservice_socket_3",
+      "root_cause": "currencyservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "currencyservice",
+        "checkoutservice",
+        "adservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_emailservice_cpu_2",
+      "root_cause": "emailservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "emailservice",
+        "currencyservice",
+        "checkoutservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_emailservice_cpu_3",
+      "root_cause": "emailservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "emailservice",
+        "checkoutservice",
+        "currencyservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_emailservice_delay_2",
+      "root_cause": "emailservice",
+      "rank": 2,
+      "is_top1": false,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 0.5,
+      "top_candidates": [
+        "checkoutservice",
+        "emailservice",
+        "currencyservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_emailservice_delay_3",
+      "root_cause": "emailservice",
+      "rank": 4,
+      "is_top1": false,
+      "is_top3": false,
+      "is_top5": true,
+      "reciprocal_rank": 0.25,
+      "top_candidates": [
+        "currencyservice",
+        "adservice",
+        "checkoutservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_emailservice_disk_2",
+      "root_cause": "emailservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "emailservice",
+        "productcatalogservice",
+        "currencyservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_emailservice_disk_3",
+      "root_cause": "emailservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "emailservice",
+        "currencyservice",
+        "checkoutservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_emailservice_loss_2",
+      "root_cause": "emailservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "emailservice",
+        "checkoutservice",
+        "currencyservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_emailservice_loss_3",
+      "root_cause": "emailservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "emailservice",
+        "checkoutservice",
+        "currencyservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_emailservice_mem_2",
+      "root_cause": "emailservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "emailservice",
+        "checkoutservice",
+        "currencyservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_emailservice_mem_3",
+      "root_cause": "emailservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "emailservice",
+        "checkoutservice",
+        "currencyservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_emailservice_socket_2",
+      "root_cause": "emailservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "emailservice",
+        "checkoutservice",
+        "currencyservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_emailservice_socket_3",
+      "root_cause": "emailservice",
+      "rank": 2,
+      "is_top1": false,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 0.5,
+      "top_candidates": [
+        "currencyservice",
+        "emailservice",
+        "checkoutservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_cpu_2",
+      "root_cause": "productcatalogservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "productcatalogservice",
+        "recommendationservice",
+        "currencyservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_cpu_3",
+      "root_cause": "productcatalogservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "productcatalogservice",
+        "recommendationservice",
+        "checkoutservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_delay_2",
+      "root_cause": "productcatalogservice",
+      "rank": 3,
+      "is_top1": false,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 0.3333333333333333,
+      "top_candidates": [
+        "checkoutservice",
+        "currencyservice",
+        "productcatalogservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_delay_3",
+      "root_cause": "productcatalogservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "productcatalogservice",
+        "frontend",
+        "checkoutservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_disk_2",
+      "root_cause": "productcatalogservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "productcatalogservice",
+        "checkoutservice",
+        "currencyservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_disk_3",
+      "root_cause": "productcatalogservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "productcatalogservice",
+        "recommendationservice",
+        "currencyservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_loss_2",
+      "root_cause": "productcatalogservice",
+      "rank": 2,
+      "is_top1": false,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 0.5,
+      "top_candidates": [
+        "recommendationservice",
+        "productcatalogservice",
+        "currencyservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_loss_3",
+      "root_cause": "productcatalogservice",
+      "rank": 2,
+      "is_top1": false,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 0.5,
+      "top_candidates": [
+        "recommendationservice",
+        "productcatalogservice",
+        "currencyservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_mem_2",
+      "root_cause": "productcatalogservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "productcatalogservice",
+        "recommendationservice",
+        "frontend"
+      ]
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_mem_3",
+      "root_cause": "productcatalogservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "productcatalogservice",
+        "recommendationservice",
+        "currencyservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_socket_2",
+      "root_cause": "productcatalogservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "productcatalogservice",
+        "recommendationservice",
+        "checkoutservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_productcatalogservice_socket_3",
+      "root_cause": "productcatalogservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "productcatalogservice",
+        "currencyservice",
+        "checkoutservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_recommendationservice_cpu_2",
+      "root_cause": "recommendationservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "recommendationservice",
+        "currencyservice",
+        "productcatalogservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_recommendationservice_cpu_3",
+      "root_cause": "recommendationservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "recommendationservice",
+        "checkoutservice",
+        "adservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_recommendationservice_delay_2",
+      "root_cause": "recommendationservice",
+      "rank": 2,
+      "is_top1": false,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 0.5,
+      "top_candidates": [
+        "productcatalogservice",
+        "recommendationservice",
+        "checkoutservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_recommendationservice_delay_3",
+      "root_cause": "recommendationservice",
+      "rank": 4,
+      "is_top1": false,
+      "is_top3": false,
+      "is_top5": true,
+      "reciprocal_rank": 0.25,
+      "top_candidates": [
+        "currencyservice",
+        "checkoutservice",
+        "paymentservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_recommendationservice_disk_2",
+      "root_cause": "recommendationservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "recommendationservice",
+        "currencyservice",
+        "checkoutservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_recommendationservice_disk_3",
+      "root_cause": "recommendationservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "recommendationservice",
+        "productcatalogservice",
+        "checkoutservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_recommendationservice_loss_2",
+      "root_cause": "recommendationservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "recommendationservice",
+        "productcatalogservice",
+        "checkoutservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_recommendationservice_loss_3",
+      "root_cause": "recommendationservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "recommendationservice",
+        "currencyservice",
+        "productcatalogservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_recommendationservice_mem_2",
+      "root_cause": "recommendationservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "recommendationservice",
+        "currencyservice",
+        "productcatalogservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_recommendationservice_mem_3",
+      "root_cause": "recommendationservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "recommendationservice",
+        "checkoutservice",
+        "productcatalogservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_recommendationservice_socket_2",
+      "root_cause": "recommendationservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "recommendationservice",
+        "paymentservice",
+        "currencyservice"
+      ]
+    },
+    {
+      "case_id": "re2ob_recommendationservice_socket_3",
+      "root_cause": "recommendationservice",
+      "rank": 1,
+      "is_top1": true,
+      "is_top3": true,
+      "is_top5": true,
+      "reciprocal_rank": 1.0,
+      "top_candidates": [
+        "recommendationservice",
+        "productcatalogservice",
+        "currencyservice"
+      ]
+    }
+  ]
+}

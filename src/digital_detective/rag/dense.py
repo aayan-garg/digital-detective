@@ -40,13 +40,42 @@ class DenseRetriever:
                 f"{BGE_MODEL_NAME}; neither is installed in the active environment."
             ) from exc
         try:
+            import hashlib
+            from pathlib import Path
+            import numpy as np
+
+            cache_dir = Path("data/rag/cache")
+            cache_dir.mkdir(parents=True, exist_ok=True)
+            corpus_hash = hashlib.sha256("".join(d.document_id for d in self.documents).encode("utf-8")).hexdigest()[:16]
+            cache_path = cache_dir / f"bge_embeddings_{corpus_hash}.npy"
+
             self._model = SentenceTransformer(model_name)
-            self._document_vectors = self._model.encode(
-                [f"{doc.title}\n{doc.text}" for doc in self.documents],
-                normalize_embeddings=True,
-                convert_to_numpy=True,
-                show_progress_bar=False,
-            )
+            if cache_path.is_file():
+                try:
+                    loaded = np.load(str(cache_path))
+                    if loaded.shape == (len(self.documents), 384):
+                        self._document_vectors = loaded
+                    else:
+                        raise ValueError("Shape mismatch")
+                except Exception:
+                    self._document_vectors = self._model.encode(
+                        [f"{doc.title}\n{doc.text}" for doc in self.documents],
+                        normalize_embeddings=True,
+                        convert_to_numpy=True,
+                        show_progress_bar=False,
+                    )
+                    np.save(str(cache_path), self._document_vectors)
+            else:
+                self._document_vectors = self._model.encode(
+                    [f"{doc.title}\n{doc.text}" for doc in self.documents],
+                    normalize_embeddings=True,
+                    convert_to_numpy=True,
+                    show_progress_bar=False,
+                )
+                try:
+                    np.save(str(cache_path), self._document_vectors)
+                except Exception:
+                    pass
         except Exception as exc:
             raise ModelUnavailableError(
                 f"Unable to load or encode with {model_name!r}; no fallback is allowed."

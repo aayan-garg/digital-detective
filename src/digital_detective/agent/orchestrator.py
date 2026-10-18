@@ -227,9 +227,13 @@ class AgentOrchestrator:
             mode = "C"
 
         cid = str(case.metadata.case_id)
+        from .models import MockAgentModel
         trajectory = InvestigationTrajectory(
             incident_id=cid,
             model_name=getattr(self.agent_model, "model_name", type(self.agent_model).__name__),
+            is_mock=getattr(self.agent_model, "is_mock", isinstance(self.agent_model, MockAgentModel)),
+            fallback_active=getattr(self.agent_model, "fallback_active", False),
+            fallback_reason=getattr(self.agent_model, "fallback_reason", ""),
         )
 
         # ------------------------------------------------------------------

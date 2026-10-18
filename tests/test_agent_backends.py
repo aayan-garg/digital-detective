@@ -848,5 +848,53 @@ class TestMockAgentModelDecisions(unittest.TestCase):
         self.assertIn(decision.service, ("svcA", "svcB"))
 
 
+# ---------------------------------------------------------------------------
+# 12. Mock fallback observability (regression test for audit task 5)
+# ---------------------------------------------------------------------------
+
+class TestMockFallbackObservability(unittest.TestCase):
+    """Ensure mock fallback is always observable and never represented as live execution."""
+
+    def test_auto_mode_fallback_is_explicitly_flagged(self) -> None:
+        """When auto-mode cannot reach Ollama, fallback_active and is_mock must be True."""
+        with patch.object(OllamaAgentModel, "check_availability", return_value=(False, "Connection refused on port 11434")):
+            agent = build_agent_model("auto")
+        self.assertIsInstance(agent, MockAgentModel)
+        self.assertTrue(agent.is_mock)
+        self.assertTrue(agent.fallback_active)
+        self.assertEqual(agent.fallback_reason, "Connection refused on port 11434")
+
+    def test_direct_mock_mode_is_not_fallback(self) -> None:
+        """Directly requesting 'mock' mode is an intentional choice, not a fallback."""
+        agent = build_agent_model("mock")
+        self.assertIsInstance(agent, MockAgentModel)
+        self.assertTrue(agent.is_mock)
+        self.assertFalse(agent.fallback_active)
+        self.assertEqual(agent.fallback_reason, "")
+
+    def test_orchestrator_trajectory_preserves_mock_and_fallback_status(self) -> None:
+        """Orchestrator trajectory must reflect whether the run was mock and whether fallback occurred."""
+        from digital_detective.agent.orchestrator import AgentOrchestrator
+
+        fallback_mock = MockAgentModel(fallback_active=True, fallback_reason="Ollama offline")
+        orch = AgentOrchestrator(agent_model=fallback_mock, budget=5, max_steps=3)
+        traj = orch.investigate(_MinimalCase(), custom_onset_ts=1700000000)
+
+        self.assertTrue(traj.is_mock)
+        self.assertTrue(traj.fallback_active)
+        self.assertEqual(traj.fallback_reason, "Ollama offline")
+        d = traj.to_dict()
+        self.assertTrue(d["is_mock"])
+        self.assertTrue(d["fallback_active"])
+        self.assertEqual(d["fallback_reason"], "Ollama offline")
+
+    def test_ollama_mode_never_silently_falls_back(self) -> None:
+        """Explicit 'ollama' mode must fail fast with RuntimeError instead of silently degrading."""
+        with patch.object(OllamaAgentModel, "check_availability", return_value=(False, "Ollama not running")):
+            with self.assertRaises(RuntimeError) as ctx:
+                build_agent_model("ollama")
+        self.assertIn("Ollama unavailable", str(ctx.exception))
+
+
 if __name__ == "__main__":
     unittest.main()

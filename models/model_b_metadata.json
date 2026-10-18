@@ -1,0 +1,39 @@
+{
+  "model_name": "Model_B_PairwiseRanker",
+  "version": "1.0.0",
+  "training_dataset": "RE2-SS and RE2-TT (cross-system development set)",
+  "training_cases_count": 180,
+  "training_case_ids_sample": [
+    "re2ss_carts_cpu_1",
+    "re2ss_carts_cpu_2",
+    "re2ss_carts_cpu_3",
+    "re2ss_carts_delay_1",
+    "re2ss_carts_delay_2",
+    "re2ss_carts_delay_3",
+    "re2ss_carts_disk_1",
+    "re2ss_carts_disk_2",
+    "re2ss_carts_disk_3",
+    "re2ss_carts_loss_1"
+  ],
+  "feature_names": [
+    "s_comb",
+    "e_elev",
+    "r_strength",
+    "r_early",
+    "r_coverage",
+    "r_prop",
+    "peak_anomaly_strength",
+    "anomalous_metric_count",
+    "episode_active",
+    "episode_timing",
+    "trace_wait_concentration",
+    "trace_terminal_factor"
+  ],
+  "solver": "liblinear",
+  "C": 1.0,
+  "locked_test_split": "RE2-OB repetitions 2 and 3 (60 cases, held-out zero-leakage)",
+  "locked_test_mrr": 0.8916666666666667,
+  "locked_test_top1": 0.8166666666666667,
+  "locked_test_top3": 0.9666666666666667,
+  "locked_test_top5": 1.0
+}

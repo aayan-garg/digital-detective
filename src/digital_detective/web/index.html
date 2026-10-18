@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Detective — Microservice RCA & Incident Replay</title>
+  <meta name="description" content="Autonomous microservice Root Cause Analysis, Causal Residuals, Hybrid RAG Runbook Retrieval, and Safe Remediation Engine">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-dark">
+  <!-- Top Application Bar -->
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="brand-icon">
+        <span class="radar-ping"></span>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          <path d="M11 8v6M8 11h6"></path>
+        </svg>
+      </div>
+      <div class="brand-title-wrap">
+        <h1 class="brand-title">DIGITAL DETECTIVE</h1>
+        <span class="brand-subtitle">Autonomous Microservice RCA &amp; Remediation System</span>
+      </div>
+    </div>
+
+    <!-- Incident Selection & Trigger Controls -->
+    <div class="header-controls">
+      <div class="control-group">
+        <label for="system-filter">SYSTEM</label>
+        <select id="system-filter" class="form-select">
+          <option value="">All Systems</option>
+          <option value="ob" selected>Online Boutique (OB)</option>
+          <option value="ss">Sock Shop (SS)</option>
+          <option value="tt">Train Ticket (TT)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="incident-select">INCIDENT CASE</label>
+        <select id="incident-select" class="form-select case-select">
+          <option value="re2ob_checkoutservice_cpu_1">Loading incidents...</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="model-select">INVESTIGATOR</label>
+        <select id="model-select" class="form-select">
+          <option value="mock" selected>Mock / Model B (Deterministic)</option>
+          <option value="ollama">Qwen3-8B (Ollama Local)</option>
+          <option value="grok">Grok (Remote xAI API)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="btn-configure-api">API BACKEND</label>
+        <button id="btn-configure-api" class="btn btn-outline" type="button" title="Configure backend API URL">
+          <span class="status-dot api-dot" id="api-conn-dot"></span>
+          <span id="api-conn-label">Connecting...</span>
+        </button>
+      </div>
+
+      <div class="control-actions">
+        <button id="btn-investigate" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          Run Investigation
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="app-main">
+    <!-- Status / Loading Bar -->
+    <div id="status-banner" class="status-banner ready">
+      <div class="status-indicator">
+        <span class="status-dot"></span>
+        <span id="status-text">System ready. Select an incident case and run the investigation pipeline.</span>
+      </div>
+      <div id="execution-time-badge" class="badge badge-subtle hidden">0.00s</div>
+    </div>
+
+    <!-- KPI Metric Cards Grid -->
+    <section class="kpi-grid">
+      <!-- Card 1: Incident Onset -->
+      <div class="kpi-card" id="card-onset">
+        <div class="kpi-header">
+          <span class="kpi-label">INCIDENT ONSET</span>
+          <span class="kpi-badge" id="onset-method">STREAMING Z-SCORE</span>
+        </div>
+        <div class="kpi-value" id="kpi-onset-time">--</div>
+        <div class="kpi-footer" id="kpi-onset-sub">Changepoint timestamp</div>
+      </div>
+
+      <!-- Card 2: Root Cause Diagnosis -->
+      <div class="kpi-card highlight-card" id="card-diagnosis">
+        <div class="kpi-header">
+          <span class="kpi-label">DIAGNOSED ROOT CAUSE</span>
+          <div class="badge-cluster">
+            <span class="kpi-badge badge-provenance" id="inference-provenance-badge">MOCK ENGINE</span>
+            <span class="kpi-badge badge-success" id="diagnosis-confidence">-- CONFIDENCE</span>
+          </div>
+        </div>
+        <div class="kpi-value root-cause-value" id="kpi-root-cause">--</div>
+        <div class="kpi-footer" id="kpi-ground-truth-sub">Ground Truth: <span id="kpi-ground-truth-val">--</span></div>
+      </div>
+
+
+      <!-- Card 3: Ranking Margin & Uncertainty -->
+      <div class="kpi-card" id="card-margin">
+        <div class="kpi-header">
+          <span class="kpi-label">SCORE MARGIN (Δ)</span>
+          <span class="kpi-badge" id="margin-trigger-badge">DETERMINISTIC</span>
+        </div>
+        <div class="kpi-value" id="kpi-margin-value">--</div>
+        <div class="kpi-footer" id="kpi-margin-sub">Candidate Top-1 / Top-2 Gap</div>
+      </div>
+
+      <!-- Card 4: Remediation Safety Gate -->
+      <div class="kpi-card" id="card-safety">
+        <div class="kpi-header">
+          <span class="kpi-label">SAFETY GATE</span>
+          <span class="kpi-badge badge-warning" id="safety-status-badge">PENDING</span>
+        </div>
+        <div class="kpi-value" id="kpi-remediation-action">--</div>
+        <div class="kpi-footer" id="kpi-remediation-sub">Deterministic Policy Gate</div>
+      </div>
+    </section>
+
+    <!-- Main Workspace Split: Topology (Left) + Evidence / RAG (Right) -->
+    <div class="workspace-grid">
+      <!-- Left Column: Interactive Service Topology -->
+      <section class="panel topology-panel">
+        <div class="panel-header">
+          <div class="panel-title-wrap">
+            <h2 class="panel-title">Service Dependency Graph &amp; Call Latency</h2>
+            <span class="panel-tag">LIVE TELEMETRY TOPOLOGY</span>
+          </div>
+          <div class="topology-legend">
+            <span class="legend-item"><span class="legend-dot dot-rc"></span> Root Cause</span>
+            <span class="legend-item"><span class="legend-dot dot-anomaly"></span> Degraded</span>
+            <span class="legend-item"><span class="legend-dot dot-healthy"></span> Healthy</span>
+          </div>
+        </div>
+        <div class="topology-container" id="topology-view">
+          <!-- Dynamic SVG injected here -->
+          <div class="empty-state" id="topology-empty">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <p>Run investigation to render service topology</p>
+          </div>
+        </div>
+        <!-- Topology Node Detail Drawer -->
+        <div class="node-inspector hidden" id="node-inspector">
+          <div class="inspector-header">
+            <h3 id="inspector-service-name">service-name</h3>
+            <button class="btn-close" id="btn-close-inspector">&times;</button>
+          </div>
+          <div class="inspector-body" id="inspector-content">
+            <!-- Details populated on node click -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Candidates Ranking & Multi-Modal Evidence -->
+      <section class="panel evidence-panel">
+        <div class="panel-header">
+          <div class="panel-title-wrap">
+            <h2 class="panel-title">Root Cause Candidate Ranking (Top 3)</h2>
+            <span class="panel-tag">MODEL B + MARGIN VERIFICATION</span>
+          </div>
+        </div>
+
+        <div class="candidates-list" id="candidates-container">
+          <div class="empty-state">
+            <p>No investigation loaded yet.</p>
+          </div>
+        </div>
+
+        <!-- Telemetry Signal Chart Previews -->
+        <div class="metrics-strip-panel">
+          <div class="panel-subheader">
+            <h3>Key Observed Metric Anomaly Signals</h3>
+            <span class="badge-mini">Top Residuals</span>
+          </div>
+          <div class="metrics-grid" id="metrics-sparklines">
+            <!-- Metric charts injected here -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Bottom Workspace Split: Operational Knowledge (RAG) & Human-In-The-Loop Safety Gate -->
+    <div class="workspace-grid bottom-grid">
+      <!-- Operational Knowledge Runbooks (RAG Citations) -->
+      <section class="panel rag-panel">
+        <div class="panel-header">
+          <div class="panel-title-wrap">
+            <h2 class="panel-title">Operational Knowledge &amp; Grounded Runbooks</h2>
+            <span class="panel-tag">HYBRID BM25 + BGE RETRIEVAL</span>
+          </div>
+          <span class="citation-count-badge" id="citations-count">0 Citations</span>
+        </div>
+        <div class="rag-citations-container" id="rag-container">
+          <div class="empty-state">
+            <p>Run investigation to retrieve grounded operational playbooks.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Safety Gate & Interactive Remediation Console -->
+      <section class="panel remediation-panel">
+        <div class="panel-header">
+          <div class="panel-title-wrap">
+            <h2 class="panel-title">Remediation Policy &amp; Safety Verification</h2>
+            <span class="panel-tag">DETERMINISTIC GUARDRAILS</span>
+          </div>
+        </div>
+
+        <div class="safety-content" id="safety-console">
+          <!-- Policy checklist -->
+          <div class="safety-checklist">
+            <div class="check-item" id="check-supported">
+              <span class="check-icon">✓</span>
+              <span class="check-label">Supported Action (Restart / Scale / Clear Pool)</span>
+            </div>
+            <div class="check-item" id="check-rollback">
+              <span class="check-icon">✓</span>
+              <span class="check-label">Mandatory Rollback Action Defined</span>
+            </div>
+            <div class="check-item" id="check-universe">
+              <span class="check-icon">✓</span>
+              <span class="check-label">Target Service within Candidate Universe</span>
+            </div>
+            <div class="check-item" id="check-rootmatch">
+              <span class="check-icon">✓</span>
+              <span class="check-label">Target Service Matches RCA Diagnosis</span>
+            </div>
+            <div class="check-item" id="check-degraded">
+              <span class="check-icon">✓</span>
+              <span class="check-label">Target Service Shows Active Telemetry Degradation</span>
+            </div>
+            <div class="check-item" id="check-confidence">
+              <span class="check-icon">✓</span>
+              <span class="check-label">Decision Confidence &ge; 0.80 Authorization Threshold</span>
+            </div>
+          </div>
+
+          <!-- Remediation Action Proposal Card -->
+          <div class="remediation-proposal-box" id="remediation-proposal-box">
+            <div class="proposal-row">
+              <span class="proposal-label">Proposed Action:</span>
+              <span class="proposal-value" id="proposal-action">--</span>
+            </div>
+            <div class="proposal-row">
+              <span class="proposal-label">Target Service:</span>
+              <span class="proposal-value" id="proposal-target">--</span>
+            </div>
+            <div class="proposal-row">
+              <span class="proposal-label">Rollback Hook:</span>
+              <code class="code-pill" id="proposal-rollback">--</code>
+            </div>
+            <div class="proposal-row">
+              <span class="proposal-label">Counterfactual Verdict:</span>
+              <span class="badge" id="proposal-verdict">--</span>
+            </div>
+          </div>
+
+          <!-- Human-in-the-Loop Controls -->
+          <div class="remediation-buttons">
+            <button id="btn-approve-rem" class="btn btn-success" disabled>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Approve &amp; Execute (Simulated)
+            </button>
+            <button id="btn-dry-run-rem" class="btn btn-secondary" disabled>
+              Verify Preconditions (Dry Run)
+            </button>
+            <button id="btn-reject-rem" class="btn btn-danger" disabled>
+              Reject Action
+            </button>
+          </div>
+
+          <!-- Action Log Output -->
+          <div class="action-log" id="action-log-box">
+            <div class="log-entry system-msg">[Console] Awaiting investigation results.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Application Logic -->
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
