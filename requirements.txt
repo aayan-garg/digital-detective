@@ -66,3 +66,10 @@ networkx>=2.8
 
 # sentence-transformers>=2.2.0
 # torch>=2.0.0
+
+# ---------------------------------------------------------------------------
+# 5. Web API service dependencies (for FastAPI / Render backend)
+# ---------------------------------------------------------------------------
+fastapi>=0.100.0
+uvicorn>=0.23.0
+pydantic>=2.0.0

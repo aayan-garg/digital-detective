@@ -1,0 +1,37 @@
+query_id	scenario_family	candidate_rank	document_id	document_title	document_category	hybrid_score	human_relevance_grade	annotator_notes
+ddir60-re2ob_checkoutservice_cpu_2	RE2|ob|checkoutservice|cpu	1	ddir60-opentelemetry-6798cb7f056e#c1	Event Model	metrics	0.0163		
+ddir60-re2ob_checkoutservice_cpu_2	RE2|ob|checkoutservice|cpu	2	ddir60-opentelemetry-3c47acf7b3ac#c0	Self-diagnostics	safe-operations	0.0134		
+ddir60-re2ob_checkoutservice_cpu_2	RE2|ob|checkoutservice|cpu	3	ddir60-kubernetes-19a64fb20462#c0	"{{% heading ""prerequisites"" %}}"	cpu	0.0105		
+ddir60-re2ob_checkoutservice_cpu_3	RE2|ob|checkoutservice|cpu	1	ddir60-opentelemetry-6798cb7f056e#c1	Event Model	metrics	0.0163		
+ddir60-re2ob_checkoutservice_cpu_3	RE2|ob|checkoutservice|cpu	2	ddir60-opentelemetry-3c47acf7b3ac#c0	Self-diagnostics	safe-operations	0.0134		
+ddir60-re2ob_checkoutservice_cpu_3	RE2|ob|checkoutservice|cpu	3	ddir60-kubernetes-19a64fb20462#c0	"{{% heading ""prerequisites"" %}}"	cpu	0.0105		
+ddir60-re2ob_checkoutservice_delay_2	RE2|ob|checkoutservice|delay	1	ddir60-opentelemetry-6798cb7f056e#c1	Event Model	metrics	0.0163		
+ddir60-re2ob_checkoutservice_delay_2	RE2|ob|checkoutservice|delay	2	ddir60-grpc-2e7fee056a04#c0	Connection failure	grpc	0.0149		
+ddir60-re2ob_checkoutservice_delay_2	RE2|ob|checkoutservice|delay	3	ddir60-opentelemetry-00a9c717b259#c0	Error handling and performance	safe-operations	0.0146		
+ddir60-re2ob_checkoutservice_delay_3	RE2|ob|checkoutservice|delay	1	ddir60-opentelemetry-6798cb7f056e#c1	Event Model	metrics	0.0163		
+ddir60-re2ob_checkoutservice_delay_3	RE2|ob|checkoutservice|delay	2	ddir60-grpc-2e7fee056a04#c0	Connection failure	grpc	0.0149		
+ddir60-re2ob_checkoutservice_delay_3	RE2|ob|checkoutservice|delay	3	ddir60-opentelemetry-00a9c717b259#c0	Error handling and performance	safe-operations	0.0146		
+ddir60-re2ob_checkoutservice_disk_2	RE2|ob|checkoutservice|disk	1	ddir60-opentelemetry-6798cb7f056e#c1	Event Model	metrics	0.0163		
+ddir60-re2ob_checkoutservice_disk_2	RE2|ob|checkoutservice|disk	2	ddir60-opentelemetry-3c47acf7b3ac#c0	Self-diagnostics	safe-operations	0.0143		
+ddir60-re2ob_checkoutservice_disk_2	RE2|ob|checkoutservice|disk	3	ddir60-opentelemetry-cc12dd623496#c0	Events => Data Stream => Timeseries	metrics	0.0135		
+ddir60-re2ob_checkoutservice_disk_3	RE2|ob|checkoutservice|disk	1	ddir60-opentelemetry-6798cb7f056e#c1	Event Model	metrics	0.0163		
+ddir60-re2ob_checkoutservice_disk_3	RE2|ob|checkoutservice|disk	2	ddir60-opentelemetry-3c47acf7b3ac#c0	Self-diagnostics	safe-operations	0.0143		
+ddir60-re2ob_checkoutservice_disk_3	RE2|ob|checkoutservice|disk	3	ddir60-opentelemetry-cc12dd623496#c0	Events => Data Stream => Timeseries	metrics	0.0135		
+ddir60-re2ob_checkoutservice_loss_2	RE2|ob|checkoutservice|loss	1	ddir60-opentelemetry-6798cb7f056e#c1	Event Model	metrics	0.0163		
+ddir60-re2ob_checkoutservice_loss_2	RE2|ob|checkoutservice|loss	2	ddir60-grpc-2e7fee056a04#c0	Connection failure	grpc	0.0143		
+ddir60-re2ob_checkoutservice_loss_2	RE2|ob|checkoutservice|loss	3	ddir60-opentelemetry-3c47acf7b3ac#c0	Self-diagnostics	safe-operations	0.0141		
+ddir60-re2ob_checkoutservice_loss_3	RE2|ob|checkoutservice|loss	1	ddir60-opentelemetry-6798cb7f056e#c1	Event Model	metrics	0.0163		
+ddir60-re2ob_checkoutservice_loss_3	RE2|ob|checkoutservice|loss	2	ddir60-grpc-2e7fee056a04#c0	Connection failure	grpc	0.0143		
+ddir60-re2ob_checkoutservice_loss_3	RE2|ob|checkoutservice|loss	3	ddir60-opentelemetry-3c47acf7b3ac#c0	Self-diagnostics	safe-operations	0.0141		
+ddir60-re2ob_checkoutservice_mem_2	RE2|ob|checkoutservice|mem	1	ddir60-opentelemetry-6798cb7f056e#c1	Event Model	metrics	0.0163		
+ddir60-re2ob_checkoutservice_mem_2	RE2|ob|checkoutservice|mem	2	ddir60-opentelemetry-3c47acf7b3ac#c0	Self-diagnostics	safe-operations	0.0145		
+ddir60-re2ob_checkoutservice_mem_2	RE2|ob|checkoutservice|mem	3	ddir60-opentelemetry-cc12dd623496#c0	Events => Data Stream => Timeseries	metrics	0.013		
+ddir60-re2ob_checkoutservice_mem_3	RE2|ob|checkoutservice|mem	1	ddir60-opentelemetry-6798cb7f056e#c1	Event Model	metrics	0.0163		
+ddir60-re2ob_checkoutservice_mem_3	RE2|ob|checkoutservice|mem	2	ddir60-opentelemetry-3c47acf7b3ac#c0	Self-diagnostics	safe-operations	0.0145		
+ddir60-re2ob_checkoutservice_mem_3	RE2|ob|checkoutservice|mem	3	ddir60-opentelemetry-cc12dd623496#c0	Events => Data Stream => Timeseries	metrics	0.013		
+ddir60-re2ob_checkoutservice_socket_2	RE2|ob|checkoutservice|socket	1	ddir60-opentelemetry-6798cb7f056e#c1	Event Model	metrics	0.0163		
+ddir60-re2ob_checkoutservice_socket_2	RE2|ob|checkoutservice|socket	2	ddir60-grpc-2e7fee056a04#c0	Connection failure	grpc	0.0151		
+ddir60-re2ob_checkoutservice_socket_2	RE2|ob|checkoutservice|socket	3	ddir60-opentelemetry-3c47acf7b3ac#c0	Self-diagnostics	safe-operations	0.0147		
+ddir60-re2ob_checkoutservice_socket_3	RE2|ob|checkoutservice|socket	1	ddir60-opentelemetry-6798cb7f056e#c1	Event Model	metrics	0.0163		
+ddir60-re2ob_checkoutservice_socket_3	RE2|ob|checkoutservice|socket	2	ddir60-grpc-2e7fee056a04#c0	Connection failure	grpc	0.0151		
+ddir60-re2ob_checkoutservice_socket_3	RE2|ob|checkoutservice|socket	3	ddir60-opentelemetry-3c47acf7b3ac#c0	Self-diagnostics	safe-operations	0.0147		

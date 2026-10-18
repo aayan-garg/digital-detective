@@ -18,6 +18,15 @@ from .models import IncidentQueryContext, KnowledgeDocument, RetrievalResult
 from .query import build_query
 from .reranker import ETTIN_MODEL_NAME, CrossEncoderReranker
 from .retriever import DeterministicRetriever
+from .ingestion import RunbookIngestionEngine, StructuredChunk
+from .hybrid import HybridRetriever, HybridRetrievalConfig
+from .incident_query import build_incident_aware_query, IncidentQueryPackage
+from .context_assembly import (
+    CitationVerificationReport,
+    FormattedContextBlock,
+    assemble_operational_context,
+    verify_grounded_citations,
+)
 
 __all__ = [
     "DeterministicRetriever",
@@ -42,4 +51,14 @@ __all__ = [
     "format_retrieved_context",
     "load_corpus",
     "reciprocal_rank_fusion",
+    "RunbookIngestionEngine",
+    "StructuredChunk",
+    "HybridRetriever",
+    "HybridRetrievalConfig",
+    "build_incident_aware_query",
+    "IncidentQueryPackage",
+    "CitationVerificationReport",
+    "FormattedContextBlock",
+    "assemble_operational_context",
+    "verify_grounded_citations",
 ]

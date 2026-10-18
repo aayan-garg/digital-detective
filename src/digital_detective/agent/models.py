@@ -243,6 +243,9 @@ class InvestigationTrajectory:
     total_budget_used: int = 0
     terminated_by: str = ""
     model_name: str = "unknown"
+    is_mock: bool = False
+    fallback_active: bool = False
+    fallback_reason: str = ""
     step_timings: list[StepTiming] = field(default_factory=list)
     total_llm_time_sec: float = 0.0
     total_tool_time_sec: float = 0.0
@@ -284,6 +287,9 @@ class InvestigationTrajectory:
         return {
             "incident_id": self.incident_id,
             "model_name": self.model_name,
+            "is_mock": self.is_mock,
+            "fallback_active": self.fallback_active,
+            "fallback_reason": self.fallback_reason,
             "total_steps": self.total_steps,
             "total_budget_used": self.total_budget_used,
             "terminated_by": self.terminated_by,
@@ -314,6 +320,9 @@ class AgentModel(abc.ABC):
 
     # Subclasses may override this for display purposes.
     model_name: str = "AgentModel"
+    is_mock: bool = False
+    fallback_active: bool = False
+    fallback_reason: str = ""
 
     @abc.abstractmethod
     def decide(
@@ -375,16 +384,24 @@ class MockAgentModel(AgentModel):
     """
 
     model_name = "MockAgentModel"
+    is_mock: bool = True
+    fallback_active: bool = False
+    fallback_reason: str = ""
 
     def __init__(
         self,
         confidence_threshold: float = 0.55,
         min_evidence_queries: int = 2,
         stop_budget_reserve: int = 2,
+        fallback_active: bool = False,
+        fallback_reason: str = "",
     ) -> None:
         self.confidence_threshold = confidence_threshold
         self.min_evidence_queries = min_evidence_queries
         self.stop_budget_reserve = stop_budget_reserve
+        self.is_mock = True
+        self.fallback_active = fallback_active
+        self.fallback_reason = fallback_reason
 
     # ------------------------------------------------------------------
     # Internal helpers
@@ -1257,6 +1274,8 @@ def build_agent_model(
             confidence_threshold=mock_confidence_threshold,
             min_evidence_queries=mock_min_evidence_queries,
             stop_budget_reserve=mock_stop_budget_reserve,
+            fallback_active=True,
+            fallback_reason=msg,
         )
 
     raise ValueError(

@@ -1,0 +1,258 @@
+{
+  "experiment": "cross_application_generalization_v1",
+  "training_source": {
+    "dataset": "RE2-OB",
+    "case_count": 90,
+    "model": "Model B (Pairwise Linear SVM)",
+    "features": [
+      "s_comb",
+      "e_elev",
+      "r_strength",
+      "r_early",
+      "r_coverage",
+      "r_prop",
+      "peak_anomaly_strength",
+      "anomalous_metric_count",
+      "episode_active",
+      "episode_timing",
+      "trace_wait_concentration",
+      "trace_terminal_factor"
+    ],
+    "train_duration_sec": 0.0198
+  },
+  "zero_shot_transfer": {
+    "RE2-SS": {
+      "system": "sock-shop",
+      "case_count": 90,
+      "aggregate": {
+        "top1": 0.5,
+        "top3": 0.9222222222222223,
+        "top5": 0.9666666666666667,
+        "mrr": 0.7065873015873015
+      },
+      "cases_sample": [
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_cpu_1",
+          "root_cause": "carts",
+          "top_pred": "carts"
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_cpu_2",
+          "root_cause": "carts",
+          "top_pred": "carts"
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_carts_cpu_3",
+          "root_cause": "carts",
+          "top_pred": "shipping"
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.3333333333333333,
+          "target_rank": 3,
+          "case_id": "re2ss_carts_delay_1",
+          "root_cause": "carts",
+          "top_pred": "front-end"
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_carts_delay_2",
+          "root_cause": "carts",
+          "top_pred": "orders"
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_carts_delay_3",
+          "root_cause": "carts",
+          "top_pred": "orders"
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_disk_1",
+          "root_cause": "carts",
+          "top_pred": "carts"
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_disk_2",
+          "root_cause": "carts",
+          "top_pred": "carts"
+        },
+        {
+          "top1": true,
+          "top3": true,
+          "top5": true,
+          "mrr": 1.0,
+          "target_rank": 1,
+          "case_id": "re2ss_carts_disk_3",
+          "root_cause": "carts",
+          "top_pred": "carts"
+        },
+        {
+          "top1": false,
+          "top3": true,
+          "top5": true,
+          "mrr": 0.5,
+          "target_rank": 2,
+          "case_id": "re2ss_carts_loss_1",
+          "root_cause": "carts",
+          "top_pred": "orders"
+        }
+      ]
+    },
+    "RE2-TT": {
+      "system": "train-ticket",
+      "case_count": 90,
+      "aggregate": {
+        "top1": 0.45555555555555555,
+        "top3": 0.7111111111111111,
+        "top5": 0.7333333333333333,
+        "mrr": 0.591125437888764
+      },
+      "cases_sample": [
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.058823529411764705,
+          "target_rank": 17,
+          "case_id": "re2tt_ts-auth-service_cpu_1",
+          "root_cause": "ts-auth-service",
+          "top_pred": "ts-order-service"
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.04,
+          "target_rank": 25,
+          "case_id": "re2tt_ts-auth-service_cpu_2",
+          "root_cause": "ts-auth-service",
+          "top_pred": "ts-ticketinfo-service"
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.045454545454545456,
+          "target_rank": 22,
+          "case_id": "re2tt_ts-auth-service_cpu_3",
+          "root_cause": "ts-auth-service",
+          "top_pred": "ts-basic-service"
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.058823529411764705,
+          "target_rank": 17,
+          "case_id": "re2tt_ts-auth-service_delay_1",
+          "root_cause": "ts-auth-service",
+          "top_pred": "ts-seat-service"
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.05555555555555555,
+          "target_rank": 18,
+          "case_id": "re2tt_ts-auth-service_delay_2",
+          "root_cause": "ts-auth-service",
+          "top_pred": "ts-basic-service"
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.038461538461538464,
+          "target_rank": 26,
+          "case_id": "re2tt_ts-auth-service_delay_3",
+          "root_cause": "ts-auth-service",
+          "top_pred": "ts-order-service"
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.1,
+          "target_rank": 10,
+          "case_id": "re2tt_ts-auth-service_disk_1",
+          "root_cause": "ts-auth-service",
+          "top_pred": "ts-basic-service"
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.045454545454545456,
+          "target_rank": 22,
+          "case_id": "re2tt_ts-auth-service_disk_2",
+          "root_cause": "ts-auth-service",
+          "top_pred": "ts-security-service"
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.05,
+          "target_rank": 20,
+          "case_id": "re2tt_ts-auth-service_disk_3",
+          "root_cause": "ts-auth-service",
+          "top_pred": "ts-basic-service"
+        },
+        {
+          "top1": false,
+          "top3": false,
+          "top5": false,
+          "mrr": 0.03571428571428571,
+          "target_rank": 28,
+          "case_id": "re2tt_ts-auth-service_loss_1",
+          "root_cause": "ts-auth-service",
+          "top_pred": "ts-basic-service"
+        }
+      ]
+    },
+    "combined": {
+      "case_count": 180,
+      "aggregate": {
+        "top1": 0.4777777777777778,
+        "top3": 0.8166666666666667,
+        "top5": 0.85,
+        "mrr": 0.6488563697380328
+      }
+    }
+  }
+}

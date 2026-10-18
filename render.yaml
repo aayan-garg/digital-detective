@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: digital-detective-api
+    runtime: python
+    plan: free
+    region: oregon
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt && pip install -e ."
+    startCommand: "uvicorn digital_detective.api.main:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: PYTHONPATH
+        value: "src:."
+      - key: ENABLE_DENSE_RAG
+        value: "false"
+
+      - key: RCAEVAL_DATASET_ROOT
+        value: data/demo_cases
+      - key: CORS_ORIGINS
+        value: "https://digital-detective.vercel.app,http://localhost:3000,http://localhost:8000"
+      - key: RATE_LIMIT_INVESTIGATE
+        value: "30"
+      - key: RATE_LIMIT_REMEDIATION
+        value: "15"

@@ -63,9 +63,16 @@ experiments/external_rca/environments/*
 !experiments/external_rca/results/
 !experiments/external_rca/results/*.json
 checkpoints/
-models/
+models/*
+!models/model_b_ranker_v1.pkl
+!models/model_b_metadata.json
 *.ckpt
 *.pt
 *.pth
 *.onnx
 *.pkl
+!models/model_b_ranker_v1.pkl
+
+# RAG dense embedding caches
+data/rag/cache/
+*.npy
