@@ -46,20 +46,47 @@ app = FastAPI(
     version="1.0.0",
 )
 
+REQUIRED_ALLOWED_ORIGINS = [
+    "https://digital-detective-web-nine.vercel.app",
+    "https://digital-detective-web-i7jn.vercel.app",
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://localhost:8000",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:8000",
+]
+
+
+def resolve_allowed_origins(env_origins: str | None = None) -> list[str]:
+    """Merge configured CORS origins with required production and local dev origins.
+
+    Guarantees production Vercel frontend and local development origins are always
+    allowed even when an existing CORS_ORIGINS environment variable contains an
+    outdated or partial domain list. Disallows wildcard '*'.
+    """
+    origins: list[str] = []
+    seen: set[str] = set()
+
+    def add_origin(raw: str) -> None:
+        clean = raw.strip().strip("'\"").rstrip("/")
+        if clean and clean not in seen and clean != "*":
+            seen.add(clean)
+            origins.append(clean)
+
+    if env_origins:
+        for item in env_origins.split(","):
+            add_origin(item)
+
+    for item in REQUIRED_ALLOWED_ORIGINS:
+        add_origin(item)
+
+    return origins
+
+
 # Configure CORS strictly for production and local development origins
 cors_origins_env = os.getenv("CORS_ORIGINS", "")
-if cors_origins_env:
-    allowed_origins = [orig.strip() for orig in cors_origins_env.split(",") if orig.strip()]
-else:
-    # Default allowed origins for local development and unified hosting
-    allowed_origins = [
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "http://localhost:8000",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:8000",
-    ]
+allowed_origins = resolve_allowed_origins(cors_origins_env)
 
 app.add_middleware(
     CORSMiddleware,

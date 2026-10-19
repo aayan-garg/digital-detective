@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 
 from digital_detective.pipeline import InvestigationPipeline
 from digital_detective.schema import CanonicalIncident, RemediationStatus
-from digital_detective.api.main import app
+from digital_detective.api.main import app, resolve_allowed_origins, REQUIRED_ALLOWED_ORIGINS
 
 client = TestClient(app)
 SAMPLE_CASE = "re2ob_checkoutservice_cpu_1"
@@ -162,3 +162,54 @@ class TestFastAPIService:
             },
         )
         assert resp_ok.status_code == 200
+
+    def test_cors_preflight_allows_production_vercel_origin(self):
+        resp = client.options(
+            "/api/health",
+            headers={
+                "Origin": "https://digital-detective-web-nine.vercel.app",
+                "Access-Control-Request-Method": "GET",
+            },
+        )
+        assert resp.status_code == 200
+        assert resp.headers.get("access-control-allow-origin") == "https://digital-detective-web-nine.vercel.app"
+
+    def test_cors_resolution_with_stale_environment_variable(self):
+        stale_env = '"https://outdated-domain.vercel.app", http://localhost:3000, *'
+        resolved = resolve_allowed_origins(stale_env)
+
+        assert "https://outdated-domain.vercel.app" in resolved
+        assert "https://digital-detective-web-nine.vercel.app" in resolved
+        assert "http://localhost:3000" in resolved
+        assert "*" not in resolved
+        assert len(resolved) == len(set(resolved))
+
+        from fastapi import FastAPI
+        from fastapi.middleware.cors import CORSMiddleware
+
+        test_app = FastAPI()
+        test_app.add_middleware(
+            CORSMiddleware,
+            allow_origins=resolved,
+            allow_credentials=True,
+            allow_methods=["GET", "POST", "OPTIONS"],
+            allow_headers=["*"],
+        )
+
+        @test_app.get("/test")
+        def _test():
+            return {"ok": True}
+
+        test_client = TestClient(test_app)
+        preflight_resp = test_client.options(
+            "/test",
+            headers={
+                "Origin": "https://digital-detective-web-nine.vercel.app",
+                "Access-Control-Request-Method": "GET",
+            },
+        )
+        assert preflight_resp.status_code == 200
+        assert (
+            preflight_resp.headers.get("access-control-allow-origin")
+            == "https://digital-detective-web-nine.vercel.app"
+        )
