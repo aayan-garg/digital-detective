@@ -14,4 +14,4 @@
  * 4. window.location.origin (unified hosting fallback)
  */
 
-window.__DIGITAL_DETECTIVE_API_BASE__ = "";
+window.__DIGITAL_DETECTIVE_API_BASE__ = "https://digital-detective-api-ofxl.onrender.com";

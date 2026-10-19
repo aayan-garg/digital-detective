@@ -19,7 +19,7 @@ services:
       - key: RCAEVAL_DATASET_ROOT
         value: data/demo_cases
       - key: CORS_ORIGINS
-        value: "https://digital-detective.vercel.app,http://localhost:3000,http://localhost:8000"
+        value: "https://digital-detective-web-i7jn.vercel.app,http://localhost:3000,http://localhost:8000"
       - key: RATE_LIMIT_INVESTIGATE
         value: "30"
       - key: RATE_LIMIT_REMEDIATION
