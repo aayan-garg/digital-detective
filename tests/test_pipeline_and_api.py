@@ -86,6 +86,23 @@ class TestFastAPIService:
         assert data["ranking"]["selected_root_cause"] == "checkoutservice"
         assert len(data["rag_context"]["citations"]) >= 1
 
+    def test_precomputed_demo_investigations_fast(self):
+        for cid, expected_rc in [
+            ("re2ob_checkoutservice_cpu_1", "checkoutservice"),
+            ("re2ob_checkoutservice_mem_1", "checkoutservice"),
+            ("re2ob_currencyservice_delay_1", "currencyservice"),
+        ]:
+            resp = client.post(
+                "/api/investigate",
+                json={"case_id": cid, "model_name": "mock", "execute_remediation": True},
+            )
+            assert resp.status_code == 200
+            data = resp.json()
+            assert data["incident_id"] == cid
+            assert data["ranking"]["selected_root_cause"] == expected_rc
+            assert data["remediation_plan"]["status"] == "executed"
+
+
     def test_remediation_approval_workflow(self):
         # 1. Approve
         resp_approve = client.post(

@@ -227,8 +227,15 @@ async function runInvestigation() {
     });
 
     if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.detail || "Investigation failed");
+      let detail = `HTTP ${res.status}`;
+      try {
+        const err = await res.json();
+        detail = err.detail || detail;
+      } catch {
+        const text = await res.text();
+        if (text) detail = `${detail}: ${text.slice(0, 120)}`;
+      }
+      throw new Error(detail);
     }
 
     currentIncident = await res.json();
