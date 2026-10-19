@@ -62,9 +62,13 @@ async function init() {
 async function loadDemoData() {
   try {
     statusText.textContent = "Loading precomputed benchmark investigations...";
-    const res = await fetch("./demo_investigations.json");
-    if (!res.ok) throw new Error(`HTTP ${res.status}: Failed to load static demo data`);
-    demoInvestigations = await res.json();
+    if (window.__DIGITAL_DETECTIVE_DEMO_DATA__ && typeof window.__DIGITAL_DETECTIVE_DEMO_DATA__ === "object") {
+      demoInvestigations = window.__DIGITAL_DETECTIVE_DEMO_DATA__;
+    } else {
+      const res = await fetch("./demo_investigations.json");
+      if (!res.ok) throw new Error(`HTTP ${res.status}: Failed to load static demo data`);
+      demoInvestigations = await res.json();
+    }
 
     const caseIds = Object.keys(demoInvestigations);
     if (!caseIds || caseIds.length === 0) {

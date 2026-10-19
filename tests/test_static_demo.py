@@ -62,6 +62,16 @@ class TestStaticDemoAsset:
             f"Expected exact benchmark cases {list(EXPECTED_BENCHMARK_CASES.keys())}, got {list(data.keys())}"
         )
 
+    def test_demo_data_js_asset_exists_and_matches_json(self):
+        js_path = DEMO_JSON_PATH.parent / "demo_data.js"
+        assert js_path.is_file(), f"demo_data.js asset missing at {js_path}"
+        assert js_path.stat().st_size > 0, "demo_data.js file is empty"
+        content = js_path.read_text(encoding="utf-8")
+        assert content.startswith("window.__DIGITAL_DETECTIVE_DEMO_DATA__ = ")
+        raw_json = content[len("window.__DIGITAL_DETECTIVE_DEMO_DATA__ = "):].rstrip(";\n")
+        parsed = json.loads(raw_json)
+        assert set(parsed.keys()) == set(EXPECTED_BENCHMARK_CASES.keys())
+
     @pytest.mark.parametrize("case_id,expected", EXPECTED_BENCHMARK_CASES.items())
     def test_benchmark_incident_diagnosis_data(self, case_id: str, expected: dict[str, str]):
         with open(DEMO_JSON_PATH, "r", encoding="utf-8") as f:
