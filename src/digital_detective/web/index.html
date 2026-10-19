@@ -23,7 +23,10 @@
         </svg>
       </div>
       <div class="brand-title-wrap">
-        <h1 class="brand-title">DIGITAL DETECTIVE</h1>
+        <div class="brand-title-row">
+          <h1 class="brand-title">DIGITAL DETECTIVE</h1>
+          <span class="badge-precomputed-demo">PRECOMPUTED DEMO</span>
+        </div>
         <span class="brand-subtitle">Autonomous Microservice RCA &amp; Remediation System</span>
       </div>
     </div>
@@ -33,35 +36,32 @@
       <div class="control-group">
         <label for="system-filter">SYSTEM</label>
         <select id="system-filter" class="form-select">
-          <option value="">All Systems</option>
-          <option value="ob" selected>Online Boutique (OB)</option>
-          <option value="ss">Sock Shop (SS)</option>
-          <option value="tt">Train Ticket (TT)</option>
+          <option value="" selected>Online Boutique (OB)</option>
         </select>
       </div>
 
       <div class="control-group">
         <label for="incident-select">INCIDENT CASE</label>
         <select id="incident-select" class="form-select case-select">
-          <option value="re2ob_checkoutservice_cpu_1">Loading incidents...</option>
+          <option value="re2ob_checkoutservice_cpu_1">re2ob_checkoutservice_cpu_1 [OB - cpu]</option>
+          <option value="re2ob_checkoutservice_mem_1">re2ob_checkoutservice_mem_1 [OB - mem]</option>
+          <option value="re2ob_currencyservice_delay_1">re2ob_currencyservice_delay_1 [OB - delay]</option>
         </select>
       </div>
 
       <div class="control-group">
         <label for="model-select">INVESTIGATOR</label>
         <select id="model-select" class="form-select">
-          <option value="mock" selected>Mock / Model B (Deterministic)</option>
-          <option value="ollama">Qwen3-8B (Ollama Local)</option>
-          <option value="grok">Grok (Remote xAI API)</option>
+          <option value="mock" selected>Model B Ranker (Benchmark Replay)</option>
         </select>
       </div>
 
       <div class="control-group">
-        <label for="btn-configure-api">API BACKEND</label>
-        <button id="btn-configure-api" class="btn btn-outline" type="button" title="Configure backend API URL">
-          <span class="status-dot api-dot" id="api-conn-dot"></span>
-          <span id="api-conn-label">Connecting...</span>
-        </button>
+        <label>EXECUTION MODE</label>
+        <div class="demo-mode-pill" id="demo-mode-indicator" title="Zero-cost static deployment: replaying verified benchmark investigations with zero external dependencies">
+          <span class="demo-dot"></span>
+          <span class="demo-mode-text">PRECOMPUTED DEMO</span>
+        </div>
       </div>
 
       <div class="control-actions">
@@ -81,9 +81,12 @@
     <div id="status-banner" class="status-banner ready">
       <div class="status-indicator">
         <span class="status-dot"></span>
-        <span id="status-text">System ready. Select an incident case and run the investigation pipeline.</span>
+        <span id="status-text">Precomputed demo ready. Select a benchmark incident case to replay the investigation.</span>
       </div>
-      <div id="execution-time-badge" class="badge badge-subtle hidden">0.00s</div>
+      <div class="badge-cluster">
+        <span class="badge-precomputed-demo">PRECOMPUTED DEMO</span>
+        <div id="execution-time-badge" class="badge badge-subtle hidden">0.00s</div>
+      </div>
     </div>
 
     <!-- KPI Metric Cards Grid -->
@@ -103,7 +106,7 @@
         <div class="kpi-header">
           <span class="kpi-label">DIAGNOSED ROOT CAUSE</span>
           <div class="badge-cluster">
-            <span class="kpi-badge badge-provenance" id="inference-provenance-badge">MOCK ENGINE</span>
+            <span class="kpi-badge badge-provenance demo" id="inference-provenance-badge">PRECOMPUTED DEMO</span>
             <span class="kpi-badge badge-success" id="diagnosis-confidence">-- CONFIDENCE</span>
           </div>
         </div>

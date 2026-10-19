@@ -1,17 +1,19 @@
 /**
  * Digital Detective — Web Client Configuration
  *
- * For decoupled public deployment (e.g. Vercel frontend calling Render backend):
- * Set window.__DIGITAL_DETECTIVE_API_BASE__ to your Render public service URL.
+ * Public Deployment: Self-contained zero-cost interactive static demo.
+ * Serves verified benchmark investigations locally from demo_investigations.json
+ * without requiring any backend hosting, external API, or cloud infrastructure.
  *
- * Example:
- *   window.__DIGITAL_DETECTIVE_API_BASE__ = "https://digital-detective-api.onrender.com";
- *
- * Precedence Order in app.js:
- * 1. URL Query Parameter (?api=https://...)
- * 2. LocalStorage ("DIGITAL_DETECTIVE_API_BASE")
- * 3. window.__DIGITAL_DETECTIVE_API_BASE__ (this file)
- * 4. window.location.origin (unified hosting fallback)
+ * For optional local FastAPI execution:
+ * Start the local backend:
+ *   $env:RCAEVAL_DATASET_ROOT="data/demo_cases"
+ *   uvicorn digital_detective.api.main:app --host 0.0.0.0 --port 8000
+ * Then access: http://localhost:8000/
  */
 
-window.__DIGITAL_DETECTIVE_API_BASE__ = "https://digital-detective.onrender.com";
+// Empty by default for zero-cost static demo operation
+window.__DIGITAL_DETECTIVE_API_BASE__ = "";
+
+// Explicit flag indicating static benchmark demo mode
+window.__DIGITAL_DETECTIVE_STATIC_DEMO__ = true;

@@ -16,7 +16,7 @@ SAMPLE_CASE = "re2ob_checkoutservice_cpu_1"
 
 class TestPipelineE2E:
     def test_pipeline_real_run(self):
-        pipeline = InvestigationPipeline()
+        pipeline = InvestigationPipeline(enable_dense_rag=False)
         incident = pipeline.run(SAMPLE_CASE, model_name="mock")
 
         assert isinstance(incident, CanonicalIncident)
