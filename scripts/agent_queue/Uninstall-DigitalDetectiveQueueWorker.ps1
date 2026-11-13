@@ -5,18 +5,19 @@
 .DESCRIPTION
     Safely unregisters the scheduled task created by Install-DigitalDetectiveQueueWorker.ps1.
     Optionally removes local worker state (%LOCALAPPDATA%\DigitalDetective\agent_queue).
-    Strictly prevents deletion of external directories and guards against symlinks/reparse points.
+    Strictly locked to the single canonical worker-owned directory to prevent arbitrary deletion.
+    Guards against symlinks/reparse points across all directory components.
     Supports dry-run mode and is idempotent.
 
 .PARAMETER TaskName
     Name of the scheduled task. Defaults to 'DigitalDetectiveQueueWorker'.
 
 .PARAMETER StateDir
-    Path to worker state directory. Must reside under %LOCALAPPDATA%\DigitalDetective\agent_queue.
-    Defaults to %LOCALAPPDATA%\DigitalDetective\agent_queue.
+    Optional validation path. If specified, must strictly match the canonical path
+    %LOCALAPPDATA%\DigitalDetective\agent_queue. Any other path is rejected.
 
 .PARAMETER RemoveState
-    If specified, deletes local logs, history, and lock files within the approved worker directory.
+    If specified, deletes local logs, history, and lock files within the canonical worker directory.
 
 .PARAMETER DryRun
     Simulates uninstallation without deleting anything.
@@ -40,14 +41,39 @@ param(
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = "Stop"
 
-# Canonical worker root under LOCALAPPDATA
-$defaultCanonicalRoot = [System.IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA "DigitalDetective\agent_queue"))
+# Single canonical worker root under LOCALAPPDATA
+$canonicalRoot = [System.IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA "DigitalDetective\agent_queue"))
 
-if (-not $StateDir) {
-    $StateDir = $defaultCanonicalRoot
+# Strictly enforce that StateDir (if provided) matches the canonical worker root
+if ($StateDir) {
+    $resolvedGiven = [System.IO.Path]::GetFullPath($StateDir)
+    if (-not $resolvedGiven.Equals($canonicalRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
+        Write-Error "Safety restriction: StateDir cannot be redirected to external path '$resolvedGiven'. Only the canonical worker directory '$canonicalRoot' is permitted."
+        exit 1
+    }
 }
 
-$canonicalStateDir = [System.IO.Path]::GetFullPath($StateDir)
+$targetStateDir = $canonicalRoot
+
+# Reparse point check: ensure no path component from LOCALAPPDATA to worker directory is a junction or symlink
+function Test-PathHasReparsePoint([string]$Path) {
+    $curr = [System.IO.Path]::GetFullPath($Path)
+    while ($curr -and (Test-Path -Path $curr)) {
+        $item = Get-Item -Path $curr -Force
+        if (($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -eq [System.IO.FileAttributes]::ReparsePoint) {
+            return $true
+        }
+        $p = Split-Path -Path $curr -Parent
+        if (-not $p -or $p -eq $curr) { break }
+        $curr = $p
+    }
+    return $false
+}
+
+if (Test-PathHasReparsePoint $targetStateDir) {
+    Write-Error "Safety restriction: Target directory '$targetStateDir' or one of its parents is a reparse point (symlink/junction). Cleanup aborted."
+    exit 1
+}
 
 $task = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
 
@@ -55,7 +81,7 @@ if ($DryRun) {
     Write-Output "-------------------- [UNINSTALL DRY-RUN] --------------------"
     Write-Output "Task Name       : $TaskName"
     Write-Output "Task Exists     : $(if ($task) { 'Yes' } else { 'No' })"
-    Write-Output "State Directory : $canonicalStateDir (Remove: $RemoveState)"
+    Write-Output "State Directory : $targetStateDir (Remove: $RemoveState)"
     Write-Output "-------------------------------------------------------------"
     exit 0
 }
@@ -75,8 +101,8 @@ else {
     Write-Output "Scheduled task '$TaskName' is not currently registered (no action needed)."
 }
 
-# 2. Clean stale lock file if present
-$lockFile = Join-Path $canonicalStateDir "worker.lock"
+# 2. Clean lock file strictly within validated canonicalStateDir
+$lockFile = Join-Path $targetStateDir "worker.lock"
 if (Test-Path -Path $lockFile) {
     try {
         Remove-Item -Path $lockFile -Force -ErrorAction SilentlyContinue
@@ -86,26 +112,10 @@ if (Test-Path -Path $lockFile) {
 
 # 3. Constrained destructive state cleanup
 if ($RemoveState) {
-    # Strictly enforce that StateDir is within %LOCALAPPDATA%\DigitalDetective\agent_queue
-    $isUnderCanonicalRoot = $canonicalStateDir.Equals($defaultCanonicalRoot, [System.StringComparison]::OrdinalIgnoreCase) -or `
-        $canonicalStateDir.StartsWith($defaultCanonicalRoot + "\", [System.StringComparison]::OrdinalIgnoreCase)
-
-    if (-not $isUnderCanonicalRoot) {
-        Write-Error "Safety restriction: -RemoveState is restricted to the worker-owned directory '$defaultCanonicalRoot'. Path '$canonicalStateDir' was rejected to prevent accidental deletion."
-        exit 1
-    }
-
-    if (Test-Path -Path $canonicalStateDir) {
-        # Guard against reparse points (symlinks / directory junctions)
-        $dirItem = Get-Item -Path $canonicalStateDir -Force
-        if (($dirItem.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -eq [System.IO.FileAttributes]::ReparsePoint) {
-            Write-Error "Safety restriction: Target directory '$canonicalStateDir' is a reparse point (symlink/junction). Deletion aborted to prevent directory traversal."
-            exit 1
-        }
-
+    if (Test-Path -Path $targetStateDir) {
         try {
-            Remove-Item -Path $canonicalStateDir -Recurse -Force
-            Write-Output "Removed worker state directory: $canonicalStateDir"
+            Remove-Item -Path $targetStateDir -Recurse -Force
+            Write-Output "Removed worker state directory: $targetStateDir"
         }
         catch {
             Write-Warning "Could not completely remove state directory: $($_.Exception.Message)"
@@ -113,5 +123,5 @@ if ($RemoveState) {
     }
 }
 else {
-    Write-Output "Preserved worker logs and history at: $canonicalStateDir (pass -RemoveState to delete)."
+    Write-Output "Preserved worker logs and history at: $targetStateDir (pass -RemoveState to delete)."
 }

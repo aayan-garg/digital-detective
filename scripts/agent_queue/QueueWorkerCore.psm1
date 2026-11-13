@@ -135,13 +135,18 @@ function Select-QueueTask {
     param(
         [Parameter(Mandatory = $true)]
         [AllowEmptyCollection()]
+        [AllowNull()]
         $Issues,
 
         [Parameter(Mandatory = $false)]
         [string]$CurrentBranch = "main"
     )
 
-    if (-not $Issues -or $Issues.Count -eq 0) {
+    $issueList = @()
+    if ($Issues) {
+        $issueList = @($Issues | Where-Object { $null -ne $_ -and $_.PSObject.Properties['title'] })
+    }
+    if ($issueList.Count -eq 0) {
         return [PSCustomObject]@{
             Action        = "EmptyQueue"
             SelectedIssue = $null
@@ -151,7 +156,7 @@ function Select-QueueTask {
     }
 
     # 1. Check for any issue in [DD-AGENT:REVIEW]
-    $reviewIssues = @($Issues | Where-Object { $_.title -match '^\[DD-AGENT:REVIEW\]' })
+    $reviewIssues = @($issueList | Where-Object { $_.title -match '^\[DD-AGENT:REVIEW\]' })
     if ($reviewIssues.Count -gt 0) {
         $firstReview = $reviewIssues[0]
         return [PSCustomObject]@{
@@ -163,7 +168,7 @@ function Select-QueueTask {
     }
 
     # 2. Check for [DD-AGENT:IN-PROGRESS]
-    $inProgressIssues = @($Issues | Where-Object { $_.title -match '^\[DD-AGENT:IN-PROGRESS\]' })
+    $inProgressIssues = @($issueList | Where-Object { $_.title -match '^\[DD-AGENT:IN-PROGRESS\]' })
     if ($inProgressIssues.Count -gt 1) {
         return [PSCustomObject]@{
             Action        = "Blocked"
@@ -195,7 +200,7 @@ function Select-QueueTask {
     }
 
     # 3. Prioritize [DD-AGENT:REVISION]
-    $revisionIssues = @($Issues | Where-Object { $_.title -match '^\[DD-AGENT:REVISION\]' } | Sort-Object {
+    $revisionIssues = @($issueList | Where-Object { $_.title -match '^\[DD-AGENT:REVISION\]' } | Sort-Object {
         if ($_.createdAt) { [datetime]$_.createdAt } else { [datetime]::MaxValue }
     })
     if ($revisionIssues.Count -gt 0) {
@@ -209,7 +214,7 @@ function Select-QueueTask {
     }
 
     # 4. Select oldest [DD-AGENT:READY]
-    $readyIssues = @($Issues | Where-Object { $_.title -match '^\[DD-AGENT:READY\]' } | Sort-Object {
+    $readyIssues = @($issueList | Where-Object { $_.title -match '^\[DD-AGENT:READY\]' } | Sort-Object {
         if ($_.createdAt) { [datetime]$_.createdAt } else { [datetime]::MaxValue }
     })
     if ($readyIssues.Count -gt 0) {
@@ -352,6 +357,9 @@ function Evaluate-PostRunState {
         [Parameter(Mandatory = $false)]
         $PostIssue,
 
+        [Parameter(Mandatory = $false)]
+        $AssociatedPr,
+
         [Parameter(Mandatory = $true)]
         [int]$ExitCode,
 
@@ -386,47 +394,75 @@ function Evaluate-PostRunState {
         }
     }
 
-    # Process exit code was 0 and no soft denials detected.
-    # Now verify GitHub state transition.
-    if ($PostIssue) {
-        $postTitle = if ($PostIssue.title) { $PostIssue.title } else { "" }
-        $postState = if ($PostIssue.state) { $PostIssue.state } else { "" }
-
-        if ($postTitle -match '^\[DD-AGENT:REVIEW\]') {
-            return [PSCustomObject]@{
-                Outcome       = "TASK_COMPLETED_REVIEW_READY"
-                TaskCompleted = $true
-                Reason        = "Task completed successfully; issue transitioned to [DD-AGENT:REVIEW] with PR open."
-            }
-        }
-        elseif ($postTitle -match '^\[DD-AGENT:DONE\]') {
-            return [PSCustomObject]@{
-                Outcome       = "TASK_COMPLETED_DONE"
-                TaskCompleted = $true
-                Reason        = "Task completed successfully; issue transitioned to [DD-AGENT:DONE]."
-            }
-        }
-        elseif ($postState -eq "closed") {
-            return [PSCustomObject]@{
-                Outcome       = "TASK_COMPLETED_CLOSED"
-                TaskCompleted = $true
-                Reason        = "Task completed successfully; issue was closed."
-            }
-        }
-        else {
-            # CLI exited 0, but issue remained in IN-PROGRESS, READY, or untransitioned
-            return [PSCustomObject]@{
-                Outcome       = "CLI_SUCCEEDED_UNTRANSITIONED"
-                TaskCompleted = $false
-                Reason        = "Antigravity process exited with code 0, but issue title did not transition to [DD-AGENT:REVIEW] (current title: '$postTitle')."
-            }
+    # Verify post-run GitHub issue state
+    if (-not $PostIssue) {
+        return [PSCustomObject]@{
+            Outcome       = "CLI_SUCCEEDED_UNKNOWN_STATE"
+            TaskCompleted = $false
+            Reason        = "Antigravity process exited with code 0, but post-run GitHub issue state could not be verified."
         }
     }
 
-    return [PSCustomObject]@{
-        Outcome       = "CLI_SUCCEEDED_UNKNOWN_STATE"
-        TaskCompleted = $false
-        Reason        = "Antigravity process exited with code 0, but post-run GitHub issue state could not be verified."
+    $postTitle = if ($PostIssue.title) { $PostIssue.title } else { "" }
+    $postState = if ($PostIssue.state) { $PostIssue.state.ToString().ToLowerInvariant() } else { "" }
+
+    # Strict check: Issue closure is explicitly forbidden by safety policy
+    if ($postState -eq "closed") {
+        return [PSCustomObject]@{
+            Outcome       = "POLICY_VIOLATION_CLOSED_ISSUE"
+            TaskCompleted = $false
+            Reason        = "Policy violation: Issue #$($InitialIssue.number) was closed. Closing issues is strictly prohibited for the queue agent."
+        }
+    }
+
+    if ($postState -ne "open") {
+        return [PSCustomObject]@{
+            Outcome       = "UNEXPECTED_ISSUE_STATE"
+            TaskCompleted = $false
+            Reason        = "Issue #$($InitialIssue.number) has unexpected state '$postState' (must remain open)."
+        }
+    }
+
+    # Issue must be open and have [DD-AGENT:REVIEW] prefix
+    if ($postTitle -match '^\[DD-AGENT:REVIEW\]') {
+        # Actually verify associated PR state
+        if (-not $AssociatedPr) {
+            return [PSCustomObject]@{
+                Outcome       = "REVIEW_TITLE_WITHOUT_PR"
+                TaskCompleted = $false
+                Reason        = "Issue transitioned to [DD-AGENT:REVIEW], but no associated pull request was found on GitHub."
+            }
+        }
+
+        $prState = if ($AssociatedPr.state) { $AssociatedPr.state.ToString().ToUpperInvariant() } else { "" }
+        if ($prState -ne "OPEN") {
+            return [PSCustomObject]@{
+                Outcome       = "REVIEW_TITLE_PR_NOT_OPEN"
+                TaskCompleted = $false
+                Reason        = "Issue transitioned to [DD-AGENT:REVIEW], but associated PR #$($AssociatedPr.number) is state '$prState' instead of OPEN."
+            }
+        }
+
+        return [PSCustomObject]@{
+            Outcome       = "TASK_COMPLETED_REVIEW_READY"
+            TaskCompleted = $true
+            Reason        = "Task completed successfully; Issue #$($InitialIssue.number) is open in [DD-AGENT:REVIEW] with active open PR #$($AssociatedPr.number) ($($AssociatedPr.url))."
+        }
+    }
+    elseif ($postTitle -match '^\[DD-AGENT:DONE\]') {
+        return [PSCustomObject]@{
+            Outcome       = "TASK_COMPLETED_DONE"
+            TaskCompleted = $true
+            Reason        = "Task accepted and marked [DD-AGENT:DONE]."
+        }
+    }
+    else {
+        # Process exited 0, but issue remained IN-PROGRESS, READY, or failed to transition
+        return [PSCustomObject]@{
+            Outcome       = "CLI_SUCCEEDED_UNTRANSITIONED"
+            TaskCompleted = $false
+            Reason        = "Antigravity process exited with code 0, but issue did not transition to [DD-AGENT:REVIEW] (current title: '$postTitle')."
+        }
     }
 }
 

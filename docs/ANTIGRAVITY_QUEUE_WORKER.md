@@ -195,9 +195,12 @@ powershell -ExecutionPolicy Bypass -File scripts/agent_queue/Uninstall-DigitalDe
    * Log files are bounded (keeps latest 50 files) and `history.jsonl` is bounded to the latest 500 entries.
 6. **Destructive Cleanup Boundaries:**
    * `Uninstall-DigitalDetectiveQueueWorker.ps1 -RemoveState` strictly constrains deletions to `%LOCALAPPDATA%\DigitalDetective\agent_queue`.
-   * External directories or paths containing reparse points (symlinks / directory junctions) are rejected with a safety error.
-7. **Post-Run State Verification:**
-   * The worker verifies whether the issue actually transitioned to `[DD-AGENT:REVIEW]` or `[DD-AGENT:DONE]`.
+   * All path components from `%LOCALAPPDATA%` to the target directory are validated against reparse points (symlinks / directory junctions) *prior* to any filesystem deletion (including `worker.lock`).
+   * External directories or paths containing reparse points are rejected with a safety error.
+7. **Post-Run State & Pull Request Verification:**
+   * The worker verifies whether the issue remains open and has transitioned to `[DD-AGENT:REVIEW]` or `[DD-AGENT:DONE]`.
+   * Any transition to `[DD-AGENT:REVIEW]` strictly requires an associated Pull Request matching `(^|[/-])issue-$number($|-)` to exist and be in state `OPEN`. Missing PRs yield `REVIEW_TITLE_WITHOUT_PR`; closed or merged PRs yield `REVIEW_TITLE_PR_NOT_OPEN`.
+   * Closing an issue is strictly prohibited by safety policy; any closed post-run issue state triggers `POLICY_VIOLATION_CLOSED_ISSUE`.
    * If the CLI process exits with code 0 but the issue remains untransitioned, history records `CLI_SUCCEEDED_UNTRANSITIONED` rather than false task success.
 
 ---
@@ -225,16 +228,12 @@ A dedicated Pester test suite validates all decision logic without live network 
 powershell -ExecutionPolicy Bypass -File scripts/agent_queue/Invoke-AgentQueueTests.ps1
 ```
 
-**Test Coverage (32/32 passing in ~35s):**
-* Approved untracked alias whitelist vs unauthorized modifications, staged files, and deletions.
-* Empty queue, review pending blocks, and multiple in-progress blocks.
-* Exact branch segment matching preventing issue #4 from matching issue #40.
-* Revision priority over ready tasks and oldest-first selection.
-* Process file lock acquisition, contention detection, and release.
-* Post-run state verification distinguishing CLI process success from issue transition.
-* Representative captured Antigravity CLI stderr fixtures for soft-denials.
-* Credential sanitization in logs.
-* Safe `.cmd` batch execution via `cmd.exe /d /c` wrapper.
-* Scheduled task installer dry-run, idempotency, status inspector JSON output, and uninstaller.
-* Rejection of destructive state cleanup on external directories (Safety Gate Test).
-* Live Task Scheduler registration, idempotency, and clean unregistration.
+**Test Coverage (40/40 passing in ~27s across 8 test suites):**
+* **Working tree cleanliness (7 tests):** Approved untracked alias whitelist vs unauthorized modifications, staged files, deletions, and backslash paths.
+* **Queue task selection & exact branch matching (10 tests):** Empty queue, review pending blocks, multiple in-progress blocks, exact branch matching (`(^|[/-])issue-$number($|-)`), adjacent-number rejection (issue-4 vs issue-40), revision priority, oldest-first ordering, and branch main enforcement for ready tasks.
+* **Concurrency locking (1 test):** Exclusive process file lock acquisition, contention detection, and release.
+* **Post-run state & PR verification (9 tests):** Valid open PR verification for review state, missing PR detection, closed/merged PR detection, closed issue policy violation, done state acceptance, untransitioned in-progress, timeout (exit 124), process failure, and soft-denial detection.
+* **Security, injection & representative stderr fixtures (3 tests):** Malicious title argument injection prevention, captured Antigravity CLI stderr fixture detection, and credential/token redaction.
+* **Batch wrapper execution (.cmd vs .exe) (1 test):** Safe `.cmd` batch launcher wrapping via `cmd.exe /d /c`.
+* **Fail-closed & empty-queue isolation (4 tests):** Deterministic mock tests verifying missing executable (exit 2), failed auth status (exit 3), empty queue (exit 0 without invoking `agy -p`), and review-pending queue (exit 0 without invoking `agy -p`).
+* **Dry-run, diagnostics & cleanup safety contracts (5 tests):** Installer dry-run, uninstaller dry-run, external directory cleanup safety gate (preserving canary and lock file), status inspector JSON parsing, and live Task Scheduler registration/idempotency/unregistration.

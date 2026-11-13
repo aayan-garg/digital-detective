@@ -203,44 +203,76 @@ Describe "QueueWorkerCore - Concurrency Locking" {
     }
 }
 
-Describe "QueueWorkerCore - Post-Run State Verification" {
-    It "Validates TASK_COMPLETED_REVIEW_READY when issue title transitioned to [DD-AGENT:REVIEW]" {
-        $initial = [PSCustomObject]@{ number = 4; title = "[DD-AGENT:IN-PROGRESS] Build runner" }
+Describe "QueueWorkerCore - Post-Run State & PR Verification" {
+    $initial = [PSCustomObject]@{ number = 4; title = "[DD-AGENT:IN-PROGRESS] Build runner" }
+
+    It "Validates TASK_COMPLETED_REVIEW_READY when issue is open in [DD-AGENT:REVIEW] with an active open PR" {
         $post = [PSCustomObject]@{ number = 4; title = "[DD-AGENT:REVIEW] Build runner"; state = "open" }
-        $result = Evaluate-PostRunState -InitialIssue $initial -PostIssue $post -ExitCode 0 -IsSoftDenied $false
+        $pr = [PSCustomObject]@{ number = 6; state = "OPEN"; title = "feat: add runner"; url = "https://github.com/pr/6" }
+        $result = Evaluate-PostRunState -InitialIssue $initial -PostIssue $post -AssociatedPr $pr -ExitCode 0 -IsSoftDenied $false
         $result.Outcome | Should Be "TASK_COMPLETED_REVIEW_READY"
         $result.TaskCompleted | Should Be $true
     }
 
+    It "Rejects completion when issue is [DD-AGENT:REVIEW] but associated PR is missing" {
+        $post = [PSCustomObject]@{ number = 4; title = "[DD-AGENT:REVIEW] Build runner"; state = "open" }
+        $result = Evaluate-PostRunState -InitialIssue $initial -PostIssue $post -AssociatedPr $null -ExitCode 0 -IsSoftDenied $false
+        $result.Outcome | Should Be "REVIEW_TITLE_WITHOUT_PR"
+        $result.TaskCompleted | Should Be $false
+        $result.Reason | Should Match "no associated pull request was found"
+    }
+
+    It "Rejects completion when issue is [DD-AGENT:REVIEW] but associated PR is closed or merged" {
+        $post = [PSCustomObject]@{ number = 4; title = "[DD-AGENT:REVIEW] Build runner"; state = "open" }
+        $pr = [PSCustomObject]@{ number = 6; state = "CLOSED"; title = "feat: add runner"; url = "https://github.com/pr/6" }
+        $result = Evaluate-PostRunState -InitialIssue $initial -PostIssue $post -AssociatedPr $pr -ExitCode 0 -IsSoftDenied $false
+        $result.Outcome | Should Be "REVIEW_TITLE_PR_NOT_OPEN"
+        $result.TaskCompleted | Should Be $false
+        $result.Reason | Should Match "instead of OPEN"
+    }
+
+    It "Rejects completion and raises policy violation if issue was closed" {
+        $post = [PSCustomObject]@{ number = 4; title = "[DD-AGENT:REVIEW] Build runner"; state = "closed" }
+        $pr = [PSCustomObject]@{ number = 6; state = "OPEN"; title = "feat: add runner"; url = "https://github.com/pr/6" }
+        $result = Evaluate-PostRunState -InitialIssue $initial -PostIssue $post -AssociatedPr $pr -ExitCode 0 -IsSoftDenied $false
+        $result.Outcome | Should Be "POLICY_VIOLATION_CLOSED_ISSUE"
+        $result.TaskCompleted | Should Be $false
+        $result.Reason | Should Match "Policy violation"
+    }
+
+    It "Accepts TASK_COMPLETED_DONE when issue is open and marked [DD-AGENT:DONE]" {
+        $post = [PSCustomObject]@{ number = 4; title = "[DD-AGENT:DONE] Build runner"; state = "open" }
+        $result = Evaluate-PostRunState -InitialIssue $initial -PostIssue $post -AssociatedPr $null -ExitCode 0 -IsSoftDenied $false
+        $result.Outcome | Should Be "TASK_COMPLETED_DONE"
+        $result.TaskCompleted | Should Be $true
+    }
+
     It "Flags CLI_SUCCEEDED_UNTRANSITIONED when CLI exits 0 but issue remains IN-PROGRESS" {
-        $initial = [PSCustomObject]@{ number = 4; title = "[DD-AGENT:IN-PROGRESS] Build runner" }
         $post = [PSCustomObject]@{ number = 4; title = "[DD-AGENT:IN-PROGRESS] Build runner"; state = "open" }
-        $result = Evaluate-PostRunState -InitialIssue $initial -PostIssue $post -ExitCode 0 -IsSoftDenied $false
+        $result = Evaluate-PostRunState -InitialIssue $initial -PostIssue $post -AssociatedPr $null -ExitCode 0 -IsSoftDenied $false
         $result.Outcome | Should Be "CLI_SUCCEEDED_UNTRANSITIONED"
         $result.TaskCompleted | Should Be $false
         $result.Reason | Should Match "did not transition"
     }
 
     It "Flags TIMEOUT on exit code 124" {
-        $initial = [PSCustomObject]@{ number = 4; title = "[DD-AGENT:IN-PROGRESS] Build runner" }
         $post = [PSCustomObject]@{ number = 4; title = "[DD-AGENT:IN-PROGRESS] Build runner"; state = "open" }
-        $result = Evaluate-PostRunState -InitialIssue $initial -PostIssue $post -ExitCode 124 -IsSoftDenied $false
+        $result = Evaluate-PostRunState -InitialIssue $initial -PostIssue $post -AssociatedPr $null -ExitCode 124 -IsSoftDenied $false
         $result.Outcome | Should Be "TIMEOUT"
         $result.TaskCompleted | Should Be $false
     }
 
     It "Flags CLI_PROCESS_FAILED on non-zero exit code" {
-        $initial = [PSCustomObject]@{ number = 4; title = "[DD-AGENT:IN-PROGRESS] Build runner" }
         $post = [PSCustomObject]@{ number = 4; title = "[DD-AGENT:IN-PROGRESS] Build runner"; state = "open" }
-        $result = Evaluate-PostRunState -InitialIssue $initial -PostIssue $post -ExitCode 1 -IsSoftDenied $false
+        $result = Evaluate-PostRunState -InitialIssue $initial -PostIssue $post -AssociatedPr $null -ExitCode 1 -IsSoftDenied $false
         $result.Outcome | Should Be "CLI_PROCESS_FAILED"
         $result.TaskCompleted | Should Be $false
     }
 
     It "Flags SOFT_DENIED even if CLI process exited with code 0" {
-        $initial = [PSCustomObject]@{ number = 4; title = "[DD-AGENT:IN-PROGRESS] Build runner" }
         $post = [PSCustomObject]@{ number = 4; title = "[DD-AGENT:REVIEW] Build runner"; state = "open" }
-        $result = Evaluate-PostRunState -InitialIssue $initial -PostIssue $post -ExitCode 0 -IsSoftDenied $true
+        $pr = [PSCustomObject]@{ number = 6; state = "OPEN"; title = "feat"; url = "url" }
+        $result = Evaluate-PostRunState -InitialIssue $initial -PostIssue $post -AssociatedPr $pr -ExitCode 0 -IsSoftDenied $true
         $result.Outcome | Should Be "SOFT_DENIED"
         $result.TaskCompleted | Should Be $false
     }
@@ -313,7 +345,71 @@ Describe "QueueWorkerCore - Batch Wrapper Execution (.cmd vs .exe)" {
     Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
 }
 
-Describe "QueueWorker Scripts - Dry-Run & Diagnostics Contract" {
+Describe "QueueWorker Scripts - Fail-Closed & Empty-Queue Isolation (Deterministic)" {
+    $scriptDir = Join-Path $PSScriptRoot "..\..\scripts\agent_queue"
+    $workerScript = Join-Path $scriptDir "Invoke-DigitalDetectiveQueueWorker.ps1"
+    $mockBinDir = Join-Path $env:TEMP ("dd_mock_bin_" + [guid]::NewGuid().ToString())
+    New-Item -Path $mockBinDir -ItemType Directory -Force | Out-Null
+
+    # Create dummy agy.cmd that records invocations of agy -p (headless runs)
+    $dummyAgy = Join-Path $mockBinDir "agy.cmd"
+    $agyInvocationLog = Join-Path $mockBinDir "agy_invocations.log"
+    Set-Content -Path $dummyAgy -Value "@echo off`r`nif `"%1`"==`"--version`" (echo agy version 1.5.8 & exit /b 0)`r`nif `"%1`"==`"-p`" (echo CALLED >> `"$agyInvocationLog`" & exit /b 0)`r`nexit /b 0" -Encoding ASCII
+
+    # Create dummy git.exe (batch alias for test harness)
+    $dummyGit = Join-Path $mockBinDir "git.cmd"
+    Set-Content -Path $dummyGit -Value "@echo off`necho %* | findstr /i `"rev-parse`" >nul && (echo main & exit /b 0)`necho %* | findstr /i `"status`" >nul && exit /b 0`nexit /b 0" -Encoding ASCII
+
+    It "Fails closed with exit code 2 when required executable is missing" {
+        $nonExistentGh = "C:\nonexistent\gh.exe"
+        $proc = Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$workerScript`" -GhPath `"$nonExistentGh`"" -NoNewWindow -Wait -PassThru
+        $proc.ExitCode | Should Be 2
+    }
+
+    It "Fails closed with exit code 3 when gh auth status fails" {
+        $dummyFailingGh = Join-Path $mockBinDir "gh_fail.cmd"
+        Set-Content -Path $dummyFailingGh -Value "@echo off`necho Not logged in & exit /b 1" -Encoding ASCII
+
+        $proc = Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$workerScript`" -GhPath `"$dummyFailingGh`" -AgyPath `"$dummyAgy`" -GitPath `"$dummyGit`"" -NoNewWindow -Wait -PassThru
+        $proc.ExitCode | Should Be 3
+    }
+
+    It "Exits cleanly with code 0 on empty queue without invoking agy -p" {
+        $dummyEmptyGh = Join-Path $mockBinDir "gh_empty.cmd"
+        Set-Content -Path $dummyEmptyGh -Value "@echo off`nif `"%1`"==`"auth`" (exit /b 0)`nif `"%1`"==`"issue`" (echo [] & exit /b 0)`nexit /b 0" -Encoding ASCII
+
+        if (Test-Path $agyInvocationLog) { Remove-Item $agyInvocationLog -Force }
+
+        $proc = Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$workerScript`" -GhPath `"$dummyEmptyGh`" -AgyPath `"$dummyAgy`" -GitPath `"$dummyGit`"" -NoNewWindow -Wait -PassThru
+        $proc.ExitCode | Should Be 0
+        Test-Path $agyInvocationLog | Should Be $false
+    }
+
+    It "Exits cleanly with code 0 on review-pending queue without invoking agy -p" {
+        $dummyReviewGh = Join-Path $mockBinDir "gh_review.cmd"
+        $reviewJsonFile = Join-Path $mockBinDir "review.json"
+        $jsonPayload = @(
+            @{
+                number    = 3
+                title     = "[DD-AGENT:REVIEW] Audit"
+                createdAt = "2026-11-13T01:00:00Z"
+            }
+        ) | ConvertTo-Json -Compress
+        Set-Content -Path $reviewJsonFile -Value $jsonPayload -Encoding ASCII
+
+        Set-Content -Path $dummyReviewGh -Value "@echo off`r`nif `"%1`"==`"auth`" (exit /b 0)`r`nif `"%1`"==`"issue`" (type `"$reviewJsonFile`" & exit /b 0)`r`nexit /b 0" -Encoding ASCII
+
+        if (Test-Path $agyInvocationLog) { Remove-Item $agyInvocationLog -Force }
+
+        $proc = Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$workerScript`" -GhPath `"$dummyReviewGh`" -AgyPath `"$dummyAgy`" -GitPath `"$dummyGit`"" -NoNewWindow -Wait -PassThru
+        $proc.ExitCode | Should Be 0
+        Test-Path $agyInvocationLog | Should Be $false
+    }
+
+    Remove-Item $mockBinDir -Recurse -Force -ErrorAction SilentlyContinue
+}
+
+Describe "QueueWorker Scripts - Dry-Run, Diagnostics & Cleanup Safety Contracts" {
     $scriptDir = Join-Path $PSScriptRoot "..\..\scripts\agent_queue"
 
     It "Install-DigitalDetectiveQueueWorker -DryRun executes without side-effects" {
@@ -330,18 +426,25 @@ Describe "QueueWorker Scripts - Dry-Run & Diagnostics Contract" {
         ($output -join "`n") | Should Match "UNINSTALL DRY-RUN"
     }
 
-    It "Rejects destructive cleanup on an external directory (Safety Gate Test)" {
+    It "Rejects destructive cleanup on an external directory, preserving canary and worker.lock" {
         $uninstallScript = Join-Path $scriptDir "Uninstall-DigitalDetectiveQueueWorker.ps1"
         $dangerousExternalDir = Join-Path $env:TEMP ("dd_external_test_" + [guid]::NewGuid().ToString())
         New-Item -Path $dangerousExternalDir -ItemType Directory -Force | Out-Null
+
         $canaryFile = Join-Path $dangerousExternalDir "do_not_delete.txt"
         Set-Content -Path $canaryFile -Value "Safe Canary Content"
+        $lockCanary = Join-Path $dangerousExternalDir "worker.lock"
+        Set-Content -Path $lockCanary -Value "External Lock File"
 
         try {
             $errFile = [System.IO.Path]::GetTempFileName()
             $proc = Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$uninstallScript`" -StateDir `"$dangerousExternalDir`" -RemoveState" -NoNewWindow -Wait -PassThru -RedirectStandardError $errFile
             $proc.ExitCode | Should Be 1
+
+            # Both canary file AND worker.lock must remain untouched
             Test-Path -Path $canaryFile | Should Be $true
+            Test-Path -Path $lockCanary | Should Be $true
+
             $errContent = if (Test-Path -Path $errFile) { Get-Content -Path $errFile -Raw } else { "" }
             $errContent | Should Match "Safety restriction"
             Remove-Item $errFile -Force -ErrorAction SilentlyContinue

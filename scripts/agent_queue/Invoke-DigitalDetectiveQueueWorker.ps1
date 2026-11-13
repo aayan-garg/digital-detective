@@ -170,7 +170,8 @@ try {
     }
 
     # 7. Check current branch using resolved git executable
-    $currentBranch = (& $resolvedGit -C $RepoPath rev-parse --abbrev-ref HEAD 2>&1).Trim()
+    $branchOutput = & $resolvedGit -C $RepoPath rev-parse --abbrev-ref HEAD 2>&1
+    $currentBranch = if ($branchOutput) { ($branchOutput | Out-String).Trim() } else { "main" }
     Write-Verbose "Current branch: $currentBranch"
 
     # 8. Query GitHub issue queue
@@ -182,9 +183,13 @@ try {
     }
 
     $issues = @()
-    if ($rawIssuesJson -and $rawIssuesJson.Trim().Length -gt 0) {
+    $rawIssuesStr = if ($rawIssuesJson) { ($rawIssuesJson | Out-String).Trim() } else { "" }
+    if ($rawIssuesStr.Length -gt 0) {
         try {
-            $issues = ConvertFrom-Json -InputObject $rawIssuesJson
+            $parsedIssues = ConvertFrom-Json -InputObject $rawIssuesStr
+            if ($parsedIssues) {
+                $issues = @($parsedIssues | Where-Object { $null -ne $_ })
+            }
         }
         catch {
             Write-Error "Failed to parse GitHub issues JSON: $($_.Exception.Message)"
@@ -259,10 +264,26 @@ try {
         } catch {}
     }
 
+    # Query associated Pull Requests for this issue
+    $rawPrsJson = & $resolvedGh pr list --repo $RepoSlug --state all --json number,title,state,headRefName,url --limit 20 2>&1
+    $associatedPr = $null
+    if ($LASTEXITCODE -eq 0 -and $rawPrsJson) {
+        try {
+            $parsedPrs = ConvertFrom-Json -InputObject $rawPrsJson
+            $allPrs = if ($null -eq $parsedPrs) { @() } else { @($parsedPrs | Where-Object { $null -ne $_ }) }
+            $exactBranchPattern = "(^|[/-])issue-$($selectedIssue.number)($|-)"
+            $matchingPrs = @($allPrs | Where-Object { $_.PSObject.Properties['headRefName'] -and $_.headRefName -and ($_.headRefName -match $exactBranchPattern) })
+            if ($matchingPrs.Count -gt 0) {
+                $associatedPr = $matchingPrs[0]
+            }
+        } catch {}
+    }
+
     # Evaluate post-run state distinguishing CLI process exit from actual task completion
     $evalState = Evaluate-PostRunState `
         -InitialIssue $selectedIssue `
         -PostIssue $postIssueObj `
+        -AssociatedPr $associatedPr `
         -ExitCode $cliResult.ExitCode `
         -IsSoftDenied $isSoftDenied `
         -OutputText $sanitizedOutput
@@ -273,6 +294,9 @@ try {
         IssueNumber     = $selectedIssue.number
         InitialTitle    = $selectedIssue.title
         PostTitle       = if ($postIssueObj) { $postIssueObj.title } else { "Unknown" }
+        PostState       = if ($postIssueObj) { $postIssueObj.state } else { "Unknown" }
+        AssociatedPr    = if ($associatedPr) { $associatedPr.number } else { $null }
+        PrState         = if ($associatedPr) { $associatedPr.state } else { $null }
         ExitCode        = $cliResult.ExitCode
         DurationSeconds = [math]::Round($duration, 2)
         Outcome         = $evalState.Outcome
