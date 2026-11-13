@@ -219,3 +219,4 @@ digital-detective/
 **Fully Tested & Integrated (v1.0-complete)**.
 * **Test Suite**: 475 passed, 11 skipped, 0 failed.
 * **Measured Baselines**: Preserved and verified.
+* **Architecture & Baseline Audit**: See [docs/BASELINE_AUDIT.md](docs/BASELINE_AUDIT.md) for the source-verified architecture, component matrix, test health inventory, and benchmark reproducibility audit.
