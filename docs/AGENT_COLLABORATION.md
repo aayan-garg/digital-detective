@@ -12,16 +12,16 @@ The user should not need to copy implementation prompts or agent responses betwe
 
 ## One-time Antigravity IDE MCP setup
 
-Use the official hosted GitHub MCP server. It does not require Docker or a local bridge.
+Use the official hosted GitHub MCP server. Manual remote configuration is recommended by the GitHub MCP project's Antigravity guide; it avoids the Marketplace/Docker installation path.
 
-1. In Antigravity IDE, open the Agent panel's **… → MCP Servers → Manage MCP Servers → View raw config**.
-2. Antigravity IDE's current global config path is `%USERPROFILE%\\.gemini\\config\\mcp_config.json` on Windows. The workspace-level alternative is `<repo>/.agents/mcp_config.json`; use the global path here so your access token never appears in the repository.
+1. Close the Marketplace "Add MCP Server" dialog without installing the GitHub Marketplace entry.
+2. In Antigravity IDE, open the Agent panel's **… → MCP Servers → Manage MCP Servers → View raw config**. Use this UI action to open the exact configuration file used by the installed Antigravity version; do not guess the file path.
 3. Create a GitHub fine-grained personal access token. Restrict **Repository access** to this repository only: `aayan-garg/digital-detective`.
 4. Grant only these repository permissions:
    - Metadata: Read-only
    - Issues: Read and write
    - Pull requests: Read and write
-5. Merge the following server entry into the existing `mcpServers` object. Do not overwrite other MCP servers. Replace the token placeholder locally; never commit the token or this local configuration.
+5. Merge this server entry into the existing `mcpServers` object. Do not overwrite other servers. Replace the token placeholder locally; never commit the token or this local configuration.
 
 ```json
 {
@@ -30,21 +30,26 @@ Use the official hosted GitHub MCP server. It does not require Docker or a local
       "serverUrl": "https://api.githubcopilot.com/mcp/",
       "headers": {
         "Authorization": "Bearer YOUR_FINE_GRAINED_GITHUB_TOKEN",
-        "X-MCP-Tools": "search_issues,list_issues,issue_read,issue_write,add_issue_comment,update_issue_comment,search_pull_requests,pull_request_read,create_pull_request,update_pull_request,pull_request_review_write,add_comment_to_pending_review,add_reply_to_pull_request_comment"
+        "X-MCP-Toolsets": "issues,pull_requests"
       }
     }
   }
 }
 ```
 
-The tool allowlist intentionally omits repository content writes, branch writes, workflow operations, organization operations, PR merge, and arbitrary Git operations. Antigravity uses its local Git checkout for source edits, commits, and pushes; GitHub MCP handles the issue queue and PR discussion.
+The `X-MCP-Toolsets` header limits the server to GitHub Issues and Pull Request tools. It does not enable repository-content writes, branch management, Actions, organization administration, or arbitrary shell operations. Antigravity uses its local Git checkout and local Git credentials for source edits, branch commits, and pushes.
 
 6. Save the configuration and restart/reload the GitHub MCP server (or Antigravity IDE if needed).
 7. Open **… → MCP Servers** and confirm the GitHub server is connected and exposes issue search/read/write and PR read/create/review tools.
 8. Test by asking Antigravity to search for open issues in `aayan-garg/digital-detective`. The queue is empty until an issue is created with the ready prefix.
 
-Antigravity's current IDE documentation supports remote servers via `serverUrl`; the official GitHub MCP server documents the `X-MCP-Tools` header for exact tool allowlists. The MCP configuration is workstation-local, not a repository file.
+Official references:
+- [Antigravity MCP configuration](https://antigravity.google/docs/mcp)
+- [GitHub MCP server: Antigravity installation](https://github.com/github/github-mcp-server/blob/main/docs/installation-guides/install-antigravity.md)
+- [GitHub MCP remote server and toolsets](https://github.com/github/github-mcp-server/blob/main/docs/remote-server.md)
 
+The MCP configuration and token are workstation-local and must never be committed.
+ 
 ## Task lifecycle
 
 Issue title prefixes are the queue state. Keep the issue open until the architect accepts the PR.
