@@ -15,12 +15,13 @@ The user should not need to copy implementation prompts or agent responses betwe
 Use the official hosted GitHub MCP server. It does not require Docker or a local bridge.
 
 1. In Antigravity IDE, open the Agent panel's **… → MCP Servers → Manage MCP Servers → View raw config**.
-2. Create a GitHub fine-grained personal access token. Restrict **Repository access** to this repository only: `aayan-garg/digital-detective`.
-3. Grant only the repository permissions needed by the selected MCP tools:
+2. Antigravity IDE's current global config path is `%USERPROFILE%\\.gemini\\config\\mcp_config.json` on Windows. The workspace-level alternative is `<repo>/.agents/mcp_config.json`; use the global path here so your access token never appears in the repository.
+3. Create a GitHub fine-grained personal access token. Restrict **Repository access** to this repository only: `aayan-garg/digital-detective`.
+4. Grant only these repository permissions:
    - Metadata: Read-only
    - Issues: Read and write
    - Pull requests: Read and write
-4. Merge the following server entry into the existing `mcpServers` object. Do not overwrite other MCP servers. Replace the token placeholder locally; never commit the token or this local configuration.
+5. Merge the following server entry into the existing `mcpServers` object. Do not overwrite other MCP servers. Replace the token placeholder locally; never commit the token or this local configuration.
 
 ```json
 {
@@ -36,13 +37,13 @@ Use the official hosted GitHub MCP server. It does not require Docker or a local
 }
 ```
 
-The tool allowlist intentionally omits repository file-write, branch-write, workflow, organization, and arbitrary Git operations. Antigravity uses its local Git checkout for code changes, commits, and pushes; GitHub MCP is used for the issue queue and PR discussion.
+The tool allowlist intentionally omits repository content writes, branch writes, workflow operations, organization operations, PR merge, and arbitrary Git operations. Antigravity uses its local Git checkout for source edits, commits, and pushes; GitHub MCP handles the issue queue and PR discussion.
 
-5. Save the configuration and restart/reload the GitHub MCP server (or Antigravity IDE if needed).
-6. Open **… → MCP Servers** and confirm the GitHub server is connected and exposes issue search/read/write and PR read/create/review tools.
-7. Test by asking Antigravity to search for open issues in `aayan-garg/digital-detective`. The queue is empty until an issue is created with the ready prefix.
+6. Save the configuration and restart/reload the GitHub MCP server (or Antigravity IDE if needed).
+7. Open **… → MCP Servers** and confirm the GitHub server is connected and exposes issue search/read/write and PR read/create/review tools.
+8. Test by asking Antigravity to search for open issues in `aayan-garg/digital-detective`. The queue is empty until an issue is created with the ready prefix.
 
-Antigravity's current IDE documentation supports remote servers via `serverUrl`; the official GitHub MCP installation guide documents the hosted endpoint. The MCP configuration is workstation-local, not a repository file.
+Antigravity's current IDE documentation supports remote servers via `serverUrl`; the official GitHub MCP server documents the `X-MCP-Tools` header for exact tool allowlists. The MCP configuration is workstation-local, not a repository file.
 
 ## Task lifecycle
 
