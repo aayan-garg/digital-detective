@@ -33,10 +33,16 @@ The issue title prefix is the state marker. Keep the issue open throughout imple
 ## Claiming and workspace safety
 
 1. Before editing, inspect `git status --short --branch`, the current branch, and recent commits.
-2. If there are uncommitted changes, stop and report them. Never stash, reset, clean, overwrite, or discard user changes.
-3. Never implement on `main`. For a new task, fetch `origin/main` and create a dedicated branch named `agent/issue-<number>-<short-slug>`. For a revision, reuse the branch of the linked PR after verifying it belongs to this task.
-4. Claim the issue by changing its title prefix to `[DD-AGENT:IN-PROGRESS]` and posting a comment with the branch name and a concise scope summary.
-5. If the GitHub MCP server is unavailable or the issue cannot be updated, do not silently proceed as though the task was claimed.
+2. Treat the following five exact untracked files as a user-approved pre-existing baseline; they are allowed to remain untracked and must never be modified, deleted, moved, staged, or ignored:
+   - `src/agent/__init__.py`
+   - `src/agent/disambiguator.py`
+   - `src/features/__init__.py`
+   - `src/features/causal_residuals.py`
+   - `src/features/log_scorer.py`
+3. If any tracked modification, staged change, or untracked path other than those five is present, stop and report it. Never stash, reset, clean, overwrite, or discard user changes. When committing, explicitly stage only task-owned file paths; never use `git add .` or `git add -A`.
+4. Never implement on `main`. For a new task, fetch `origin/main` and create a dedicated branch named `agent/issue-<number>-<short-slug>`. If that exact task branch already exists locally and points to the expected task/base, verify it and reuse it rather than creating it again. For a revision, reuse the branch of the linked PR after verifying it belongs to this task.
+5. Claim the issue by changing its title prefix to `[DD-AGENT:IN-PROGRESS]` and posting a comment with the branch name and a concise scope summary.
+6. If the GitHub MCP server is unavailable or the issue cannot be updated, do not silently proceed as though the task was claimed.
 
 ## Implementation rules
 
