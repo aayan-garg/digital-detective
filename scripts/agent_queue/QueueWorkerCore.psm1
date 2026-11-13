@@ -56,22 +56,30 @@ function Test-WorkingTreeCleanliness {
         [string]$RepoPath,
 
         [Parameter(Mandatory = $false)]
+        [string]$GitExe,
+
+        [Parameter(Mandatory = $false)]
         [string[]]$PorcelainLines = @()
     )
 
     if (-not $PorcelainLines -and $RepoPath) {
-        $gitCmd = Resolve-WorkerExecutable -Name "git"
-        if (-not $gitCmd) {
+        $resolvedGit = if ($GitExe -and (Test-Path -Path $GitExe -PathType Leaf)) {
+            $GitExe
+        } else {
+            Resolve-WorkerExecutable -Name "git" -ExplicitPath $GitExe
+        }
+
+        if (-not $resolvedGit) {
             return [PSCustomObject]@{
-                IsClean = $false
-                Reason  = "Git executable not found to check working tree cleanliness."
+                IsClean    = $false
+                Reason     = "Git executable not found to check working tree cleanliness."
                 Violations = @("git-not-found")
             }
         }
         $prevPwd = Get-Location
         try {
             Set-Location $RepoPath
-            $rawStatus = & $gitCmd status --porcelain=v1 -uall 2>&1
+            $rawStatus = & $resolvedGit status --porcelain=v1 -uall 2>&1
             $PorcelainLines = @($rawStatus | Where-Object { $_ -match '\S' })
         }
         finally {
@@ -166,9 +174,9 @@ function Select-QueueTask {
     }
     elseif ($inProgressIssues.Count -eq 1) {
         $inProg = $inProgressIssues[0]
-        # Check if current branch matches the issue
-        $expectedBranchPattern = "issue-$($inProg.number)"
-        if ($CurrentBranch -and $CurrentBranch -match $expectedBranchPattern) {
+        # Match the issue number path segment exactly to avoid issue-4 matching issue-40
+        $exactBranchPattern = "(^|[/-])issue-$($inProg.number)($|-)"
+        if ($CurrentBranch -and ($CurrentBranch -match $exactBranchPattern)) {
             return [PSCustomObject]@{
                 Action        = "Resume"
                 SelectedIssue = $inProg
@@ -231,6 +239,74 @@ function Select-QueueTask {
     }
 }
 
+function Invoke-AntigravityCli {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$AgyPath,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Prompt,
+
+        [Parameter(Mandatory = $true)]
+        [string]$WorkingDirectory,
+
+        [Parameter(Mandatory = $false)]
+        [int]$TimeoutSeconds = 1800
+    )
+
+    if (-not (Test-Path -Path $AgyPath -PathType Leaf)) {
+        throw "Antigravity CLI executable not found at: $AgyPath"
+    }
+
+    $isCmd = ($AgyPath -match '\.(cmd|bat)$')
+    $psi = [System.Diagnostics.ProcessStartInfo]::new()
+
+    if ($isCmd) {
+        $psi.FileName = if ($env:ComSpec) { $env:ComSpec } else { "cmd.exe" }
+        $psi.Arguments = "/d /c `"`"$AgyPath`" -p `"$Prompt`" --output-format json --print-timeout `"$($TimeoutSeconds)s`"`""
+    }
+    else {
+        $psi.FileName = $AgyPath
+        $psi.Arguments = "-p `"$Prompt`" --output-format json --print-timeout `"$($TimeoutSeconds)s`""
+    }
+
+    $psi.WorkingDirectory = $WorkingDirectory
+    $psi.RedirectStandardOutput = $true
+    $psi.RedirectStandardError = $true
+    $psi.UseShellExecute = $false
+    $psi.CreateNoWindow = $true
+
+    $proc = [System.Diagnostics.Process]::Start($psi)
+    $stdOutTask = $proc.StandardOutput.ReadToEndAsync()
+    $stdErrTask = $proc.StandardError.ReadToEndAsync()
+
+    $completed = $proc.WaitForExit($TimeoutSeconds * 1000)
+    $exitCode = 0
+    $stdOut = ""
+    $stdErr = ""
+
+    if (-not $completed) {
+        try { $proc.Kill() } catch {}
+        $exitCode = 124 # Standard timeout exit code
+        $stdOut = $stdOutTask.Result
+        $stdErr = $stdErrTask.Result + "`n[ERROR] Antigravity execution timed out after $TimeoutSeconds seconds."
+    }
+    else {
+        $exitCode = $proc.ExitCode
+        $stdOut = $stdOutTask.Result
+        $stdErr = $stdErrTask.Result
+    }
+
+    return [PSCustomObject]@{
+        ExitCode       = $exitCode
+        StandardOutput = $stdOut
+        StandardError  = $stdErr
+        IsTimeout      = ($exitCode -eq 124)
+        LaunchMode     = if ($isCmd) { "cmd.exe wrapper" } else { "direct executable" }
+    }
+}
+
 function Test-SoftDenial {
     [CmdletBinding()]
     param(
@@ -253,7 +329,9 @@ function Test-SoftDenial {
         'approval-gated',
         'was denied by user or policy',
         'not authorized to execute',
-        'operation requires an unavailable approval'
+        'operation requires an unavailable approval',
+        'tool call not approved',
+        'auto-approval is disabled'
     )
 
     foreach ($pat in $softDenialPatterns) {
@@ -263,6 +341,93 @@ function Test-SoftDenial {
     }
 
     return $false
+}
+
+function Evaluate-PostRunState {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        $InitialIssue,
+
+        [Parameter(Mandatory = $false)]
+        $PostIssue,
+
+        [Parameter(Mandatory = $true)]
+        [int]$ExitCode,
+
+        [Parameter(Mandatory = $true)]
+        [bool]$IsSoftDenied,
+
+        [Parameter(Mandatory = $false)]
+        [string]$OutputText = ""
+    )
+
+    if ($ExitCode -eq 124) {
+        return [PSCustomObject]@{
+            Outcome       = "TIMEOUT"
+            TaskCompleted = $false
+            Reason        = "Antigravity execution timed out before completion."
+        }
+    }
+
+    if ($ExitCode -ne 0) {
+        return [PSCustomObject]@{
+            Outcome       = "CLI_PROCESS_FAILED"
+            TaskCompleted = $false
+            Reason        = "Antigravity CLI process exited with non-zero exit code $ExitCode."
+        }
+    }
+
+    if ($IsSoftDenied) {
+        return [PSCustomObject]@{
+            Outcome       = "SOFT_DENIED"
+            TaskCompleted = $false
+            Reason        = "Antigravity CLI encountered tool approval soft-denials in unattended mode."
+        }
+    }
+
+    # Process exit code was 0 and no soft denials detected.
+    # Now verify GitHub state transition.
+    if ($PostIssue) {
+        $postTitle = if ($PostIssue.title) { $PostIssue.title } else { "" }
+        $postState = if ($PostIssue.state) { $PostIssue.state } else { "" }
+
+        if ($postTitle -match '^\[DD-AGENT:REVIEW\]') {
+            return [PSCustomObject]@{
+                Outcome       = "TASK_COMPLETED_REVIEW_READY"
+                TaskCompleted = $true
+                Reason        = "Task completed successfully; issue transitioned to [DD-AGENT:REVIEW] with PR open."
+            }
+        }
+        elseif ($postTitle -match '^\[DD-AGENT:DONE\]') {
+            return [PSCustomObject]@{
+                Outcome       = "TASK_COMPLETED_DONE"
+                TaskCompleted = $true
+                Reason        = "Task completed successfully; issue transitioned to [DD-AGENT:DONE]."
+            }
+        }
+        elseif ($postState -eq "closed") {
+            return [PSCustomObject]@{
+                Outcome       = "TASK_COMPLETED_CLOSED"
+                TaskCompleted = $true
+                Reason        = "Task completed successfully; issue was closed."
+            }
+        }
+        else {
+            # CLI exited 0, but issue remained in IN-PROGRESS, READY, or untransitioned
+            return [PSCustomObject]@{
+                Outcome       = "CLI_SUCCEEDED_UNTRANSITIONED"
+                TaskCompleted = $false
+                Reason        = "Antigravity process exited with code 0, but issue title did not transition to [DD-AGENT:REVIEW] (current title: '$postTitle')."
+            }
+        }
+    }
+
+    return [PSCustomObject]@{
+        Outcome       = "CLI_SUCCEEDED_UNKNOWN_STATE"
+        TaskCompleted = $false
+        Reason        = "Antigravity process exited with code 0, but post-run GitHub issue state could not be verified."
+    }
 }
 
 function Sanitize-LogContent {
@@ -313,25 +478,25 @@ function Acquire-WorkerLock {
         $fileStream.Flush()
 
         return [PSCustomObject]@{
-            Success    = $true
-            Stream     = $fileStream
-            LockPath   = $LockFilePath
+            Success      = $true
+            Stream       = $fileStream
+            LockPath     = $LockFilePath
             ErrorMessage = $null
         }
     }
     catch [System.IO.IOException] {
         return [PSCustomObject]@{
-            Success    = $false
-            Stream     = $null
-            LockPath   = $LockFilePath
+            Success      = $false
+            Stream       = $null
+            LockPath     = $LockFilePath
             ErrorMessage = "Concurrent lock already held by another process: $($_.Exception.Message)"
         }
     }
     catch {
         return [PSCustomObject]@{
-            Success    = $false
-            Stream     = $null
-            LockPath   = $LockFilePath
+            Success      = $false
+            Stream       = $null
+            LockPath     = $LockFilePath
             ErrorMessage = "Failed to acquire lock: $($_.Exception.Message)"
         }
     }
@@ -359,17 +524,34 @@ function Rotate-WorkerLogs {
         [string]$LogsDir,
 
         [Parameter(Mandatory = $false)]
-        [int]$MaxLogsToKeep = 50
+        [int]$MaxLogsToKeep = 50,
+
+        [Parameter(Mandatory = $false)]
+        [int]$MaxHistoryLines = 500
     )
 
     if (-not (Test-Path -Path $LogsDir)) { return }
 
+    # Rotate individual log files
     $logFiles = Get-ChildItem -Path $LogsDir -Filter "*.log" -File | Sort-Object LastWriteTime -Descending
     if ($logFiles.Count -gt $MaxLogsToKeep) {
         $toRemove = $logFiles | Select-Object -Skip $MaxLogsToKeep
         foreach ($f in $toRemove) {
             try { Remove-Item -Path $f.FullName -Force -ErrorAction SilentlyContinue } catch {}
         }
+    }
+
+    # Bounded rotation of history.jsonl
+    $historyFile = Join-Path $LogsDir "history.jsonl"
+    if (Test-Path -Path $historyFile) {
+        try {
+            $historyLines = @(Get-Content -Path $historyFile -ErrorAction SilentlyContinue | Where-Object { $_ -match '\S' })
+            if ($historyLines.Count -gt $MaxHistoryLines) {
+                $trimmed = $historyLines | Select-Object -Last $MaxHistoryLines
+                Set-Content -Path $historyFile -Value $trimmed -Encoding UTF8
+            }
+        }
+        catch {}
     }
 }
 
@@ -378,7 +560,9 @@ Export-ModuleMember -Function `
     Resolve-WorkerExecutable, `
     Test-WorkingTreeCleanliness, `
     Select-QueueTask, `
+    Invoke-AntigravityCli, `
     Test-SoftDenial, `
+    Evaluate-PostRunState, `
     Sanitize-LogContent, `
     Acquire-WorkerLock, `
     Release-WorkerLock, `

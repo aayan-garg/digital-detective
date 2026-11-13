@@ -61,7 +61,6 @@ param(
 )
 
 Set-StrictMode -Version 2.0
-
 $ErrorActionPreference = "Stop"
 
 # Import companion module
@@ -100,7 +99,7 @@ if (-not (Test-Path -Path $logsDir)) {
     New-Item -Path $logsDir -ItemType Directory -Force | Out-Null
 }
 
-# 3. Locate required executables
+# 3. Locate required executables with fallbacks
 $resolvedGit = Resolve-WorkerExecutable -Name "git" -ExplicitPath $GitPath -FallbackPaths @(
     "C:\Program Files\Git\cmd\git.exe",
     "C:\Program Files (x86)\Git\cmd\git.exe"
@@ -160,8 +159,8 @@ if (-not $DryRun) {
 }
 
 try {
-    # 6. Working-tree safety check
-    $treeCleanliness = Test-WorkingTreeCleanliness -RepoPath $RepoPath
+    # 6. Working-tree safety check (using resolved git executable)
+    $treeCleanliness = Test-WorkingTreeCleanliness -RepoPath $RepoPath -GitExe $resolvedGit
     if (-not $treeCleanliness.IsClean) {
         Write-Warning "Working tree safety check FAILED: $($treeCleanliness.Reason)"
         foreach ($v in $treeCleanliness.Violations) {
@@ -170,8 +169,8 @@ try {
         exit 4
     }
 
-    # 7. Check current branch
-    $currentBranch = (git -C $RepoPath rev-parse --abbrev-ref HEAD 2>&1).Trim()
+    # 7. Check current branch using resolved git executable
+    $currentBranch = (& $resolvedGit -C $RepoPath rev-parse --abbrev-ref HEAD 2>&1).Trim()
     Write-Verbose "Current branch: $currentBranch"
 
     # 8. Query GitHub issue queue
@@ -213,6 +212,7 @@ try {
     if ($DryRun) {
         Write-Output "-------------------- [DRY-RUN SUMMARY] --------------------"
         Write-Output "Repository Root : $RepoPath"
+        Write-Output "Git Executable  : $resolvedGit"
         Write-Output "Current Branch  : $currentBranch"
         Write-Output "Selected Issue  : #$($selectedIssue.number) - $($selectedIssue.title)"
         Write-Output "Task Action     : $($decision.Action) ($($decision.TaskType))"
@@ -222,7 +222,7 @@ try {
         exit 0
     }
 
-    # 11. Launch Antigravity in headless mode
+    # 11. Launch Antigravity in headless mode safely via Invoke-AntigravityCli
     $timestamp = (Get-Date).ToUniversalTime().ToString("yyyyMMdd-HHmmss")
     $logFile = Join-Path $logsDir "run-$timestamp-issue-$($selectedIssue.number).log"
     $historyFile = Join-Path $logsDir "history.jsonl"
@@ -234,98 +234,69 @@ try {
     $prompt = "/process-digital-detective-queue"
 
     # Execute agy safely from repository root without interpolating arbitrary issue text
-    $prevLoc = Get-Location
-    $exitCode = 0
-    $outputLines = @()
-
-    try {
-        Set-Location $RepoPath
-        # Use Start-Process with redirection or direct invocation
-        $psi = [System.Diagnostics.ProcessStartInfo]::new()
-        $psi.FileName = $resolvedAgy
-        $psi.Arguments = "-p `"$prompt`" --output-format json --print-timeout `"$($TimeoutSeconds)s`""
-        $psi.WorkingDirectory = $RepoPath
-        $psi.RedirectStandardOutput = $true
-        $psi.RedirectStandardError = $true
-        $psi.UseShellExecute = $false
-        $psi.CreateNoWindow = $true
-
-        $proc = [System.Diagnostics.Process]::Start($psi)
-        $stdOutTask = $proc.StandardOutput.ReadToEndAsync()
-        $stdErrTask = $proc.StandardError.ReadToEndAsync()
-
-        $completed = $proc.WaitForExit($TimeoutSeconds * 1000)
-        if (-not $completed) {
-            try { $proc.Kill() } catch {}
-            $exitCode = 124 # Timeout
-            $stdOut = $stdOutTask.Result
-            $stdErr = $stdErrTask.Result + "`n[ERROR] Worker timed out after $TimeoutSeconds seconds."
-        }
-        else {
-            $exitCode = $proc.ExitCode
-            $stdOut = $stdOutTask.Result
-            $stdErr = $stdErrTask.Result
-        }
-    }
-    finally {
-        Set-Location $prevLoc
-    }
+    $cliResult = Invoke-AntigravityCli `
+        -AgyPath $resolvedAgy `
+        -Prompt $prompt `
+        -WorkingDirectory $RepoPath `
+        -TimeoutSeconds $TimeoutSeconds
 
     $duration = ((Get-Date) - $startTime).TotalSeconds
-    $combinedOutput = "=== STDOUT ===`n$stdOut`n=== STDERR ===`n$stdErr"
+    $combinedOutput = "=== STDOUT ===`n$($cliResult.StandardOutput)`n=== STDERR ===`n$($cliResult.StandardError)"
     $sanitizedOutput = Sanitize-LogContent -Text $combinedOutput
 
     # Write log file
     Set-Content -Path $logFile -Value $sanitizedOutput -Encoding UTF8
 
     # Check for soft-denials
-    $isSoftDenied = Test-SoftDenial -OutputText $sanitizedOutput -ExitCode $exitCode
+    $isSoftDenied = Test-SoftDenial -OutputText $sanitizedOutput -ExitCode $cliResult.ExitCode
 
-    # Query issue post-state
+    # Query issue post-state from GitHub
     $postIssueJson = & $resolvedGh issue view $selectedIssue.number --repo $RepoSlug --json state,title 2>&1
-    $postTitle = $selectedIssue.title
+    $postIssueObj = $null
     if ($LASTEXITCODE -eq 0 -and $postIssueJson) {
         try {
-            $postObj = ConvertFrom-Json -InputObject $postIssueJson
-            $postTitle = $postObj.title
+            $postIssueObj = ConvertFrom-Json -InputObject $postIssueJson
         } catch {}
     }
 
-    $outcomeStatus = if ($exitCode -eq 0 -and -not $isSoftDenied) {
-        "SUCCESS"
-    } elseif ($isSoftDenied) {
-        "SOFT_DENIED"
-    } elseif ($exitCode -eq 124) {
-        "TIMEOUT"
-    } else {
-        "ERROR"
-    }
+    # Evaluate post-run state distinguishing CLI process exit from actual task completion
+    $evalState = Evaluate-PostRunState `
+        -InitialIssue $selectedIssue `
+        -PostIssue $postIssueObj `
+        -ExitCode $cliResult.ExitCode `
+        -IsSoftDenied $isSoftDenied `
+        -OutputText $sanitizedOutput
 
-    # Record history entry
+    # Record history entry with full evaluation
     $historyEntry = [PSCustomObject]@{
         Timestamp       = $timestamp
         IssueNumber     = $selectedIssue.number
         InitialTitle    = $selectedIssue.title
-        PostTitle       = $postTitle
-        ExitCode        = $exitCode
+        PostTitle       = if ($postIssueObj) { $postIssueObj.title } else { "Unknown" }
+        ExitCode        = $cliResult.ExitCode
         DurationSeconds = [math]::Round($duration, 2)
-        Outcome         = $outcomeStatus
+        Outcome         = $evalState.Outcome
+        TaskCompleted   = $evalState.TaskCompleted
+        EvaluationReason= $evalState.Reason
         IsSoftDenied    = $isSoftDenied
+        LaunchMode      = $cliResult.LaunchMode
         LogFile         = $logFile
     }
 
     $jsonLine = ($historyEntry | ConvertTo-Json -Compress)
     Add-Content -Path $historyFile -Value $jsonLine -Encoding UTF8
 
-    # Rotate old logs
-    Rotate-WorkerLogs -LogsDir $logsDir -MaxLogsToKeep 50
+    # Rotate old logs and bound history.jsonl
+    Rotate-WorkerLogs -LogsDir $logsDir -MaxLogsToKeep 50 -MaxHistoryLines 500
 
-    Write-Output "Execution finished with outcome: $outcomeStatus (Exit code: $exitCode, Duration: $([math]::Round($duration, 1))s)"
+    Write-Output "Execution finished: $($evalState.Outcome) (Process exit: $($cliResult.ExitCode), Task completed: $($evalState.TaskCompleted), Duration: $([math]::Round($duration, 1))s)"
+    Write-Output "Reason: $($evalState.Reason)"
+
     if ($isSoftDenied) {
         Write-Warning "Antigravity reported an approval soft-denial. User action or interactive approval may be required."
     }
 
-    exit $exitCode
+    exit $cliResult.ExitCode
 }
 finally {
     if ($lockResult) {

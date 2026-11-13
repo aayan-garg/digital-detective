@@ -79,9 +79,10 @@ $schedulerStatus = [PSCustomObject]@{
     NextRunTime    = if ($taskInfo) { $taskInfo.NextRunTime } else { $null }
 }
 
-# 3. Inspect Executables & Auth
+# 3. Inspect Executables & Auth (with fallbacks)
 $gitExe = Resolve-WorkerExecutable -Name "git" -ExplicitPath $GitPath -FallbackPaths @(
-    "C:\Program Files\Git\cmd\git.exe"
+    "C:\Program Files\Git\cmd\git.exe",
+    "C:\Program Files (x86)\Git\cmd\git.exe"
 )
 $gitVer = if ($gitExe) { (& $gitExe --version 2>&1).Trim() } else { "Not Found" }
 
@@ -116,9 +117,12 @@ $executablesStatus = [PSCustomObject]@{
     AgyVersion  = $agyVer
 }
 
-# 4. Inspect Working Tree
-$currentBranch = try { (git -C $RepoPath rev-parse --abbrev-ref HEAD 2>&1).Trim() } catch { "Unknown" }
-$treeCheck = Test-WorkingTreeCleanliness -RepoPath $RepoPath
+# 4. Inspect Working Tree (using resolved git executable)
+$currentBranch = if ($gitExe) {
+    try { (& $gitExe -C $RepoPath rev-parse --abbrev-ref HEAD 2>&1).Trim() } catch { "Unknown" }
+} else { "Git Not Found" }
+
+$treeCheck = Test-WorkingTreeCleanliness -RepoPath $RepoPath -GitExe $gitExe
 
 $workspaceStatus = [PSCustomObject]@{
     RepositoryRoot = $RepoPath
@@ -216,7 +220,7 @@ Write-Output "  State Dir     : $($historyStatus.StateDir)"
 Write-Output "  Process Lock  : $($historyStatus.LockStatus)"
 Write-Output "  Total Runs    : $($historyStatus.TotalRuns)"
 if ($lastRun) {
-    Write-Output "  Latest Run    : $($lastRun.Timestamp) - Issue #$($lastRun.IssueNumber) - Outcome: $($lastRun.Outcome) (Exit: $($lastRun.ExitCode))"
+    Write-Output "  Latest Run    : $($lastRun.Timestamp) - Issue #$($lastRun.IssueNumber) - Outcome: $($lastRun.Outcome) (Completed: $($lastRun.TaskCompleted), Exit: $($lastRun.ExitCode))"
 } else {
     Write-Output "  Latest Run    : None recorded"
 }
